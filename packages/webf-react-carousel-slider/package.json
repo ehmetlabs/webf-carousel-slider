@@ -1,0 +1,29 @@
+{
+  "name": "webf_carousel_slider",
+  "version": "0.1.0",
+  "description": "WebF Custom Element wrapper for carousel_slider_plus. Provides hybrid UI carousel component with Flutter performance and JavaScript API.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
+    "@openwebf/react-core-ui": "^0.24.2"
+  },
+  "devDependencies": {
+    "@openwebf/react-core-ui": "^0.24.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "picomatch": "^4.0.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
