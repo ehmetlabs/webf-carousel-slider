@@ -39,11 +39,11 @@ interface CarouselSliderProperties {
    * Enable autoplay.
    * @default false
    */
-  autoplay?: boolean;
+  autoplay: boolean;
 
   /**
-   * Autoplay interval in milliseconds.
-   * @default 3000
+   * Autoplay interval in seconds.
+   * @default 3.0
    */
   autoplayInterval?: number;
 
@@ -51,7 +51,7 @@ interface CarouselSliderProperties {
    * Enable infinite scroll loop.
    * @default true
    */
-  enableInfiniteScroll?: boolean;
+  enableInfiniteScroll: boolean;
 
   /**
    * Aspect ratio for the carousel.
@@ -65,7 +65,7 @@ interface CarouselSliderProperties {
    * Creates a scaling effect for the center item.
    * @default false
    */
-  enlargeCenterPage?: boolean;
+  enlargeCenterPage: boolean;
 
   /**
    * Fraction of viewport visible for each item.
@@ -96,7 +96,7 @@ interface CarouselSliderProperties {
    * Reverse the carousel direction.
    * @default false
    */
-  reverse?: boolean;
+  reverse: boolean;
 
   /**
    * Scroll direction.
@@ -108,13 +108,41 @@ interface CarouselSliderProperties {
    * Add padding at start and end.
    * @default true
    */
-  padEnds?: boolean;
+  padEnds: boolean;
 
   /**
    * Fixed height for the carousel.
    * Set as string like "400" or "400.0".
    */
   height?: string;
+
+  // ========== Methods ==========
+
+  /**
+   * Navigate to the next page.
+   */
+  next(): void;
+
+  /**
+   * Navigate to the previous page.
+   */
+  previous(): void;
+
+  /**
+   * Jump to a specific page without animation.
+   * @param page - Page index to jump to (0-based)
+   */
+  jumpToPage(page: number): void;
+
+  /**
+   * Pause autoplay.
+   */
+  pause(): void;
+
+  /**
+   * Resume autoplay.
+   */
+  resume(): void;
 }
 
 /**
@@ -149,35 +177,4 @@ interface CarouselSliderEvents {
    * Fired when a page animation completes.
    */
   pageAnimationEnd: Event;
-}
-
-/**
- * Methods for <carousel-slider>.
- */
-interface CarouselSliderMethods {
-  /**
-   * Navigate to the next page.
-   */
-  next(): void;
-
-  /**
-   * Navigate to the previous page.
-   */
-  previous(): void;
-
-  /**
-   * Jump to a specific page without animation.
-   * @param page - Page index to jump to (0-based)
-   */
-  jumpToPage(page: number): void;
-
-  /**
-   * Pause autoplay.
-   */
-  pause(): void;
-
-  /**
-   * Resume autoplay.
-   */
-  resume(): void;
 }

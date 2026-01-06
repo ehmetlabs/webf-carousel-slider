@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:webf/webf.dart';
 import 'package:webf/dom.dart' as dom;
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
+import 'carousel_slider_bindings_generated.dart';
 
 /// WebF Custom Element wrapper for carousel_slider_plus.
 /// Provides a high-performance carousel component accessible from JavaScript.
 ///
-/// This is a base implementation extending WidgetElement directly.
-/// After running WebF CLI codegen, this should extend the generated bindings class.
-class CarouselSliderElement extends WidgetElement {
+/// Extends the generated bindings class to enable automatic property mapping.
+class CarouselSliderElement extends CarouselSliderBindings {
   CarouselSliderElement(super.context);
 
   // Internal state
@@ -21,87 +21,198 @@ class CarouselSliderElement extends WidgetElement {
   bool _enlargeCenterPage = false;
   double _viewportFraction = 1.0;
   int _currentIndex = 0;
+  double? _autoPlayAnimationDuration;
+  CarouselSliderAutoPlayCurve? _autoPlayCurve;
+  double? _initialPage;
+  bool _reverse = false;
+  CarouselSliderScrollDirection? _scrollDirection;
+  bool _padEnds = true;
+  String? _height;
 
   // Property getters/setters
   String get variant => _variant;
 
-  set variant(String value) {
-    if (_variant != value) {
+  set variant(dynamic value) {
+    if (value is String && _variant != value) {
       _variant = value;
       state?.requestUpdateState();
     }
   }
 
+  @override
   bool get autoplay => _autoplay;
 
-  set autoplay(bool value) {
-    if (_autoplay != value) {
-      _autoplay = value;
+  @override
+  set autoplay(dynamic value) {
+    final boolValue = value is bool ? value : value == 'true' || value == '';
+    if (_autoplay != boolValue) {
+      _autoplay = boolValue;
       state?.requestUpdateState();
     }
   }
 
-  double get autoplayInterval => _autoplayInterval;
+  @override
+  double? get autoplayInterval => _autoplayInterval;
 
-  set autoplayInterval(double value) {
-    if (_autoplayInterval != value) {
-      _autoplayInterval = value;
+  @override
+  set autoplayInterval(dynamic value) {
+    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 3.0;
+    if (_autoplayInterval != doubleValue) {
+      _autoplayInterval = doubleValue;
       state?.requestUpdateState();
     }
   }
 
+  @override
   bool get enableInfiniteScroll => _enableInfiniteScroll;
 
-  set enableInfiniteScroll(bool value) {
-    if (_enableInfiniteScroll != value) {
-      _enableInfiniteScroll = value;
+  @override
+  set enableInfiniteScroll(dynamic value) {
+    final boolValue = value is bool ? value : value == 'true' || value == '';
+    if (_enableInfiniteScroll != boolValue) {
+      _enableInfiniteScroll = boolValue;
       state?.requestUpdateState();
     }
   }
 
-  double get aspectRatio => _aspectRatio;
+  @override
+  double? get aspectRatio => _aspectRatio;
 
-  set aspectRatio(double value) {
-    if (_aspectRatio != value && value > 0) {
-      _aspectRatio = value;
+  @override
+  set aspectRatio(dynamic value) {
+    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 0.0;
+    if (_aspectRatio != doubleValue && doubleValue > 0) {
+      _aspectRatio = doubleValue;
       state?.requestUpdateState();
     }
   }
 
+  @override
   bool get enlargeCenterPage => _enlargeCenterPage;
 
-  set enlargeCenterPage(bool value) {
-    if (_enlargeCenterPage != value) {
-      _enlargeCenterPage = value;
+  @override
+  set enlargeCenterPage(dynamic value) {
+    final boolValue = value is bool ? value : value == 'true' || value == '';
+    if (_enlargeCenterPage != boolValue) {
+      _enlargeCenterPage = boolValue;
       state?.requestUpdateState();
     }
   }
 
-  double get viewportFraction => _viewportFraction;
+  @override
+  double? get viewportFraction => _viewportFraction;
 
-  set viewportFraction(double value) {
-    if (_viewportFraction != value && value > 0 && value <= 1.0) {
-      _viewportFraction = value;
+  @override
+  set viewportFraction(dynamic value) {
+    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 1.0;
+    if (_viewportFraction != doubleValue && doubleValue > 0 && doubleValue <= 1.0) {
+      _viewportFraction = doubleValue;
       state?.requestUpdateState();
     }
   }
 
-  int get currentIndex => _currentIndex;
+  @override
+  double? get currentIndex => _currentIndex.toDouble();
 
-  set currentIndex(int value) {
-    if (_currentIndex != value) {
-      _currentIndex = value;
+  @override
+  set currentIndex(dynamic value) {
+    final intValue = value is int ? value : (value is double ? value.toInt() : int.tryParse(value.toString()) ?? 0);
+    if (_currentIndex != intValue) {
+      _currentIndex = intValue;
       // Trigger page change
       final sliderState = state as CarouselSliderElementState?;
-      sliderState?.jumpToPage(value);
+      sliderState?.jumpToPage(intValue);
     }
   }
 
-  String get options => jsonEncode(_getCurrentOptions());
+  @override
+  String? get options => jsonEncode(_getCurrentOptions());
 
-  set options(String value) {
+  @override
+  set options(dynamic value) {
     // Options parsing - will trigger rebuild
     state?.requestUpdateState();
+  }
+
+  @override
+  double? get autoPlayAnimationDuration => _autoPlayAnimationDuration;
+
+  @override
+  set autoPlayAnimationDuration(dynamic value) {
+    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 800.0;
+    if (_autoPlayAnimationDuration != doubleValue) {
+      _autoPlayAnimationDuration = doubleValue;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  CarouselSliderAutoPlayCurve? get autoPlayCurve => _autoPlayCurve;
+
+  @override
+  set autoPlayCurve(dynamic value) {
+    if (_autoPlayCurve != value) {
+      _autoPlayCurve = value;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  double? get initialPage => _initialPage?.toDouble();
+
+  @override
+  set initialPage(dynamic value) {
+    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 0.0;
+    if (_initialPage != doubleValue) {
+      _initialPage = doubleValue;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  bool get reverse => _reverse;
+
+  @override
+  set reverse(dynamic value) {
+    final boolValue = value is bool ? value : value == 'true' || value == '';
+    if (_reverse != boolValue) {
+      _reverse = boolValue;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  CarouselSliderScrollDirection? get scrollDirection => _scrollDirection;
+
+  @override
+  set scrollDirection(dynamic value) {
+    if (_scrollDirection != value) {
+      _scrollDirection = value;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  bool get padEnds => _padEnds;
+
+  @override
+  set padEnds(dynamic value) {
+    final boolValue = value is bool ? value : value == 'true' || value == '';
+    if (_padEnds != boolValue) {
+      _padEnds = boolValue;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  String? get height => _height;
+
+  @override
+  set height(dynamic value) {
+    if (_height != value.toString()) {
+      _height = value?.toString();
+      state?.requestUpdateState();
+    }
   }
 
   // Methods for programmatic control
@@ -189,22 +300,36 @@ class CarouselSliderElementState extends WebFWidgetElementState {
   }
 
   CarouselOptions _buildOptions() {
+    final aspectRatioValue = widgetElement.aspectRatio ?? 0.0;
     return CarouselOptions(
       height: null,
-      aspectRatio:
-          widgetElement.aspectRatio > 0 ? widgetElement.aspectRatio : 16 / 9,
-      viewportFraction: widgetElement.viewportFraction,
-      initialPage: widgetElement.currentIndex,
+      aspectRatio: aspectRatioValue > 0 ? aspectRatioValue : 16 / 9,
+      viewportFraction: widgetElement.viewportFraction ?? 1.0,
+      initialPage: (widgetElement.currentIndex ?? 0.0).toInt(),
       enableInfiniteScroll: widgetElement.enableInfiniteScroll,
-      reverse: false,
+      reverse: widgetElement.reverse,
       autoPlay: widgetElement.autoplay,
       autoPlayInterval: Duration(
-          milliseconds: (widgetElement.autoplayInterval * 1000).toInt()),
-      autoPlayAnimationDuration: const Duration(milliseconds: 800),
-      autoPlayCurve: Curves.ease,
+          milliseconds: ((widgetElement.autoplayInterval ?? 3.0) * 1000).toInt()),
+      autoPlayAnimationDuration: Duration(
+          milliseconds: (widgetElement.autoPlayAnimationDuration ?? 800.0).toInt()),
+      autoPlayCurve: widgetElement._autoPlayCurve == null
+          ? Curves.ease
+          : (widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEase
+              ? Curves.ease
+              : widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEaseIn
+                  ? Curves.easeIn
+                  : widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEaseOut
+                      ? Curves.easeOut
+                      : widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEaseInOut
+                          ? Curves.easeInOut
+                          : Curves.fastOutSlowIn),
       enlargeCenterPage: widgetElement.enlargeCenterPage,
-      scrollDirection: Axis.horizontal,
-      padEnds: true,
+      scrollDirection: widgetElement.scrollDirection == null ||
+              widgetElement.scrollDirection == CarouselSliderScrollDirection.axisHorizontal
+          ? Axis.horizontal
+          : Axis.vertical,
+      padEnds: widgetElement.padEnds,
       onPageChanged: _onPageChanged,
     );
   }
@@ -212,8 +337,14 @@ class CarouselSliderElementState extends WebFWidgetElementState {
   void _onPageChanged(int index, CarouselPageChangedReason reason) {
     widgetElement._currentIndex = index;
 
-    // Dispatch change event
-    widgetElement.dispatchEvent(Event('change'));
+    // Dispatch change event with detail data
+    widgetElement.dispatchEvent(CustomEvent(
+      'change',
+      detail: {
+        'index': index,
+        'reason': reason.toString().split('.').last,
+      },
+    ));
   }
 
   @override
