@@ -41,20 +41,17 @@ class CarouselSliderPage extends StatefulWidget {
 }
 
 class _CarouselSliderPageState extends State<CarouselSliderPage> {
-  late WebFController _controller;
+  static const String _controllerName = 'carousel_slider_example';
 
   @override
   void initState() {
     super.initState();
-    _controller = WebFController(
-      defaultBundle: WebFBundle.fromUrl('assets/index.html'),
+    // Add controller to manager with bundle
+    WebFControllerManager.instance.addWithPrerendering(
+      name: _controllerName,
+      createController: () => WebFController(),
+      bundle: WebFBundle.fromUrl('assets/index.html'),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -65,7 +62,10 @@ class _CarouselSliderPageState extends State<CarouselSliderPage> {
         title: const Text('WebF Carousel Slider Example'),
       ),
       body: SafeArea(
-        child: WebFWidget(controller: _controller),
+        child: WebF.fromControllerName(
+          controllerName: _controllerName,
+          initialRoute: '/',
+        ),
       ),
     );
   }

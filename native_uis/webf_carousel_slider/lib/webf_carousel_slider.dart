@@ -1,4 +1,3 @@
-///
 /// WebF Carousel Slider
 /// ================
 ///
@@ -66,7 +65,7 @@
 /// - ✅ Programmatic control methods
 /// - ✅ Event-driven API
 /// - ✅ TypeScript definitions
-///
+library;
 
 import 'package:webf/webf.dart';
 import 'src/carousel_slider.dart';

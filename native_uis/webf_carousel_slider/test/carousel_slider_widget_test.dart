@@ -196,8 +196,7 @@ void main() {
             body: CarouselSlider(
               options: CarouselOptions(
                 onPageChanged: (index, reason) {
-                  // Callback exists
-                  print('Page changed to $index, reason: $reason');
+                  // Callback exists - do nothing in test
                 },
               ),
               items: [
