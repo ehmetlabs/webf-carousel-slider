@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carousel Slider Example</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    carousel-slider {
+      width: 100%;
+      margin-bottom: 30px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    carousel-slider img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      color: #667eea;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .info {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .info-value {
+      color: #333;
+      font-family: monospace;
+    }
+
+    .status {
+      text-align: center;
+      color: white;
+      font-size: 14px;
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎠 WebF Carousel Slider</h1>
+    <p class="subtitle">High-performance carousel with Flutter rendering</p>
+
+    <carousel-slider
+      id="myCarousel"
+      autoplay="true"
+      autoplay-interval="3000"
+      enable-infinite-scroll="true"
+      aspect-ratio="16/9"
+      viewport-fraction="0.85"
+      enlarge-center-page="true"
+      auto-play-curve="Curves.easeInOut"
+    >
+      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=450&fit=crop" alt="Mountain landscape" />
+      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=450&fit=crop" alt="Beach sunset" />
+      <img src="https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=800&h=450&fit=crop" alt="Tropical beach" />
+      <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=450&fit=crop" alt="Forest path" />
+      <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=450&fit=crop" alt="Lake view" />
+    </carousel-slider>
+
+    <div class="controls">
+      <button id="prevBtn">⬅️ Previous</button>
+      <button id="pauseBtn">⏸️ Pause</button>
+      <button id="resumeBtn">▶️ Resume</button>
+      <button id="nextBtn">Next ➡️</button>
+    </div>
+
+    <div class="info">
+      <div class="info-item">
+        <span class="info-label">Current Index:</span>
+        <span class="info-value" id="currentIndex">0</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Total Slides:</span>
+        <span class="info-value" id="totalSlides">5</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Autoplay:</span>
+        <span class="info-value" id="autoplayStatus">Active</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Reason:</span>
+        <span class="info-value" id="changeReason">-</span>
+      </div>
+    </div>
+
+    <p class="status" id="status">Ready</p>
+  </div>
+
+  <script>
+    const carousel = document.getElementById('myCarousel');
+    const currentIndexEl = document.getElementById('currentIndex');
+    const totalSlidesEl = document.getElementById('totalSlides');
+    const autoplayStatusEl = document.getElementById('autoplayStatus');
+    const changeReasonEl = document.getElementById('changeReason');
+    const statusEl = document.getElementById('status');
+
+    let isPaused = false;
+
+    // Listen to page changes
+    carousel.addEventListener('change', (event) => {
+      const index = event.detail.index;
+      const reason = event.detail.reason;
+
+      currentIndexEl.textContent = index;
+      changeReasonEl.textContent = reason;
+      statusEl.textContent = `Changed to slide ${index + 1}`;
+
+      // Remove animation class after a delay
+      setTimeout(() => {
+        statusEl.textContent = 'Ready';
+      }, 2000);
+    });
+
+    // Control buttons
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      carousel.previous();
+      statusEl.textContent = 'Navigated to previous';
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      carousel.next();
+      statusEl.textContent = 'Navigated to next';
+    });
+
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      carousel.pause();
+      isPaused = true;
+      autoplayStatusEl.textContent = 'Paused';
+      statusEl.textContent = 'Autoplay paused';
+    });
+
+    document.getElementById('resumeBtn').addEventListener('click', () => {
+      carousel.resume();
+      isPaused = false;
+      autoplayStatusEl.textContent = 'Active';
+      statusEl.textContent = 'Autoplay resumed';
+    });
+
+    // Update initial state
+    totalSlidesEl.textContent = carousel.children.length;
+    statusEl.textContent = 'Carousel initialized with ' + carousel.children.length + ' slides';
+
+    // Log lifecycle events
+    console.log('WebF Carousel Slider initialized');
+    console.log('Total slides:', carousel.children.length);
+  </script>
+</body>
+</html>

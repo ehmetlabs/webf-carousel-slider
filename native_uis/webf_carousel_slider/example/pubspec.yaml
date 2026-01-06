@@ -1,0 +1,26 @@
+name: webf_carousel_slider_example
+description: Demonstrates how to use the webf_carousel_slider package.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webf: ^0.24.1
+  webf_carousel_slider:
+    path: ../
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
