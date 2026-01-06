@@ -1,0 +1,356 @@
+{
+  "timestamp": "2026-01-06T00:00:00.000Z",
+  "project": {
+    "name": "webf-carousel",
+    "type": "WebF Hybrid UI Component Library",
+    "repository": "https://github.com/example/carousel-slider-webf",
+    "version": "0.1.0"
+  },
+  "modules": [
+    {
+      "path": "native_uis/webf_carousel_slider",
+      "name": "webf_carousel_slider",
+      "language": "Dart",
+      "type": "Flutter Package",
+      "version": "0.1.0",
+      "description": "WebF Custom Element wrapper for carousel_slider_plus. Provides hybrid UI carousel component with Flutter performance and JavaScript API.",
+      "entry": "lib/webf_carousel_slider.dart",
+      "exports": [
+        "lib/src/carousel_slider.dart",
+        "lib/src/carousel_slider_bindings_generated.dart",
+        "lib/src/carousel_slider.d.ts"
+      ],
+      "dependencies": [
+        "webf: ^0.24.1",
+        "carousel_slider_plus: ^7.1.1",
+        "logger: ^2.6.2",
+        "collection: ^1.19.1"
+      ],
+      "testDirectory": "test/",
+      "testFiles": [
+        "test/carousel_slider_widget_test.dart"
+      ],
+      "exampleDirectory": "example/",
+      "exampleEntry": "example/lib/main.dart",
+      "customElement": "carousel-slider",
+      "api": {
+        "properties": [
+          "currentIndex",
+          "autoplay",
+          "autoplayInterval",
+          "enableInfiniteScroll",
+          "aspectRatio",
+          "enlargeCenterPage",
+          "viewportFraction",
+          "autoPlayAnimationDuration",
+          "autoPlayCurve",
+          "initialPage",
+          "reverse",
+          "scrollDirection",
+          "padEnds",
+          "height",
+          "options"
+        ],
+        "methods": [
+          "next()",
+          "previous()",
+          "jumpToPage(page: number)",
+          "pause()",
+          "resume()"
+        ],
+        "events": [
+          "change",
+          "pageAnimationStart",
+          "pageAnimationEnd"
+        ]
+      },
+      "documentation": "README.md",
+      "changelog": "CHANGELOG.md",
+      "coverage": {
+        "estimated": 80,
+        "testedAreas": [
+          "Widget rendering",
+          "CarouselOptions configuration",
+          "Property validation",
+          "Edge cases",
+          "Integration scenarios"
+        ],
+        "gaps": [
+          "Integration tests with WebF",
+          "Mock tests for Controller",
+          "Performance tests"
+        ]
+      }
+    },
+    {
+      "path": "packages/webf-react-carousel-slider",
+      "name": "webf-react-carousel-slider",
+      "language": "TypeScript",
+      "type": "React Component Binding",
+      "version": "0.1.0",
+      "description": "React component wrapper for webf_carousel_slider Custom Element.",
+      "entry": "src/index.ts",
+      "exports": [
+        "src/index.ts",
+        "src/lib/src/carousel_slider.tsx",
+        "src/types.ts"
+      ],
+      "dependencies": [
+        "react: >=16.8.0 (peer)",
+        "react-dom: >=16.8.0 (peer)",
+        "@openwebf/react-core-ui: ^0.24.2 (peer)"
+      ],
+      "devDependencies": [
+        "@openwebf/react-core-ui: ^0.24.2",
+        "@types/react: ^19.2.7",
+        "@types/react-dom: ^19.2.3",
+        "typescript: ^5.9.3",
+        "tsup: ^8.5.1"
+      ],
+      "testDirectory": null,
+      "testFiles": [],
+      "buildConfig": "tsup.config.ts",
+      "tsConfig": "tsconfig.json",
+      "output": {
+        "commonjs": "dist/index.js",
+        "esm": "dist/index.mjs",
+        "types": "dist/index.d.ts"
+      },
+      "component": "CarouselSlider",
+      "componentInterface": "CarouselSliderElement",
+      "propsInterface": "CarouselSliderProps",
+      "documentation": null,
+      "changelog": null,
+      "coverage": {
+        "estimated": 0,
+        "testedAreas": [],
+        "gaps": [
+          "No test files present",
+          "Component rendering tests",
+          "Props passing tests",
+          "Event handling tests",
+          "Ref methods tests",
+          "Integration tests with WebF"
+        ]
+      }
+    }
+  ],
+  "skills": [
+    {
+      "name": "webf-api-compatibility",
+      "path": ".claude/skills/webf-api-compatibility/SKILL.md",
+      "references": [
+        ".claude/skills/webf-api-compatibility/alternatives.md",
+        ".claude/skills/webf-api-compatibility/reference.md"
+      ]
+    },
+    {
+      "name": "webf-async-rendering",
+      "path": ".claude/skills/webf-async-rendering/SKILL.md",
+      "references": [
+        ".claude/skills/webf-async-rendering/examples.md"
+      ]
+    },
+    {
+      "name": "webf-hybrid-ui-dev",
+      "path": ".claude/skills/webf-hybrid-ui-dev/SKILL.md",
+      "references": [
+        ".claude/skills/webf-hybrid-ui-dev/example-input.md",
+        ".claude/skills/webf-hybrid-ui-dev/typescript-guide.md"
+      ]
+    },
+    {
+      "name": "webf-infinite-scrolling",
+      "path": ".claude/skills/webf-infinite-scrolling/SKILL.md",
+      "references": [
+        ".claude/skills/webf-infinite-scrolling/examples.md"
+      ]
+    },
+    {
+      "name": "webf-native-plugin-dev",
+      "path": ".claude/skills/webf-native-plugin-dev/SKILL.md",
+      "references": []
+    },
+    {
+      "name": "webf-native-plugins",
+      "path": ".claude/skills/webf-native-plugins/SKILL.md",
+      "references": [
+        ".claude/skills/webf-native-plugins/reference.md"
+      ]
+    },
+    {
+      "name": "webf-native-ui",
+      "path": ".claude/skills/webf-native-ui/SKILL.md",
+      "references": [
+        ".claude/skills/webf-native-ui/reference.md"
+      ]
+    },
+    {
+      "name": "webf-quickstart",
+      "path": ".claude/skills/webf-quickstart/SKILL.md",
+      "references": [
+        ".claude/skills/webf-quickstart/reference.md"
+      ]
+    },
+    {
+      "name": "webf-routing-setup",
+      "path": ".claude/skills/webf-routing-setup/SKILL.md",
+      "references": [
+        ".claude/skills/webf-routing-setup/cross-platform.md",
+        ".claude/skills/webf-routing-setup/examples.md"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "name": "speckit",
+      "path": ".claude/commands/",
+      "files": [
+        "speckit.checklist.md",
+        "speckit.tasks.md",
+        "speckit.constitution.md",
+        "speckit.implement.md",
+        "speckit.specify.md",
+        "speckit.taskstoissues.md",
+        "speckit.analyze.md",
+        "speckit.plan.md",
+        "speckit.clarify.md"
+      ]
+    }
+  ],
+  "ignoreRules": {
+    "sources": [
+      ".gitignore files",
+      "Default node_modules patterns"
+    ],
+    "patterns": [
+      "node_modules/**",
+      ".git/**",
+      ".github/**",
+      "dist/**",
+      "build/**",
+      ".next/**",
+      "__pycache__/**",
+      "*.lock",
+      "*.log",
+      "*.bin",
+      "*.pdf",
+      "*.png",
+      "*.jpg",
+      "*.jpeg",
+      "*.gif",
+      "*.mp4",
+      "*.zip",
+      "*.tar",
+      "*.gz",
+      ".dart_tool/**",
+      ".flutter-plugins-dependencies",
+      "/build/",
+      "/coverage/",
+      "lib/",
+      ".DS_Store",
+      "*.tsbuildinfo",
+      ".env",
+      ".env.local",
+      ".env.*.local"
+    ],
+    "estimatedIgnoredFiles": 5000
+  },
+  "scan": {
+    "startTime": "2026-01-06T00:00:00.000Z",
+    "endTime": "2026-01-06T00:00:00.000Z",
+    "totalFilesEstimated": 5200,
+    "scannedFiles": 45,
+    "coveragePercent": 0.87,
+    "truncated": false,
+    "limitsReached": [],
+    "phase": "B (Module Scanning)",
+    "notes": [
+      "Ignored node_modules (large dependency tree)",
+      "Ignored .git (version control)",
+      "Focused on source code, tests, and documentation",
+      "React package src files scanned successfully",
+      "Flutter package lib files scanned successfully"
+    ]
+  },
+  "nextSteps": [
+    {
+      "priority": "HIGH",
+      "action": "Add React package tests",
+      "details": [
+        "Install jest and @testing-library/react",
+        "Create src/__tests__/carousel_slider.test.tsx",
+        "Test component rendering, props passing, events, and ref methods"
+      ]
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Add integration tests",
+      "details": [
+        "Create integration_test/ in Flutter package",
+        "Test interaction between JavaScript and Dart layers",
+        "Test event propagation and method calls"
+      ]
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Add Storybook stories",
+      "details": [
+        "Install @storybook/react",
+        "Create stories for CarouselSlider",
+        "Document visual variants and configurations"
+      ]
+    },
+    {
+      "priority": "LOW",
+      "action": "Performance optimization",
+      "details": [
+        "Profile rendering performance with Flutter DevTools",
+        "Test with large item counts (100+)",
+        "Implement lazy loading if needed"
+      ]
+    },
+    {
+      "priority": "LOW",
+      "action": "Documentation improvements",
+      "details": [
+        "Add troubleshooting guide",
+        "Add video tutorials",
+        "Add migration guide from other carousel libraries"
+      ]
+    }
+  ],
+  "recommendations": {
+    "testing": {
+      "priority": "HIGH",
+      "reason": "React package has 0% test coverage",
+      "suggestion": "Start with jest + @testing-library/react for component tests"
+    },
+    "documentation": {
+      "priority": "MEDIUM",
+      "reason": "Good README coverage, but missing troubleshooting guides",
+      "suggestion": "Add FAQ section for common issues"
+    },
+    "tooling": {
+      "priority": "MEDIUM",
+      "reason": "No pre-commit hooks or CI/CD",
+      "suggestion": "Add Husky for pre-commit hooks, GitHub Actions for CI"
+    },
+    "architecture": {
+      "priority": "LOW",
+      "reason": "Clean architecture, follows WebF best practices",
+      "suggestion": "Consider adding more examples (Vue, Svelte bindings)"
+    }
+  },
+  "metadata": {
+    "generator": "claude-sonnet-4-5",
+    "scanMode": "adaptive",
+    "scanPhases": [
+      "A - File enumeration",
+      "B - Module scanning"
+    ],
+    "lastFullScan": "2026-01-06T00:00:00.000Z",
+    "nextRecommendedScan": "2026-01-07T00:00:00.000Z",
+    "documentationVersion": "1.0.0"
+  }
+}
