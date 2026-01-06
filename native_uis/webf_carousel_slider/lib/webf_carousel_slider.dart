@@ -68,8 +68,6 @@
 /// - ✅ TypeScript definitions
 ///
 
-library;
-
 import 'package:webf/webf.dart';
 import 'src/carousel_slider.dart';
 
