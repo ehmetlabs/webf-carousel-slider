@@ -116,6 +116,31 @@ interface CarouselSliderProperties {
    */
   height?: string;
 
+  /**
+   * Pause autoplay when user touches the carousel.
+   * @default true
+   */
+  pauseAutoPlayOnTouch: boolean;
+
+  /**
+   * Pause autoplay when user navigates manually.
+   * @default true
+   */
+  pauseAutoPlayOnManualNavigate: boolean;
+
+  /**
+   * Enable page snapping effect.
+   * @default true
+   */
+  pageSnapping: boolean;
+
+  /**
+   * Scale factor for the center page when enlargeCenterPage is true.
+   * Values between 0.0 and 1.0.
+   * @default 0.3
+   */
+  enlargeFactor?: number;
+
   // ========== Methods ==========
 
   /**
@@ -169,12 +194,42 @@ interface CarouselSliderEvents {
   }>;
 
   /**
-   * Fired when a page animation starts.
+   * Fired when user starts sliding/dragging the carousel.
    */
-  pageAnimationStart: Event;
+  slidestart: Event;
+
+  /**
+   * Fired when user stops sliding/dragging the carousel.
+   */
+  slideend: Event;
+
+  /**
+   * Fired when a page animation starts.
+   * Event detail contains from and to page indices.
+   */
+  pageanimationstart: CustomEvent<{
+    /** Starting page index */
+    from: number;
+    /** Target page index */
+    to: number;
+  }>;
 
   /**
    * Fired when a page animation completes.
+   * Event detail contains the current page index.
    */
-  pageAnimationEnd: Event;
+  pageanimationend: CustomEvent<{
+    /** Current page index */
+    index: number;
+  }>;
+
+  /**
+   * Fired when autoplay is paused.
+   */
+  autoplaypause: Event;
+
+  /**
+   * Fired when autoplay is resumed.
+   */
+  autoplayresume: Event;
 }

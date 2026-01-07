@@ -5,6 +5,12 @@ import 'package:webf/dom.dart' as dom;
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'carousel_slider_bindings_generated.dart';
 
+// 导入新的工具类和管理器
+import 'utils/type_converter.dart';
+import 'config/carousel_config.dart';
+import 'event/event_manager.dart';
+import 'controller/controller_manager.dart';
+
 /// WebF Custom Element wrapper for carousel_slider_plus.
 /// Provides a high-performance carousel component accessible from JavaScript.
 ///
@@ -29,6 +35,15 @@ class CarouselSliderElement extends CarouselSliderBindings {
   bool _padEnds = true;
   String? _height;
 
+  // 新增的配置选项
+  bool _pauseAutoPlayOnTouch = true;
+  bool _pauseAutoPlayOnManualNavigate = true;
+  bool _pageSnapping = true;
+  double? _enlargeFactor;
+
+  // 新的配置和管理器
+  CarouselConfig? _config;
+
   // Property getters/setters
   String get variant => _variant;
 
@@ -44,9 +59,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set autoplay(dynamic value) {
-    final boolValue = value is bool ? value : value == 'true' || value == '';
+    final boolValue = TypeConverter.toBool(value, defaultValue: false);
     if (_autoplay != boolValue) {
       _autoplay = boolValue;
+      _config = null; // 清除缓存，触发重建
       state?.requestUpdateState();
     }
   }
@@ -56,9 +72,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set autoplayInterval(dynamic value) {
-    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 3.0;
+    final doubleValue = TypeConverter.validateAutoplayInterval(value);
     if (_autoplayInterval != doubleValue) {
       _autoplayInterval = doubleValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -68,9 +85,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set enableInfiniteScroll(dynamic value) {
-    final boolValue = value is bool ? value : value == 'true' || value == '';
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
     if (_enableInfiniteScroll != boolValue) {
       _enableInfiniteScroll = boolValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -80,9 +98,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set aspectRatio(dynamic value) {
-    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 0.0;
-    if (_aspectRatio != doubleValue && doubleValue > 0) {
+    final doubleValue = TypeConverter.validateAspectRatio(value);
+    if (_aspectRatio != doubleValue) {
       _aspectRatio = doubleValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -92,9 +111,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set enlargeCenterPage(dynamic value) {
-    final boolValue = value is bool ? value : value == 'true' || value == '';
+    final boolValue = TypeConverter.toBool(value, defaultValue: false);
     if (_enlargeCenterPage != boolValue) {
       _enlargeCenterPage = boolValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -104,9 +124,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set viewportFraction(dynamic value) {
-    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 1.0;
-    if (_viewportFraction != doubleValue && doubleValue > 0 && doubleValue <= 1.0) {
+    final doubleValue = TypeConverter.validateViewportFraction(value);
+    if (_viewportFraction != doubleValue) {
       _viewportFraction = doubleValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -116,7 +137,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set currentIndex(dynamic value) {
-    final intValue = value is int ? value : (value is double ? value.toInt() : int.tryParse(value.toString()) ?? 0);
+    final intValue = TypeConverter.toInt(value, defaultValue: 0, min: 0);
     if (_currentIndex != intValue) {
       _currentIndex = intValue;
       // Trigger page change
@@ -126,12 +147,71 @@ class CarouselSliderElement extends CarouselSliderBindings {
   }
 
   @override
-  String? get options => jsonEncode(_getCurrentOptions());
+  String? get options => _config?.toJsonString() ?? jsonEncode(_getCurrentOptions());
 
   @override
   set options(dynamic value) {
-    // Options parsing - will trigger rebuild
-    state?.requestUpdateState();
+    if (value == null || value.toString().isEmpty) {
+      return;
+    }
+
+    try {
+      final json = jsonDecode(value.toString()) as Map<String, dynamic>;
+
+      // 批量更新属性
+      if (json.containsKey('autoplay')) {
+        autoplay = json['autoplay'];
+      }
+      if (json.containsKey('autoplayInterval')) {
+        autoplayInterval = json['autoplayInterval'];
+      }
+      if (json.containsKey('enableInfiniteScroll')) {
+        enableInfiniteScroll = json['enableInfiniteScroll'];
+      }
+      if (json.containsKey('aspectRatio')) {
+        aspectRatio = json['aspectRatio'];
+      }
+      if (json.containsKey('enlargeCenterPage')) {
+        enlargeCenterPage = json['enlargeCenterPage'];
+      }
+      if (json.containsKey('viewportFraction')) {
+        viewportFraction = json['viewportFraction'];
+      }
+      if (json.containsKey('initialPage')) {
+        initialPage = json['initialPage'];
+      }
+      if (json.containsKey('autoPlayAnimationDuration')) {
+        autoPlayAnimationDuration = json['autoPlayAnimationDuration'];
+      }
+      if (json.containsKey('reverse')) {
+        reverse = json['reverse'];
+      }
+      if (json.containsKey('scrollDirection')) {
+        scrollDirection = json['scrollDirection'];
+      }
+      if (json.containsKey('padEnds')) {
+        padEnds = json['padEnds'];
+      }
+      if (json.containsKey('pauseAutoPlayOnTouch')) {
+        pauseAutoPlayOnTouch = json['pauseAutoPlayOnTouch'];
+      }
+      if (json.containsKey('pauseAutoPlayOnManualNavigate')) {
+        pauseAutoPlayOnManualNavigate = json['pauseAutoPlayOnManualNavigate'];
+      }
+      if (json.containsKey('pageSnapping')) {
+        pageSnapping = json['pageSnapping'];
+      }
+      if (json.containsKey('enlargeFactor')) {
+        enlargeFactor = json['enlargeFactor'];
+      }
+
+      // 触发重建
+      state?.requestUpdateState();
+    } catch (e) {
+      // 派发错误事件
+      final eventManager = (state as CarouselSliderElementState?)?._eventManager;
+      eventManager?.dispatchError('Failed to parse options: $e');
+    }
   }
 
   @override
@@ -139,9 +219,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set autoPlayAnimationDuration(dynamic value) {
-    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 800.0;
+    final doubleValue = TypeConverter.toDouble(value, defaultValue: 800.0, min: 100, max: 5000);
     if (_autoPlayAnimationDuration != doubleValue) {
       _autoPlayAnimationDuration = doubleValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -153,6 +234,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
   set autoPlayCurve(dynamic value) {
     if (_autoPlayCurve != value) {
       _autoPlayCurve = value;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -162,9 +244,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set initialPage(dynamic value) {
-    final doubleValue = value is double ? value : double.tryParse(value.toString()) ?? 0.0;
+    final doubleValue = TypeConverter.toDouble(value, defaultValue: 0.0, min: 0);
     if (_initialPage != doubleValue) {
       _initialPage = doubleValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -174,9 +257,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set reverse(dynamic value) {
-    final boolValue = value is bool ? value : value == 'true' || value == '';
+    final boolValue = TypeConverter.toBool(value, defaultValue: false);
     if (_reverse != boolValue) {
       _reverse = boolValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -188,6 +272,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
   set scrollDirection(dynamic value) {
     if (_scrollDirection != value) {
       _scrollDirection = value;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -197,9 +282,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set padEnds(dynamic value) {
-    final boolValue = value is bool ? value : value == 'true' || value == '';
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
     if (_padEnds != boolValue) {
       _padEnds = boolValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -209,8 +295,55 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set height(dynamic value) {
-    if (_height != value.toString()) {
-      _height = value?.toString();
+    final stringValue = TypeConverter.asString(value);
+    if (_height != stringValue) {
+      _height = stringValue.isNotEmpty ? stringValue : null;
+      state?.requestUpdateState();
+    }
+  }
+
+  // 新增属性的 getter/setter
+
+  bool get pauseAutoPlayOnTouch => _pauseAutoPlayOnTouch;
+
+  set pauseAutoPlayOnTouch(dynamic value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_pauseAutoPlayOnTouch != boolValue) {
+      _pauseAutoPlayOnTouch = boolValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  bool get pauseAutoPlayOnManualNavigate => _pauseAutoPlayOnManualNavigate;
+
+  set pauseAutoPlayOnManualNavigate(dynamic value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_pauseAutoPlayOnManualNavigate != boolValue) {
+      _pauseAutoPlayOnManualNavigate = boolValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  bool get pageSnapping => _pageSnapping;
+
+  set pageSnapping(dynamic value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_pageSnapping != boolValue) {
+      _pageSnapping = boolValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  double? get enlargeFactor => _enlargeFactor;
+
+  set enlargeFactor(dynamic value) {
+    final doubleValue = TypeConverter.validateEnlargeFactor(value);
+    if (_enlargeFactor != doubleValue) {
+      _enlargeFactor = doubleValue;
+      _config = null;
       state?.requestUpdateState();
     }
   }
@@ -233,11 +366,17 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   void pause() {
     _autoplay = false;
+    // 派发自动播放暂停事件
+    final eventManager = (state as CarouselSliderElementState?)?._eventManager;
+    eventManager?.dispatchAutoplayPause();
     state?.requestUpdateState();
   }
 
   void resume() {
     _autoplay = true;
+    // 派发自动播放恢复事件
+    final eventManager = (state as CarouselSliderElementState?)?._eventManager;
+    eventManager?.dispatchAutoplayResume();
     state?.requestUpdateState();
   }
 
@@ -261,7 +400,12 @@ class CarouselSliderElement extends CarouselSliderBindings {
 }
 
 class CarouselSliderElementState extends WebFWidgetElementState {
-  CarouselSliderController? _controller;
+  late final CarouselControllerManager _controllerManager;
+  late final CarouselEventManager _eventManager;
+
+  // 缓存子组件列表
+  List<Widget>? _cachedItems;
+  int? _cachedChildCount;
 
   CarouselSliderElementState(super.widgetElement);
 
@@ -272,47 +416,45 @@ class CarouselSliderElementState extends WebFWidgetElementState {
   @override
   void initState() {
     super.initState();
-    _controller = CarouselSliderController();
+    _controllerManager = CarouselControllerManager();
+    _eventManager = CarouselEventManager(widgetElement);
   }
 
   @override
   void dispose() {
-    _controller = null;
+    _controllerManager.dispose();
     super.dispose();
   }
 
   void nextPage() {
-    _controller?.nextPage(
+    _controllerManager.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
   }
 
   void previousPage() {
-    _controller?.previousPage(
+    _controllerManager.previousPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
   }
 
   void jumpToPage(int page) {
-    _controller?.jumpToPage(page);
+    _controllerManager.jumpToPage(page);
   }
 
   CarouselOptions _buildOptions() {
-    final aspectRatioValue = widgetElement.aspectRatio ?? 0.0;
-    return CarouselOptions(
-      height: null,
-      aspectRatio: aspectRatioValue > 0 ? aspectRatioValue : 16 / 9,
-      viewportFraction: widgetElement.viewportFraction ?? 1.0,
-      initialPage: (widgetElement.currentIndex ?? 0.0).toInt(),
-      enableInfiniteScroll: widgetElement.enableInfiniteScroll,
-      reverse: widgetElement.reverse,
-      autoPlay: widgetElement.autoplay,
-      autoPlayInterval: Duration(
-          milliseconds: ((widgetElement.autoplayInterval ?? 3.0) * 1000).toInt()),
-      autoPlayAnimationDuration: Duration(
-          milliseconds: (widgetElement.autoPlayAnimationDuration ?? 800.0).toInt()),
+    // 复用或创建配置对象
+    final config = widgetElement._config ??= CarouselConfig(
+      aspectRatio: widgetElement._aspectRatio,
+      viewportFraction: widgetElement._viewportFraction,
+      initialPage: widgetElement._currentIndex.toDouble(),
+      enableInfiniteScroll: widgetElement._enableInfiniteScroll,
+      reverse: widgetElement._reverse,
+      autoPlay: widgetElement._autoplay,
+      autoPlayInterval: widgetElement._autoplayInterval,
+      autoPlayAnimationDuration: widgetElement._autoPlayAnimationDuration,
       autoPlayCurve: widgetElement._autoPlayCurve == null
           ? Curves.ease
           : (widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEase
@@ -324,33 +466,81 @@ class CarouselSliderElementState extends WebFWidgetElementState {
                       : widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEaseInOut
                           ? Curves.easeInOut
                           : Curves.fastOutSlowIn),
-      enlargeCenterPage: widgetElement.enlargeCenterPage,
-      scrollDirection: widgetElement.scrollDirection == null ||
-              widgetElement.scrollDirection == CarouselSliderScrollDirection.axisHorizontal
+      enlargeCenterPage: widgetElement._enlargeCenterPage,
+      enlargeFactor: widgetElement._enlargeFactor,
+      scrollDirection: widgetElement._scrollDirection == null ||
+              widgetElement._scrollDirection == CarouselSliderScrollDirection.axisHorizontal
           ? Axis.horizontal
           : Axis.vertical,
-      padEnds: widgetElement.padEnds,
+      padEnds: widgetElement._padEnds,
+      pageSnapping: widgetElement._pageSnapping,
+      pauseAutoPlayOnTouch: widgetElement._pauseAutoPlayOnTouch,
+      pauseAutoPlayOnManualNavigate: widgetElement._pauseAutoPlayOnManualNavigate,
       onPageChanged: _onPageChanged,
     );
+
+    return config.build();
   }
 
   void _onPageChanged(int index, CarouselPageChangedReason reason) {
+    final previousIndex = widgetElement._currentIndex;
     widgetElement._currentIndex = index;
 
-    // Dispatch change event with detail data
-    widgetElement.dispatchEvent(CustomEvent(
-      'change',
-      detail: {
-        'index': index,
-        'reason': reason.toString().split('.').last,
-      },
-    ));
+    // 派发页面动画开始事件
+    _eventManager.dispatchAnimationStart(previousIndex, index);
+
+    // 使用 EventManager 派发事件
+    _eventManager.dispatchPageChanged(index, reason);
+
+    // 派发页面动画结束事件（延迟执行，模拟动画完成）
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _eventManager.dispatchAnimationEnd(index);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final options = _buildOptions();
 
+    // 获取当前子节点数量
+    final currentChildCount = widgetElement.childNodes.length;
+
+    // 只在子节点数量变化时重建子组件列表
+    if (_cachedItems == null || _cachedChildCount != currentChildCount) {
+      _cachedItems = _buildItems();
+      _cachedChildCount = currentChildCount;
+    }
+
+    final carousel = CarouselSlider(
+      options: options,
+      items: _cachedItems!,
+      controller: _controllerManager.controller,
+    );
+
+    // 用 GestureDetector 包裹以捕获滑动手势
+    final gestureCarousel = GestureDetector(
+      onPanStart: (_) {
+        _eventManager.dispatchSlideStart();
+      },
+      onPanEnd: (_) {
+        _eventManager.dispatchSlideEnd();
+      },
+      child: carousel,
+    );
+
+    // 应用 height 属性
+    if (widgetElement._height != null && widgetElement._height!.isNotEmpty) {
+      final heightValue = _parseHeight(widgetElement._height!);
+      if (heightValue != null) {
+        return SizedBox(height: heightValue, child: gestureCarousel);
+      }
+    }
+
+    return gestureCarousel;
+  }
+
+  /// 构建子组件列表
+  List<Widget> _buildItems() {
     // Build placeholder widgets
     final placeholder = Container(
       color: Colors.grey[300],
@@ -385,14 +575,23 @@ class CarouselSliderElementState extends WebFWidgetElementState {
     }
 
     // Use placeholder if no children
-    final items = children.isNotEmpty
+    return children.isNotEmpty
         ? children
         : [placeholder, placeholder, placeholder];
+  }
 
-    return CarouselSlider(
-      options: options,
-      items: items,
-      controller: _controller,
-    );
+  /// 解析高度字符串
+  /// 支持 "400", "400px", "400.0" 等格式
+  double? _parseHeight(String heightStr) {
+    final str = heightStr.trim().toLowerCase();
+
+    // 移除 px 后缀
+    if (str.endsWith('px')) {
+      final numStr = str.replaceAll('px', '').trim();
+      return double.tryParse(numStr);
+    }
+
+    // 直接解析数字
+    return double.tryParse(str);
   }
 }
