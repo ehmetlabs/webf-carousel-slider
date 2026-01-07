@@ -8,77 +8,54 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: prefer_void_to_null
 import 'package:webf/webf.dart';
-enum CarouselSliderAutoPlayCurve {
-  curvesEase('Curves.ease'),
-  curvesEaseIn('Curves.easeIn'),
-  curvesEaseOut('Curves.easeOut'),
-  curvesEaseInOut('Curves.easeInOut'),
-  curvesFastOutSlowIn('Curves.fastOutSlowIn');
-  final String value;
-  const CarouselSliderAutoPlayCurve(this.value);
-  static CarouselSliderAutoPlayCurve? parse(String? value) {
-    if (value == null) return null;
-    return CarouselSliderAutoPlayCurve.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => throw ArgumentError('Invalid CarouselSliderAutoPlayCurve value: $value'),
-    );
-  }
-  @override
-  String toString() => value;
-}
-enum CarouselSliderScrollDirection {
-  axisHorizontal('Axis.horizontal'),
-  axisVertical('Axis.vertical');
-  final String value;
-  const CarouselSliderScrollDirection(this.value);
-  static CarouselSliderScrollDirection? parse(String? value) {
-    if (value == null) return null;
-    return CarouselSliderScrollDirection.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => throw ArgumentError('Invalid CarouselSliderScrollDirection value: $value'),
-    );
-  }
-  @override
-  String toString() => value;
-}
 abstract class CarouselSliderBindings extends WidgetElement {
   CarouselSliderBindings(super.context);
   double? get currentIndex;
   set currentIndex(value);
   String? get options;
   set options(value);
+  String? get height;
+  set height(value);
+  double? get aspectRatio;
+  set aspectRatio(value);
+  double? get viewportFraction;
+  set viewportFraction(value);
+  double? get initialPage;
+  set initialPage(value);
+  bool get padEnds;
+  set padEnds(value);
+  bool get disableCenter;
+  set disableCenter(value);
+  bool get enableInfiniteScroll;
+  set enableInfiniteScroll(value);
+  bool get animateToClosest;
+  set animateToClosest(value);
+  bool get reverse;
+  set reverse(value);
+  String? get scrollDirection;
+  set scrollDirection(value);
+  bool get pageSnapping;
+  set pageSnapping(value);
+  String? get scrollPhysics;
+  set scrollPhysics(value);
   bool get autoplay;
   set autoplay(value);
   double? get autoplayInterval;
   set autoplayInterval(value);
-  bool get enableInfiniteScroll;
-  set enableInfiniteScroll(value);
-  double? get aspectRatio;
-  set aspectRatio(value);
-  bool get enlargeCenterPage;
-  set enlargeCenterPage(value);
-  double? get viewportFraction;
-  set viewportFraction(value);
   double? get autoPlayAnimationDuration;
   set autoPlayAnimationDuration(value);
-  CarouselSliderAutoPlayCurve? get autoPlayCurve;
+  String? get autoPlayCurve;
   set autoPlayCurve(value);
-  double? get initialPage;
-  set initialPage(value);
-  bool get reverse;
-  set reverse(value);
-  CarouselSliderScrollDirection? get scrollDirection;
-  set scrollDirection(value);
-  bool get padEnds;
-  set padEnds(value);
-  String? get height;
-  set height(value);
   bool get pauseAutoPlayOnTouch;
   set pauseAutoPlayOnTouch(value);
   bool get pauseAutoPlayOnManualNavigate;
   set pauseAutoPlayOnManualNavigate(value);
-  bool get pageSnapping;
-  set pageSnapping(value);
+  bool get pauseAutoPlayInFiniteScroll;
+  set pauseAutoPlayInFiniteScroll(value);
+  bool get enlargeCenterPage;
+  set enlargeCenterPage(value);
+  String? get enlargeStrategy;
+  set enlargeStrategy(value);
   double? get enlargeFactor;
   set enlargeFactor(value);
   @override
@@ -94,6 +71,66 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (value) => options = value,
       deleter: () => options = null
     );
+    attributes['height'] = ElementAttributeProperty(
+      getter: () => height?.toString(),
+      setter: (value) => height = value,
+      deleter: () => height = null
+    );
+    attributes['aspect-ratio'] = ElementAttributeProperty(
+      getter: () => aspectRatio?.toString(),
+      setter: (value) => aspectRatio = double.tryParse(value) ?? 0.0,
+      deleter: () => aspectRatio = 0.0
+    );
+    attributes['viewport-fraction'] = ElementAttributeProperty(
+      getter: () => viewportFraction?.toString(),
+      setter: (value) => viewportFraction = double.tryParse(value) ?? 0.0,
+      deleter: () => viewportFraction = 0.0
+    );
+    attributes['initial-page'] = ElementAttributeProperty(
+      getter: () => initialPage?.toString(),
+      setter: (value) => initialPage = double.tryParse(value) ?? 0.0,
+      deleter: () => initialPage = 0.0
+    );
+    attributes['pad-ends'] = ElementAttributeProperty(
+      getter: () => padEnds.toString(),
+      setter: (value) => padEnds = value == 'true' || value == '',
+      deleter: () => padEnds = false
+    );
+    attributes['disable-center'] = ElementAttributeProperty(
+      getter: () => disableCenter.toString(),
+      setter: (value) => disableCenter = value == 'true' || value == '',
+      deleter: () => disableCenter = false
+    );
+    attributes['enable-infinite-scroll'] = ElementAttributeProperty(
+      getter: () => enableInfiniteScroll.toString(),
+      setter: (value) => enableInfiniteScroll = value == 'true' || value == '',
+      deleter: () => enableInfiniteScroll = false
+    );
+    attributes['animate-to-closest'] = ElementAttributeProperty(
+      getter: () => animateToClosest.toString(),
+      setter: (value) => animateToClosest = value == 'true' || value == '',
+      deleter: () => animateToClosest = false
+    );
+    attributes['reverse'] = ElementAttributeProperty(
+      getter: () => reverse.toString(),
+      setter: (value) => reverse = value == 'true' || value == '',
+      deleter: () => reverse = false
+    );
+    attributes['scroll-direction'] = ElementAttributeProperty(
+      getter: () => scrollDirection?.toString(),
+      setter: (value) => scrollDirection = value,
+      deleter: () => scrollDirection = null
+    );
+    attributes['page-snapping'] = ElementAttributeProperty(
+      getter: () => pageSnapping.toString(),
+      setter: (value) => pageSnapping = value == 'true' || value == '',
+      deleter: () => pageSnapping = false
+    );
+    attributes['scroll-physics'] = ElementAttributeProperty(
+      getter: () => scrollPhysics?.toString(),
+      setter: (value) => scrollPhysics = value,
+      deleter: () => scrollPhysics = null
+    );
     attributes['autoplay'] = ElementAttributeProperty(
       getter: () => autoplay.toString(),
       setter: (value) => autoplay = value == 'true' || value == '',
@@ -104,60 +141,15 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (value) => autoplayInterval = double.tryParse(value) ?? 0.0,
       deleter: () => autoplayInterval = 0.0
     );
-    attributes['enable-infinite-scroll'] = ElementAttributeProperty(
-      getter: () => enableInfiniteScroll.toString(),
-      setter: (value) => enableInfiniteScroll = value == 'true' || value == '',
-      deleter: () => enableInfiniteScroll = false
-    );
-    attributes['aspect-ratio'] = ElementAttributeProperty(
-      getter: () => aspectRatio?.toString(),
-      setter: (value) => aspectRatio = double.tryParse(value) ?? 0.0,
-      deleter: () => aspectRatio = 0.0
-    );
-    attributes['enlarge-center-page'] = ElementAttributeProperty(
-      getter: () => enlargeCenterPage.toString(),
-      setter: (value) => enlargeCenterPage = value == 'true' || value == '',
-      deleter: () => enlargeCenterPage = false
-    );
-    attributes['viewport-fraction'] = ElementAttributeProperty(
-      getter: () => viewportFraction?.toString(),
-      setter: (value) => viewportFraction = double.tryParse(value) ?? 0.0,
-      deleter: () => viewportFraction = 0.0
-    );
     attributes['auto-play-animation-duration'] = ElementAttributeProperty(
       getter: () => autoPlayAnimationDuration?.toString(),
       setter: (value) => autoPlayAnimationDuration = double.tryParse(value) ?? 0.0,
       deleter: () => autoPlayAnimationDuration = 0.0
     );
     attributes['auto-play-curve'] = ElementAttributeProperty(
-      getter: () => autoPlayCurve?.value,
-      setter: (value) => autoPlayCurve = CarouselSliderAutoPlayCurve.parse(value),
+      getter: () => autoPlayCurve?.toString(),
+      setter: (value) => autoPlayCurve = value,
       deleter: () => autoPlayCurve = null
-    );
-    attributes['initial-page'] = ElementAttributeProperty(
-      getter: () => initialPage?.toString(),
-      setter: (value) => initialPage = double.tryParse(value) ?? 0.0,
-      deleter: () => initialPage = 0.0
-    );
-    attributes['reverse'] = ElementAttributeProperty(
-      getter: () => reverse.toString(),
-      setter: (value) => reverse = value == 'true' || value == '',
-      deleter: () => reverse = false
-    );
-    attributes['scroll-direction'] = ElementAttributeProperty(
-      getter: () => scrollDirection?.value,
-      setter: (value) => scrollDirection = CarouselSliderScrollDirection.parse(value),
-      deleter: () => scrollDirection = null
-    );
-    attributes['pad-ends'] = ElementAttributeProperty(
-      getter: () => padEnds.toString(),
-      setter: (value) => padEnds = value == 'true' || value == '',
-      deleter: () => padEnds = false
-    );
-    attributes['height'] = ElementAttributeProperty(
-      getter: () => height?.toString(),
-      setter: (value) => height = value,
-      deleter: () => height = null
     );
     attributes['pause-auto-play-on-touch'] = ElementAttributeProperty(
       getter: () => pauseAutoPlayOnTouch.toString(),
@@ -169,10 +161,20 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (value) => pauseAutoPlayOnManualNavigate = value == 'true' || value == '',
       deleter: () => pauseAutoPlayOnManualNavigate = false
     );
-    attributes['page-snapping'] = ElementAttributeProperty(
-      getter: () => pageSnapping.toString(),
-      setter: (value) => pageSnapping = value == 'true' || value == '',
-      deleter: () => pageSnapping = false
+    attributes['pause-auto-play-in-finite-scroll'] = ElementAttributeProperty(
+      getter: () => pauseAutoPlayInFiniteScroll.toString(),
+      setter: (value) => pauseAutoPlayInFiniteScroll = value == 'true' || value == '',
+      deleter: () => pauseAutoPlayInFiniteScroll = false
+    );
+    attributes['enlarge-center-page'] = ElementAttributeProperty(
+      getter: () => enlargeCenterPage.toString(),
+      setter: (value) => enlargeCenterPage = value == 'true' || value == '',
+      deleter: () => enlargeCenterPage = false
+    );
+    attributes['enlarge-strategy'] = ElementAttributeProperty(
+      getter: () => enlargeStrategy?.toString(),
+      setter: (value) => enlargeStrategy = value,
+      deleter: () => enlargeStrategy = null
     );
     attributes['enlarge-factor'] = ElementAttributeProperty(
       getter: () => enlargeFactor?.toString(),
@@ -191,50 +193,45 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).options = value,
     ),
-    'autoplay': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).autoplay,
+    'height': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).height,
       setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).autoplay = value,
-    ),
-    'autoplayInterval': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).autoplayInterval,
-      setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).autoplayInterval = value,
-    ),
-    'enableInfiniteScroll': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).enableInfiniteScroll,
-      setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).enableInfiniteScroll = value,
+      castToType<CarouselSliderBindings>(element).height = value,
     ),
     'aspectRatio': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).aspectRatio,
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).aspectRatio = value,
     ),
-    'enlargeCenterPage': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).enlargeCenterPage,
-      setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).enlargeCenterPage = value,
-    ),
     'viewportFraction': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).viewportFraction,
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).viewportFraction = value,
     ),
-    'autoPlayAnimationDuration': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).autoPlayAnimationDuration,
-      setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).autoPlayAnimationDuration = value,
-    ),
-    'autoPlayCurve': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).autoPlayCurve,
-      setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).autoPlayCurve = value,
-    ),
     'initialPage': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).initialPage,
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).initialPage = value,
+    ),
+    'padEnds': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).padEnds,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).padEnds = value,
+    ),
+    'disableCenter': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).disableCenter,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).disableCenter = value,
+    ),
+    'enableInfiniteScroll': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).enableInfiniteScroll,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).enableInfiniteScroll = value,
+    ),
+    'animateToClosest': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).animateToClosest,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).animateToClosest = value,
     ),
     'reverse': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).reverse,
@@ -246,15 +243,35 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).scrollDirection = value,
     ),
-    'padEnds': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).padEnds,
+    'pageSnapping': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).pageSnapping,
       setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).padEnds = value,
+      castToType<CarouselSliderBindings>(element).pageSnapping = value,
     ),
-    'height': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).height,
+    'scrollPhysics': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).scrollPhysics,
       setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).height = value,
+      castToType<CarouselSliderBindings>(element).scrollPhysics = value,
+    ),
+    'autoplay': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).autoplay,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).autoplay = value,
+    ),
+    'autoplayInterval': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).autoplayInterval,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).autoplayInterval = value,
+    ),
+    'autoPlayAnimationDuration': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).autoPlayAnimationDuration,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).autoPlayAnimationDuration = value,
+    ),
+    'autoPlayCurve': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).autoPlayCurve,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).autoPlayCurve = value,
     ),
     'pauseAutoPlayOnTouch': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).pauseAutoPlayOnTouch,
@@ -266,10 +283,20 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).pauseAutoPlayOnManualNavigate = value,
     ),
-    'pageSnapping': StaticDefinedBindingProperty(
-      getter: (element) => castToType<CarouselSliderBindings>(element).pageSnapping,
+    'pauseAutoPlayInFiniteScroll': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).pauseAutoPlayInFiniteScroll,
       setter: (element, value) =>
-      castToType<CarouselSliderBindings>(element).pageSnapping = value,
+      castToType<CarouselSliderBindings>(element).pauseAutoPlayInFiniteScroll = value,
+    ),
+    'enlargeCenterPage': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).enlargeCenterPage,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).enlargeCenterPage = value,
+    ),
+    'enlargeStrategy': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).enlargeStrategy,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).enlargeStrategy = value,
     ),
     'enlargeFactor': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).enlargeFactor,
@@ -281,42 +308,5 @@ abstract class CarouselSliderBindings extends WidgetElement {
   List<StaticDefinedBindingPropertyMap> get properties => [
     ...super.properties,
     carouselSliderProperties,
-  ];
-  void next(List<dynamic> args);
-  void previous(List<dynamic> args);
-  void jumpToPage(List<dynamic> args);
-  void pause(List<dynamic> args);
-  void resume(List<dynamic> args);
-  static StaticDefinedSyncBindingObjectMethodMap carouselSliderMethods = {
-    'next': StaticDefinedSyncBindingObjectMethod(
-      call: (element, args) {
-        return castToType<CarouselSliderBindings>(element).next(args);
-      },
-    ),
-    'previous': StaticDefinedSyncBindingObjectMethod(
-      call: (element, args) {
-        return castToType<CarouselSliderBindings>(element).previous(args);
-      },
-    ),
-    'jumpToPage': StaticDefinedSyncBindingObjectMethod(
-      call: (element, args) {
-        return castToType<CarouselSliderBindings>(element).jumpToPage(args);
-      },
-    ),
-    'pause': StaticDefinedSyncBindingObjectMethod(
-      call: (element, args) {
-        return castToType<CarouselSliderBindings>(element).pause(args);
-      },
-    ),
-    'resume': StaticDefinedSyncBindingObjectMethod(
-      call: (element, args) {
-        return castToType<CarouselSliderBindings>(element).resume(args);
-      },
-    ),
-  };
-  @override
-  List<StaticDefinedSyncBindingObjectMethodMap> get methods => [
-    ...super.methods,
-    carouselSliderMethods,
   ];
 }

@@ -4,3 +4,4 @@
 
 
 export { CarouselSlider, CarouselSliderElement } from "./lib/src/carousel_slider";
+export * from './types';
