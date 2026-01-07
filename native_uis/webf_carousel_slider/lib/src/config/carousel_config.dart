@@ -53,7 +53,7 @@ class CarouselConfig {
   /// 确保配置值在有效范围内
   CarouselConfig({
     this.height,
-    double? aspectRatio,
+    this.aspectRatio,
     double? viewportFraction,
     double? initialPage,
     bool? enableInfiniteScroll,
@@ -61,13 +61,13 @@ class CarouselConfig {
     bool? autoPlay,
     double? autoPlayInterval,
     double? autoPlayAnimationDuration,
-    Curve? autoPlayCurve,
+    this.autoPlayCurve,
     bool? enlargeCenterPage,
     double? enlargeFactor,
     Axis? scrollDirection,
     bool? padEnds,
     bool? pageSnapping,
-    ScrollPhysics? scrollPhysics,
+    this.scrollPhysics,
     bool? pauseAutoPlayOnTouch,
     bool? pauseAutoPlayOnManualNavigate,
     this.onPageChanged,
@@ -77,8 +77,7 @@ class CarouselConfig {
     bool? disableCenter,
     CenterPageEnlargeStrategy? enlargeStrategy,
     Clip? clipBehavior,
-  })  : aspectRatio = aspectRatio, // 保持原始值，在 build() 时验证
-        viewportFraction =
+  })  : viewportFraction =
             TypeConverter.validateViewportFraction(viewportFraction),
         initialPage = TypeConverter.toInt(initialPage, defaultValue: 0, min: 0),
         enableInfiniteScroll =
@@ -99,19 +98,18 @@ class CarouselConfig {
             max: 5000,
           ),
         ),
-        autoPlayCurve = autoPlayCurve,
         enlargeCenterPage =
             TypeConverter.toBool(enlargeCenterPage, defaultValue: false),
         enlargeFactor = TypeConverter.validateEnlargeFactor(enlargeFactor),
         scrollDirection = scrollDirection ?? Axis.horizontal,
         padEnds = TypeConverter.toBool(padEnds, defaultValue: true),
         pageSnapping = TypeConverter.toBool(pageSnapping, defaultValue: true),
-        scrollPhysics = scrollPhysics,
         pauseAutoPlayOnTouch =
             TypeConverter.toBool(pauseAutoPlayOnTouch, defaultValue: true),
         pauseAutoPlayOnManualNavigate = TypeConverter.toBool(
-            pauseAutoPlayOnManualNavigate,
-            defaultValue: true),
+          pauseAutoPlayOnManualNavigate,
+          defaultValue: true,
+        ),
         // 新增属性初始化
         animateToClosest = animateToClosest ?? true,
         pauseAutoPlayInFiniteScroll = pauseAutoPlayInFiniteScroll ?? false,
@@ -280,7 +278,8 @@ class CarouselConfig {
       pauseAutoPlayInFiniteScroll: json['pauseAutoPlayInFiniteScroll'] as bool?,
       disableCenter: json['disableCenter'] as bool?,
       enlargeStrategy: json['enlargeStrategy'] != null
-          ? enum_converter.EnumConverter.parseEnlargeStrategy(json['enlargeStrategy'])
+          ? enum_converter.EnumConverter.parseEnlargeStrategy(
+              json['enlargeStrategy'])
           : null,
       clipBehavior: json['clipBehavior'] != null
           ? enum_converter.EnumConverter.parseClip(json['clipBehavior'])
