@@ -147,7 +147,8 @@ class CarouselSliderElement extends CarouselSliderBindings {
   }
 
   @override
-  String? get options => _config?.toJsonString() ?? jsonEncode(_getCurrentOptions());
+  String? get options =>
+      _config?.toJsonString() ?? jsonEncode(_getCurrentOptions());
 
   @override
   set options(dynamic value) {
@@ -209,7 +210,8 @@ class CarouselSliderElement extends CarouselSliderBindings {
       state?.requestUpdateState();
     } catch (e) {
       // 派发错误事件
-      final eventManager = (state as CarouselSliderElementState?)?._eventManager;
+      final eventManager =
+          (state as CarouselSliderElementState?)?._eventManager;
       eventManager?.dispatchError('Failed to parse options: $e');
     }
   }
@@ -219,7 +221,8 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set autoPlayAnimationDuration(dynamic value) {
-    final doubleValue = TypeConverter.toDouble(value, defaultValue: 800.0, min: 100, max: 5000);
+    final doubleValue =
+        TypeConverter.toDouble(value, defaultValue: 800.0, min: 100, max: 5000);
     if (_autoPlayAnimationDuration != doubleValue) {
       _autoPlayAnimationDuration = doubleValue;
       _config = null;
@@ -244,7 +247,8 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set initialPage(dynamic value) {
-    final doubleValue = TypeConverter.toDouble(value, defaultValue: 0.0, min: 0);
+    final doubleValue =
+        TypeConverter.toDouble(value, defaultValue: 0.0, min: 0);
     if (_initialPage != doubleValue) {
       _initialPage = doubleValue;
       _config = null;
@@ -304,8 +308,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   // 新增属性的 getter/setter
 
+  @override
   bool get pauseAutoPlayOnTouch => _pauseAutoPlayOnTouch;
 
+  @override
   set pauseAutoPlayOnTouch(dynamic value) {
     final boolValue = TypeConverter.toBool(value, defaultValue: true);
     if (_pauseAutoPlayOnTouch != boolValue) {
@@ -315,8 +321,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
     }
   }
 
+  @override
   bool get pauseAutoPlayOnManualNavigate => _pauseAutoPlayOnManualNavigate;
 
+  @override
   set pauseAutoPlayOnManualNavigate(dynamic value) {
     final boolValue = TypeConverter.toBool(value, defaultValue: true);
     if (_pauseAutoPlayOnManualNavigate != boolValue) {
@@ -326,8 +334,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
     }
   }
 
+  @override
   bool get pageSnapping => _pageSnapping;
 
+  @override
   set pageSnapping(dynamic value) {
     final boolValue = TypeConverter.toBool(value, defaultValue: true);
     if (_pageSnapping != boolValue) {
@@ -337,8 +347,10 @@ class CarouselSliderElement extends CarouselSliderBindings {
     }
   }
 
+  @override
   double? get enlargeFactor => _enlargeFactor;
 
+  @override
   set enlargeFactor(dynamic value) {
     final doubleValue = TypeConverter.validateEnlargeFactor(value);
     if (_enlargeFactor != doubleValue) {
@@ -349,22 +361,26 @@ class CarouselSliderElement extends CarouselSliderBindings {
   }
 
   // Methods for programmatic control
-  void next() {
+  @override
+  void next(List<dynamic>? args) {
     final sliderState = state as CarouselSliderElementState?;
     sliderState?.nextPage();
   }
 
-  void previous() {
+  @override
+  void previous(List<dynamic>? args) {
     final sliderState = state as CarouselSliderElementState?;
     sliderState?.previousPage();
   }
 
-  void jumpToPage(int page) {
+  @override
+  void jumpToPage(List<dynamic>? args) {
     final sliderState = state as CarouselSliderElementState?;
-    sliderState?.jumpToPage(page);
+    sliderState?.jumpToPage(args?.first as int? ?? 0);
   }
 
-  void pause() {
+  @override
+  void pause(List<dynamic>? args) {
     _autoplay = false;
     // 派发自动播放暂停事件
     final eventManager = (state as CarouselSliderElementState?)?._eventManager;
@@ -372,7 +388,8 @@ class CarouselSliderElement extends CarouselSliderBindings {
     state?.requestUpdateState();
   }
 
-  void resume() {
+  @override
+  void resume(List<dynamic>? args) {
     _autoplay = true;
     // 派发自动播放恢复事件
     final eventManager = (state as CarouselSliderElementState?)?._eventManager;
@@ -457,25 +474,31 @@ class CarouselSliderElementState extends WebFWidgetElementState {
       autoPlayAnimationDuration: widgetElement._autoPlayAnimationDuration,
       autoPlayCurve: widgetElement._autoPlayCurve == null
           ? Curves.ease
-          : (widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEase
+          : (widgetElement._autoPlayCurve ==
+                  CarouselSliderAutoPlayCurve.curvesEase
               ? Curves.ease
-              : widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEaseIn
+              : widgetElement._autoPlayCurve ==
+                      CarouselSliderAutoPlayCurve.curvesEaseIn
                   ? Curves.easeIn
-                  : widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEaseOut
+                  : widgetElement._autoPlayCurve ==
+                          CarouselSliderAutoPlayCurve.curvesEaseOut
                       ? Curves.easeOut
-                      : widgetElement._autoPlayCurve == CarouselSliderAutoPlayCurve.curvesEaseInOut
+                      : widgetElement._autoPlayCurve ==
+                              CarouselSliderAutoPlayCurve.curvesEaseInOut
                           ? Curves.easeInOut
                           : Curves.fastOutSlowIn),
       enlargeCenterPage: widgetElement._enlargeCenterPage,
       enlargeFactor: widgetElement._enlargeFactor,
       scrollDirection: widgetElement._scrollDirection == null ||
-              widgetElement._scrollDirection == CarouselSliderScrollDirection.axisHorizontal
+              widgetElement._scrollDirection ==
+                  CarouselSliderScrollDirection.axisHorizontal
           ? Axis.horizontal
           : Axis.vertical,
       padEnds: widgetElement._padEnds,
       pageSnapping: widgetElement._pageSnapping,
       pauseAutoPlayOnTouch: widgetElement._pauseAutoPlayOnTouch,
-      pauseAutoPlayOnManualNavigate: widgetElement._pauseAutoPlayOnManualNavigate,
+      pauseAutoPlayOnManualNavigate:
+          widgetElement._pauseAutoPlayOnManualNavigate,
       onPageChanged: _onPageChanged,
     );
 
