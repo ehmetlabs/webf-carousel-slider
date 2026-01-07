@@ -73,6 +73,14 @@ abstract class CarouselSliderBindings extends WidgetElement {
   set padEnds(value);
   String? get height;
   set height(value);
+  bool get pauseAutoPlayOnTouch;
+  set pauseAutoPlayOnTouch(value);
+  bool get pauseAutoPlayOnManualNavigate;
+  set pauseAutoPlayOnManualNavigate(value);
+  bool get pageSnapping;
+  set pageSnapping(value);
+  double? get enlargeFactor;
+  set enlargeFactor(value);
   @override
   void initializeAttributes(Map<String, ElementAttributeProperty> attributes) {
     super.initializeAttributes(attributes);
@@ -151,6 +159,26 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (value) => height = value,
       deleter: () => height = null
     );
+    attributes['pause-auto-play-on-touch'] = ElementAttributeProperty(
+      getter: () => pauseAutoPlayOnTouch.toString(),
+      setter: (value) => pauseAutoPlayOnTouch = value == 'true' || value == '',
+      deleter: () => pauseAutoPlayOnTouch = false
+    );
+    attributes['pause-auto-play-on-manual-navigate'] = ElementAttributeProperty(
+      getter: () => pauseAutoPlayOnManualNavigate.toString(),
+      setter: (value) => pauseAutoPlayOnManualNavigate = value == 'true' || value == '',
+      deleter: () => pauseAutoPlayOnManualNavigate = false
+    );
+    attributes['page-snapping'] = ElementAttributeProperty(
+      getter: () => pageSnapping.toString(),
+      setter: (value) => pageSnapping = value == 'true' || value == '',
+      deleter: () => pageSnapping = false
+    );
+    attributes['enlarge-factor'] = ElementAttributeProperty(
+      getter: () => enlargeFactor?.toString(),
+      setter: (value) => enlargeFactor = double.tryParse(value) ?? 0.0,
+      deleter: () => enlargeFactor = 0.0
+    );
   }
   static StaticDefinedBindingPropertyMap carouselSliderProperties = {
     'currentIndex': StaticDefinedBindingProperty(
@@ -228,10 +256,67 @@ abstract class CarouselSliderBindings extends WidgetElement {
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).height = value,
     ),
+    'pauseAutoPlayOnTouch': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).pauseAutoPlayOnTouch,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).pauseAutoPlayOnTouch = value,
+    ),
+    'pauseAutoPlayOnManualNavigate': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).pauseAutoPlayOnManualNavigate,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).pauseAutoPlayOnManualNavigate = value,
+    ),
+    'pageSnapping': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).pageSnapping,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).pageSnapping = value,
+    ),
+    'enlargeFactor': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).enlargeFactor,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).enlargeFactor = value,
+    ),
   };
   @override
   List<StaticDefinedBindingPropertyMap> get properties => [
     ...super.properties,
     carouselSliderProperties,
+  ];
+  void next(List<dynamic> args);
+  void previous(List<dynamic> args);
+  void jumpToPage(List<dynamic> args);
+  void pause(List<dynamic> args);
+  void resume(List<dynamic> args);
+  static StaticDefinedSyncBindingObjectMethodMap carouselSliderMethods = {
+    'next': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        return castToType<CarouselSliderBindings>(element).next(args);
+      },
+    ),
+    'previous': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        return castToType<CarouselSliderBindings>(element).previous(args);
+      },
+    ),
+    'jumpToPage': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        return castToType<CarouselSliderBindings>(element).jumpToPage(args);
+      },
+    ),
+    'pause': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        return castToType<CarouselSliderBindings>(element).pause(args);
+      },
+    ),
+    'resume': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        return castToType<CarouselSliderBindings>(element).resume(args);
+      },
+    ),
+  };
+  @override
+  List<StaticDefinedSyncBindingObjectMethodMap> get methods => [
+    ...super.methods,
+    carouselSliderMethods,
   ];
 }
