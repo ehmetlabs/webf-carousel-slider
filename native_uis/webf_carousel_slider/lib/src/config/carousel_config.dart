@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
 import '../utils/type_converter.dart';
+import '../utils/enum_converter.dart' as enum_converter;
 
 /// 轮播配置管理类
 ///
@@ -27,9 +28,16 @@ class CarouselConfig {
   final Axis scrollDirection;
   final bool padEnds;
   final bool pageSnapping;
-  final ScrollPhysics? scrollPhysics;
   final bool pauseAutoPlayOnTouch;
   final bool pauseAutoPlayOnManualNavigate;
+
+  // 新增属性
+  final bool animateToClosest;
+  final bool pauseAutoPlayInFiniteScroll;
+  final bool disableCenter;
+  final CenterPageEnlargeStrategy enlargeStrategy;
+  final ScrollPhysics? scrollPhysics;
+  final Clip clipBehavior;
 
   // 回调
   final void Function(int index, CarouselPageChangedReason reason)?
@@ -63,6 +71,12 @@ class CarouselConfig {
     bool? pauseAutoPlayOnTouch,
     bool? pauseAutoPlayOnManualNavigate,
     this.onPageChanged,
+    // 新增参数
+    bool? animateToClosest,
+    bool? pauseAutoPlayInFiniteScroll,
+    bool? disableCenter,
+    CenterPageEnlargeStrategy? enlargeStrategy,
+    Clip? clipBehavior,
   })  : aspectRatio = aspectRatio, // 保持原始值，在 build() 时验证
         viewportFraction =
             TypeConverter.validateViewportFraction(viewportFraction),
@@ -97,7 +111,13 @@ class CarouselConfig {
             TypeConverter.toBool(pauseAutoPlayOnTouch, defaultValue: true),
         pauseAutoPlayOnManualNavigate = TypeConverter.toBool(
             pauseAutoPlayOnManualNavigate,
-            defaultValue: true);
+            defaultValue: true),
+        // 新增属性初始化
+        animateToClosest = animateToClosest ?? true,
+        pauseAutoPlayInFiniteScroll = pauseAutoPlayInFiniteScroll ?? false,
+        disableCenter = disableCenter ?? false,
+        enlargeStrategy = enlargeStrategy ?? CenterPageEnlargeStrategy.scale,
+        clipBehavior = clipBehavior ?? Clip.hardEdge;
 
   /// 构建 CarouselOptions（带缓存）
   ///
@@ -136,6 +156,14 @@ class CarouselConfig {
       scrollDirection: scrollDirection,
       padEnds: padEnds,
       onPageChanged: onPageChanged,
+      pageSnapping: pageSnapping,
+      scrollPhysics: scrollPhysics,
+      // 新增属性
+      animateToClosest: animateToClosest,
+      pauseAutoPlayInFiniteScroll: pauseAutoPlayInFiniteScroll,
+      disableCenter: disableCenter,
+      enlargeStrategy: enlargeStrategy,
+      clipBehavior: clipBehavior,
     );
 
     _isDirty = false;
@@ -176,6 +204,12 @@ class CarouselConfig {
     bool? pauseAutoPlayOnTouch,
     bool? pauseAutoPlayOnManualNavigate,
     void Function(int index, CarouselPageChangedReason reason)? onPageChanged,
+    // 新增参数
+    bool? animateToClosest,
+    bool? pauseAutoPlayInFiniteScroll,
+    bool? disableCenter,
+    CenterPageEnlargeStrategy? enlargeStrategy,
+    Clip? clipBehavior,
   }) {
     return CarouselConfig(
       height: height ?? this.height,
@@ -200,6 +234,13 @@ class CarouselConfig {
       pauseAutoPlayOnManualNavigate:
           pauseAutoPlayOnManualNavigate ?? this.pauseAutoPlayOnManualNavigate,
       onPageChanged: onPageChanged ?? this.onPageChanged,
+      // 新增属性
+      animateToClosest: animateToClosest ?? this.animateToClosest,
+      pauseAutoPlayInFiniteScroll:
+          pauseAutoPlayInFiniteScroll ?? this.pauseAutoPlayInFiniteScroll,
+      disableCenter: disableCenter ?? this.disableCenter,
+      enlargeStrategy: enlargeStrategy ?? this.enlargeStrategy,
+      clipBehavior: clipBehavior ?? this.clipBehavior,
     );
   }
 
@@ -234,6 +275,16 @@ class CarouselConfig {
       pauseAutoPlayOnTouch: json['pauseAutoPlayOnTouch'] as bool?,
       pauseAutoPlayOnManualNavigate:
           json['pauseAutoPlayOnManualNavigate'] as bool?,
+      // 新增属性解析
+      animateToClosest: json['animateToClosest'] as bool?,
+      pauseAutoPlayInFiniteScroll: json['pauseAutoPlayInFiniteScroll'] as bool?,
+      disableCenter: json['disableCenter'] as bool?,
+      enlargeStrategy: json['enlargeStrategy'] != null
+          ? enum_converter.EnumConverter.parseEnlargeStrategy(json['enlargeStrategy'])
+          : null,
+      clipBehavior: json['clipBehavior'] != null
+          ? enum_converter.EnumConverter.parseClip(json['clipBehavior'])
+          : null,
     );
   }
 
@@ -266,6 +317,12 @@ class CarouselConfig {
       'pageSnapping': pageSnapping,
       'pauseAutoPlayOnTouch': pauseAutoPlayOnTouch,
       'pauseAutoPlayOnManualNavigate': pauseAutoPlayOnManualNavigate,
+      // 新增属性序列化
+      'animateToClosest': animateToClosest,
+      'pauseAutoPlayInFiniteScroll': pauseAutoPlayInFiniteScroll,
+      'disableCenter': disableCenter,
+      'enlargeStrategy': enlargeStrategy.toString(),
+      'clipBehavior': clipBehavior.toString(),
     };
   }
 
@@ -312,12 +369,17 @@ class CarouselConfig {
         other.pageSnapping == pageSnapping &&
         other.scrollPhysics == scrollPhysics &&
         other.pauseAutoPlayOnTouch == pauseAutoPlayOnTouch &&
-        other.pauseAutoPlayOnManualNavigate == pauseAutoPlayOnManualNavigate;
+        other.pauseAutoPlayOnManualNavigate == pauseAutoPlayOnManualNavigate &&
+        other.animateToClosest == animateToClosest &&
+        other.pauseAutoPlayInFiniteScroll == pauseAutoPlayInFiniteScroll &&
+        other.disableCenter == disableCenter &&
+        other.enlargeStrategy == enlargeStrategy &&
+        other.clipBehavior == clipBehavior;
   }
 
   @override
   int get hashCode {
-    return Object.hash(
+    return Object.hashAll([
       height,
       aspectRatio,
       viewportFraction,
@@ -336,6 +398,11 @@ class CarouselConfig {
       scrollPhysics,
       pauseAutoPlayOnTouch,
       pauseAutoPlayOnManualNavigate,
-    );
+      animateToClosest,
+      pauseAutoPlayInFiniteScroll,
+      disableCenter,
+      enlargeStrategy,
+      clipBehavior,
+    ]);
   }
 }

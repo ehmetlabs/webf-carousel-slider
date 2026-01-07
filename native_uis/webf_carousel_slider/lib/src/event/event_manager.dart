@@ -194,4 +194,22 @@ class CarouselEventManager {
       element.dispatchEvent(Event(eventName));
     }
   }
+
+  /// 派发滚动事件
+  ///
+  /// 当轮播滚动时触发
+  ///
+  /// 参数:
+  /// - pixels: 当前滚动位置（像素），null 表示无法确定
+  ///
+  /// 示例:
+  /// ```dart
+  /// _eventManager.dispatchScrolled(123.45);
+  /// ```
+  void dispatchScrolled(double? pixels) {
+    element.dispatchEvent(CustomEvent(
+      'scrolled',
+      detail: pixels,
+    ));
+  }
 }

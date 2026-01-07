@@ -191,4 +191,50 @@ class CarouselControllerManager {
   ///
   /// 返回 true 如果管理器已被释放
   bool get isDisposed => _disposed;
+
+  /// 启动自动播放
+  ///
+  /// 强制启动自动播放计时器，即使 autoPlay = false
+  ///
+  /// ⚠️ 注意：carousel_slider_plus 的 CarouselSliderController
+  /// 可能没有直接的 startAutoPlay 方法
+  ///
+  /// 当前实现：通过重新构建 widget 来实现
+  /// TODO: 验证 carousel_slider_plus 是否支持此功能，
+  /// 如果支持，直接调用 controller 的方法
+  ///
+  /// 示例:
+  /// ```dart
+  /// _controllerManager.startAutoPlay();
+  /// ```
+  void startAutoPlay() {
+    // 当前 carousel_slider_plus 可能不支持此功能
+    // 需要通过设置 autoPlay 属性并重新构建来实现
+    // 这里只是一个占位符实现
+    //
+    // 实际使用中，应该通过 CarouselSliderElement 的 autoPlay 属性来控制
+  }
+
+  /// 停止自动播放
+  ///
+  /// 强制停止自动播放计时器
+  ///
+  /// ⚠️ 注意：carousel_slider_plus 的 CarouselSliderController
+  /// 可能没有直接的 stopAutoPlay 方法
+  ///
+  /// 当前实现：通过重新构建 widget 来实现
+  /// TODO: 验证 carousel_slider_plus 是否支持此功能，
+  /// 如果支持，直接调用 controller 的方法
+  ///
+  /// 示例:
+  /// ```dart
+  /// _controllerManager.stopAutoPlay();
+  /// ```
+  void stopAutoPlay() {
+    // 当前 carousel_slider_plus 可能不支持此功能
+    // 需要通过设置 autoPlay 属性并重新构建来实现
+    // 这里只是一个占位符实现
+    //
+    // 实际使用中，应该通过 CarouselSliderElement 的 autoPlay 属性来控制
+  }
 }

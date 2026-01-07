@@ -7,9 +7,25 @@ import 'carousel_slider_bindings_generated.dart';
 
 // 导入新的工具类和管理器
 import 'utils/type_converter.dart';
+import 'utils/enum_converter.dart';
 import 'config/carousel_config.dart';
 import 'event/event_manager.dart';
+import 'event/scroll_listener.dart';
 import 'controller/controller_manager.dart';
+
+/// 自动播放曲线枚举
+enum CarouselSliderAutoPlayCurve {
+  curvesEase,
+  curvesEaseIn,
+  curvesEaseOut,
+  curvesEaseInOut,
+}
+
+/// 滚动方向枚举
+enum CarouselSliderScrollDirection {
+  axisHorizontal,
+  axisVertical,
+}
 
 /// WebF Custom Element wrapper for carousel_slider_plus.
 /// Provides a high-performance carousel component accessible from JavaScript.
@@ -40,6 +56,14 @@ class CarouselSliderElement extends CarouselSliderBindings {
   bool _pauseAutoPlayOnManualNavigate = true;
   bool _pageSnapping = true;
   double? _enlargeFactor;
+
+  // 新增属性状态
+  bool _animateToClosest = true;
+  bool _pauseAutoPlayInFiniteScroll = false;
+  bool _disableCenter = false;
+  CenterPageEnlargeStrategy? _enlargeStrategy;
+  ScrollPhysics? _scrollPhysics;
+  Clip? _clipBehavior;
 
   // 新的配置和管理器
   CarouselConfig? _config;
@@ -205,6 +229,25 @@ class CarouselSliderElement extends CarouselSliderBindings {
       if (json.containsKey('enlargeFactor')) {
         enlargeFactor = json['enlargeFactor'];
       }
+      // 新增属性处理
+      if (json.containsKey('animateToClosest')) {
+        animateToClosest = json['animateToClosest'];
+      }
+      if (json.containsKey('pauseAutoPlayInFiniteScroll')) {
+        pauseAutoPlayInFiniteScroll = json['pauseAutoPlayInFiniteScroll'];
+      }
+      if (json.containsKey('disableCenter')) {
+        disableCenter = json['disableCenter'];
+      }
+      if (json.containsKey('enlargeStrategy')) {
+        enlargeStrategy = json['enlargeStrategy'];
+      }
+      if (json.containsKey('scrollPhysics')) {
+        scrollPhysics = json['scrollPhysics'];
+      }
+      if (json.containsKey('clipBehavior')) {
+        clipBehavior = json['clipBehavior'];
+      }
 
       // 触发重建
       state?.requestUpdateState();
@@ -230,8 +273,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
     }
   }
 
-  @override
-  CarouselSliderAutoPlayCurve? get autoPlayCurve => _autoPlayCurve;
+  String? get autoPlayCurve => _autoPlayCurve?.toString();
 
   @override
   set autoPlayCurve(dynamic value) {
@@ -269,8 +311,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
     }
   }
 
-  @override
-  CarouselSliderScrollDirection? get scrollDirection => _scrollDirection;
+  String? get scrollDirection => _scrollDirection?.toString();
 
   @override
   set scrollDirection(dynamic value) {
@@ -360,6 +401,92 @@ class CarouselSliderElement extends CarouselSliderBindings {
     }
   }
 
+  // 新增属性的 getter/setter
+
+  @override
+  bool get animateToClosest => _animateToClosest;
+
+  @override
+  set animateToClosest(dynamic value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_animateToClosest != boolValue) {
+      _animateToClosest = boolValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  bool get pauseAutoPlayInFiniteScroll => _pauseAutoPlayInFiniteScroll;
+
+  @override
+  set pauseAutoPlayInFiniteScroll(dynamic value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: false);
+    if (_pauseAutoPlayInFiniteScroll != boolValue) {
+      _pauseAutoPlayInFiniteScroll = boolValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  bool get disableCenter => _disableCenter;
+
+  @override
+  set disableCenter(dynamic value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: false);
+    if (_disableCenter != boolValue) {
+      _disableCenter = boolValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  String? get enlargeStrategy => _enlargeStrategy?.toString();
+
+  @override
+  set enlargeStrategy(dynamic value) {
+    final enumValue = EnumConverter.parseEnlargeStrategy(value);
+    if (_enlargeStrategy != enumValue) {
+      _enlargeStrategy = enumValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  String? get scrollPhysics {
+    if (_scrollPhysics == null) return null;
+    if (_scrollPhysics is ClampingScrollPhysics) return 'clamping';
+    if (_scrollPhysics is BouncingScrollPhysics) return 'bouncing';
+    if (_scrollPhysics is FixedExtentScrollPhysics) return 'fixed';
+    return null;
+  }
+
+  @override
+  set scrollPhysics(dynamic value) {
+    final physicsValue = EnumConverter.parseScrollPhysics(value);
+    if (_scrollPhysics != physicsValue) {
+      _scrollPhysics = physicsValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
+  @override
+  Clip? get clipBehavior => _clipBehavior;
+
+  @override
+  set clipBehavior(dynamic value) {
+    final clipValue = EnumConverter.parseClip(value);
+    if (_clipBehavior != clipValue) {
+      _clipBehavior = clipValue;
+      _config = null;
+      state?.requestUpdateState();
+    }
+  }
+
   // Methods for programmatic control
   @override
   void next(List<dynamic>? args) {
@@ -394,6 +521,22 @@ class CarouselSliderElement extends CarouselSliderBindings {
     // 派发自动播放恢复事件
     final eventManager = (state as CarouselSliderElementState?)?._eventManager;
     eventManager?.dispatchAutoplayResume();
+    state?.requestUpdateState();
+  }
+
+  void startAutoPlay(List<dynamic>? args) {
+    _autoplay = true;
+    // 派发自动播放恢复事件
+    final eventManager = (state as CarouselSliderElementState?)?._eventManager;
+    eventManager?.dispatchAutoplayResume();
+    state?.requestUpdateState();
+  }
+
+  void stopAutoPlay(List<dynamic>? args) {
+    _autoplay = false;
+    // 派发自动播放暂停事件
+    final eventManager = (state as CarouselSliderElementState?)?._eventManager;
+    eventManager?.dispatchAutoplayPause();
     state?.requestUpdateState();
   }
 
@@ -496,10 +639,17 @@ class CarouselSliderElementState extends WebFWidgetElementState {
           : Axis.vertical,
       padEnds: widgetElement._padEnds,
       pageSnapping: widgetElement._pageSnapping,
+      scrollPhysics: widgetElement._scrollPhysics,
       pauseAutoPlayOnTouch: widgetElement._pauseAutoPlayOnTouch,
       pauseAutoPlayOnManualNavigate:
           widgetElement._pauseAutoPlayOnManualNavigate,
       onPageChanged: _onPageChanged,
+      animateToClosest: widgetElement._animateToClosest,
+      pauseAutoPlayInFiniteScroll: widgetElement._pauseAutoPlayInFiniteScroll,
+      disableCenter: widgetElement._disableCenter,
+      enlargeStrategy: widgetElement._enlargeStrategy ??
+          CenterPageEnlargeStrategy.scale,
+      clipBehavior: widgetElement._clipBehavior ?? Clip.hardEdge,
     );
 
     return config.build();
@@ -551,15 +701,21 @@ class CarouselSliderElementState extends WebFWidgetElementState {
       child: carousel,
     );
 
+    // 包裹滚动监听器以派发 scrolled 事件
+    final scrollListener = CarouselScrollListener(
+      element: widgetElement,
+      child: gestureCarousel,
+    );
+
     // 应用 height 属性
     if (widgetElement._height != null && widgetElement._height!.isNotEmpty) {
       final heightValue = _parseHeight(widgetElement._height!);
       if (heightValue != null) {
-        return SizedBox(height: heightValue, child: gestureCarousel);
+        return SizedBox(height: heightValue, child: scrollListener);
       }
     }
 
-    return gestureCarousel;
+    return scrollListener;
   }
 
   /// 构建子组件列表
