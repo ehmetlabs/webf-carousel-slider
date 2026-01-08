@@ -149,6 +149,7 @@ void main() {
       expect(TypeConverter.parseAutoPlayCurve('Curves.easeOut'), Curves.easeOut);
       expect(TypeConverter.parseAutoPlayCurve('Curves.easeInOut'), Curves.easeInOut);
       expect(TypeConverter.parseAutoPlayCurve('Curves.fastOutSlowIn'), Curves.fastOutSlowIn);
+      expect(TypeConverter.parseAutoPlayCurve('Curves.linear'), Curves.linear);
     });
 
     test('should parse short curve names', () {
@@ -157,6 +158,7 @@ void main() {
       expect(TypeConverter.parseAutoPlayCurve('easeOut'), Curves.easeOut);
       expect(TypeConverter.parseAutoPlayCurve('easeInOut'), Curves.easeInOut);
       expect(TypeConverter.parseAutoPlayCurve('fastOutSlowIn'), Curves.fastOutSlowIn);
+      expect(TypeConverter.parseAutoPlayCurve('linear'), Curves.linear);
     });
 
     test('should be case-insensitive', () {
@@ -219,12 +221,12 @@ void main() {
     });
 
     test('should use default value for null', () {
-      expect(TypeConverter.validateViewportFraction(null), 1.0);
+      expect(TypeConverter.validateViewportFraction(null), 0.8);
       expect(TypeConverter.validateViewportFraction(null, defaultValue: 0.8), 0.8);
     });
 
     test('should use default value for invalid strings', () {
-      expect(TypeConverter.validateViewportFraction('invalid'), 1.0);
+      expect(TypeConverter.validateViewportFraction('invalid'), 0.8);
       expect(TypeConverter.validateViewportFraction('0.8'), 0.8);
     });
   });
@@ -274,7 +276,7 @@ void main() {
     });
 
     test('should use default value for null', () {
-      expect(TypeConverter.validateAutoplayInterval(null), 3.0);
+      expect(TypeConverter.validateAutoplayInterval(null), 4.0);
       expect(TypeConverter.validateAutoplayInterval(null, defaultValue: 5.0), 5.0);
     });
   });

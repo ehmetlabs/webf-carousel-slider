@@ -37,7 +37,6 @@ class CarouselConfig {
   final bool disableCenter;
   final CenterPageEnlargeStrategy enlargeStrategy;
   final ScrollPhysics? scrollPhysics;
-  final Clip clipBehavior;
 
   // 回调
   final void Function(int index, CarouselPageChangedReason reason)?
@@ -76,7 +75,6 @@ class CarouselConfig {
     bool? pauseAutoPlayInFiniteScroll,
     bool? disableCenter,
     CenterPageEnlargeStrategy? enlargeStrategy,
-    Clip? clipBehavior,
   })  : viewportFraction =
             TypeConverter.validateViewportFraction(viewportFraction),
         initialPage = TypeConverter.toInt(initialPage, defaultValue: 0, min: 0),
@@ -87,7 +85,7 @@ class CarouselConfig {
         autoPlayInterval = Duration(
           milliseconds: TypeConverter.toInt(
             (TypeConverter.validateAutoplayInterval(autoPlayInterval) * 1000),
-            defaultValue: 3000,
+            defaultValue: 4000,
           ),
         ),
         autoPlayAnimationDuration = Duration(
@@ -114,8 +112,7 @@ class CarouselConfig {
         animateToClosest = animateToClosest ?? true,
         pauseAutoPlayInFiniteScroll = pauseAutoPlayInFiniteScroll ?? false,
         disableCenter = disableCenter ?? false,
-        enlargeStrategy = enlargeStrategy ?? CenterPageEnlargeStrategy.scale,
-        clipBehavior = clipBehavior ?? Clip.hardEdge;
+        enlargeStrategy = enlargeStrategy ?? CenterPageEnlargeStrategy.scale;
 
   /// 构建 CarouselOptions（带缓存）
   ///
@@ -148,7 +145,7 @@ class CarouselConfig {
       autoPlay: autoPlay,
       autoPlayInterval: autoPlayInterval,
       autoPlayAnimationDuration: autoPlayAnimationDuration,
-      autoPlayCurve: autoPlayCurve ?? Curves.ease,
+      autoPlayCurve: autoPlayCurve ?? Curves.fastOutSlowIn,
       enlargeCenterPage: enlargeCenterPage,
       enlargeFactor: enlargeFactor,
       scrollDirection: scrollDirection,
@@ -161,7 +158,6 @@ class CarouselConfig {
       pauseAutoPlayInFiniteScroll: pauseAutoPlayInFiniteScroll,
       disableCenter: disableCenter,
       enlargeStrategy: enlargeStrategy,
-      clipBehavior: clipBehavior,
     );
 
     _isDirty = false;
@@ -207,7 +203,6 @@ class CarouselConfig {
     bool? pauseAutoPlayInFiniteScroll,
     bool? disableCenter,
     CenterPageEnlargeStrategy? enlargeStrategy,
-    Clip? clipBehavior,
   }) {
     return CarouselConfig(
       height: height ?? this.height,
@@ -238,7 +233,6 @@ class CarouselConfig {
           pauseAutoPlayInFiniteScroll ?? this.pauseAutoPlayInFiniteScroll,
       disableCenter: disableCenter ?? this.disableCenter,
       enlargeStrategy: enlargeStrategy ?? this.enlargeStrategy,
-      clipBehavior: clipBehavior ?? this.clipBehavior,
     );
   }
 
@@ -266,10 +260,21 @@ class CarouselConfig {
       autoPlay: json['autoPlay'] as bool?,
       autoPlayInterval: json['autoPlayInterval'] as double?,
       autoPlayAnimationDuration: json['autoPlayAnimationDuration'] as double?,
+      autoPlayCurve: json['autoPlayCurve'] != null
+          ? TypeConverter.parseAutoPlayCurve(json['autoPlayCurve'])
+          : null,
       enlargeCenterPage: json['enlargeCenterPage'] as bool?,
       enlargeFactor: json['enlargeFactor'] as double?,
+      scrollDirection: json['scrollDirection'] != null
+          ? TypeConverter.parseScrollDirection(json['scrollDirection'])
+          : null,
       padEnds: json['padEnds'] as bool?,
       pageSnapping: json['pageSnapping'] as bool?,
+      scrollPhysics: json['scrollPhysics'] != null
+          ? enum_converter.EnumConverter.parseScrollPhysics(
+              json['scrollPhysics'],
+            )
+          : null,
       pauseAutoPlayOnTouch: json['pauseAutoPlayOnTouch'] as bool?,
       pauseAutoPlayOnManualNavigate:
           json['pauseAutoPlayOnManualNavigate'] as bool?,
@@ -280,9 +285,6 @@ class CarouselConfig {
       enlargeStrategy: json['enlargeStrategy'] != null
           ? enum_converter.EnumConverter.parseEnlargeStrategy(
               json['enlargeStrategy'])
-          : null,
-      clipBehavior: json['clipBehavior'] != null
-          ? enum_converter.EnumConverter.parseClip(json['clipBehavior'])
           : null,
     );
   }
@@ -308,12 +310,14 @@ class CarouselConfig {
       'autoPlay': autoPlay,
       'autoPlayInterval': autoPlayInterval.inMilliseconds / 1000,
       'autoPlayAnimationDuration': autoPlayAnimationDuration.inMilliseconds,
+      'autoPlayCurve': (autoPlayCurve ?? Curves.fastOutSlowIn).toString(),
       'enlargeCenterPage': enlargeCenterPage,
       'enlargeFactor': enlargeFactor,
       'scrollDirection':
           scrollDirection == Axis.horizontal ? 'horizontal' : 'vertical',
       'padEnds': padEnds,
       'pageSnapping': pageSnapping,
+      'scrollPhysics': _serializeScrollPhysics(scrollPhysics),
       'pauseAutoPlayOnTouch': pauseAutoPlayOnTouch,
       'pauseAutoPlayOnManualNavigate': pauseAutoPlayOnManualNavigate,
       // 新增属性序列化
@@ -321,8 +325,14 @@ class CarouselConfig {
       'pauseAutoPlayInFiniteScroll': pauseAutoPlayInFiniteScroll,
       'disableCenter': disableCenter,
       'enlargeStrategy': enlargeStrategy.toString(),
-      'clipBehavior': clipBehavior.toString(),
     };
+  }
+
+  String? _serializeScrollPhysics(ScrollPhysics? physics) {
+    if (physics is ClampingScrollPhysics) return 'clamping';
+    if (physics is BouncingScrollPhysics) return 'bouncing';
+    if (physics is FixedExtentScrollPhysics) return 'fixed';
+    return null;
   }
 
   /// 转换为 JSON 字符串
@@ -372,8 +382,7 @@ class CarouselConfig {
         other.animateToClosest == animateToClosest &&
         other.pauseAutoPlayInFiniteScroll == pauseAutoPlayInFiniteScroll &&
         other.disableCenter == disableCenter &&
-        other.enlargeStrategy == enlargeStrategy &&
-        other.clipBehavior == clipBehavior;
+        other.enlargeStrategy == enlargeStrategy;
   }
 
   @override
@@ -401,7 +410,6 @@ class CarouselConfig {
       pauseAutoPlayInFiniteScroll,
       disableCenter,
       enlargeStrategy,
-      clipBehavior,
     ]);
   }
 }

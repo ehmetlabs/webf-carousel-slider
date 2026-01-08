@@ -12,18 +12,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webf: ^0.24.1
+  webf: ^0.24.2
   carousel_slider_plus: ^7.1.1
-  logger: ^2.6.2
-  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  mockito: ^5.6.1
-  integration_test:
-    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -121,18 +121,13 @@ void main() {
 dependencies:
   flutter:
     sdk: flutter
-  webf: ^0.24.1                    # WebF 框架核心
+  webf: ^0.24.2                    # WebF 框架核心
   carousel_slider_plus: ^7.1.1     # 底层轮播组件
-  logger: ^2.6.2                   # 日志工具
-  collection: ^1.19.1              # 集合工具
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0            # Dart 代码规范
-  mockito: ^5.6.1                  # Mock 框架
-  integration_test:
-    sdk: flutter                   # 集成测试
 ```
 
 ### 环境要求

@@ -31,7 +31,7 @@
 ///
 /// ```javascript
 /// // Add to HTML
-/// <carousel-slider autoplay="true" autoplay-interval="3000">
+/// <carousel-slider autoplay="true" autoplay-interval="4">
 ///   <img src="image1.jpg" />
 ///   <img src="image2.jpg" />
 ///   <img src="image3.jpg" />

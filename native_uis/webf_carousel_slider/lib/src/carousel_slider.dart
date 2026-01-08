@@ -13,20 +13,6 @@ import 'event/event_manager.dart';
 import 'event/scroll_listener.dart';
 import 'controller/controller_manager.dart';
 
-/// 自动播放曲线枚举
-enum CarouselSliderAutoPlayCurve {
-  curvesEase,
-  curvesEaseIn,
-  curvesEaseOut,
-  curvesEaseInOut,
-}
-
-/// 滚动方向枚举
-enum CarouselSliderScrollDirection {
-  axisHorizontal,
-  axisVertical,
-}
-
 /// WebF Custom Element wrapper for carousel_slider_plus.
 /// Provides a high-performance carousel component accessible from JavaScript.
 ///
@@ -35,19 +21,18 @@ class CarouselSliderElement extends CarouselSliderBindings {
   CarouselSliderElement(super.context);
 
   // Internal state
-  String _variant = 'default';
   bool _autoplay = false;
-  double _autoplayInterval = 3.0;
+  double _autoplayInterval = 4.0;
   bool _enableInfiniteScroll = true;
-  double _aspectRatio = 0.0;
+  double _aspectRatio = 16 / 9;
   bool _enlargeCenterPage = false;
-  double _viewportFraction = 1.0;
+  double _viewportFraction = 0.8;
   int _currentIndex = 0;
   double? _autoPlayAnimationDuration;
-  CarouselSliderAutoPlayCurve? _autoPlayCurve;
+  Curve? _autoPlayCurve = Curves.fastOutSlowIn;
   double? _initialPage;
   bool _reverse = false;
-  CarouselSliderScrollDirection? _scrollDirection;
+  Axis _scrollDirection = Axis.horizontal;
   bool _padEnds = true;
   String? _height;
 
@@ -61,9 +46,9 @@ class CarouselSliderElement extends CarouselSliderBindings {
   bool _animateToClosest = true;
   bool _pauseAutoPlayInFiniteScroll = false;
   bool _disableCenter = false;
-  CenterPageEnlargeStrategy? _enlargeStrategy;
+  CenterPageEnlargeStrategy _enlargeStrategy =
+      CenterPageEnlargeStrategy.scale;
   ScrollPhysics? _scrollPhysics;
-  Clip? _clipBehavior;
 
   // 新的配置和管理器
   CarouselConfig? _config;
@@ -75,16 +60,6 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   CarouselEventManager? get _eventManager =>
       (state as CarouselSliderElementState?)?._eventManager;
-
-  // Property getters/setters
-  String get variant => _variant;
-
-  set variant(dynamic value) {
-    if (value is String && _variant != value) {
-      _variant = value;
-      state?.requestUpdateState();
-    }
-  }
 
   @override
   bool get autoplay => _autoplay;
@@ -174,8 +149,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
   }
 
   @override
-  String? get options =>
-      _config?.toJsonString() ?? jsonEncode(_getCurrentOptions());
+  String? get options => jsonEncode(_getCurrentOptions());
 
   @override
   set options(dynamic value) {
@@ -200,10 +174,12 @@ class CarouselSliderElement extends CarouselSliderBindings {
       applyIfPresent('enlargeCenterPage', (v) => enlargeCenterPage = v);
       applyIfPresent('viewportFraction', (v) => viewportFraction = v);
       applyIfPresent('initialPage', (v) => initialPage = v);
+      applyIfPresent('height', (v) => height = v);
       applyIfPresent(
         'autoPlayAnimationDuration',
         (v) => autoPlayAnimationDuration = v,
       );
+      applyIfPresent('autoPlayCurve', (v) => autoPlayCurve = v);
       applyIfPresent('reverse', (v) => reverse = v);
       applyIfPresent('scrollDirection', (v) => scrollDirection = v);
       applyIfPresent('padEnds', (v) => padEnds = v);
@@ -214,6 +190,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
       );
       applyIfPresent('pageSnapping', (v) => pageSnapping = v);
       applyIfPresent('enlargeFactor', (v) => enlargeFactor = v);
+      applyIfPresent('currentIndex', (v) => currentIndex = v);
       // 新增属性处理
       applyIfPresent('animateToClosest', (v) => animateToClosest = v);
       applyIfPresent(
@@ -223,7 +200,6 @@ class CarouselSliderElement extends CarouselSliderBindings {
       applyIfPresent('disableCenter', (v) => disableCenter = v);
       applyIfPresent('enlargeStrategy', (v) => enlargeStrategy = v);
       applyIfPresent('scrollPhysics', (v) => scrollPhysics = v);
-      applyIfPresent('clipBehavior', (v) => clipBehavior = v);
 
       // 触发重建
       state?.requestUpdateState();
@@ -254,8 +230,9 @@ class CarouselSliderElement extends CarouselSliderBindings {
 
   @override
   set autoPlayCurve(dynamic value) {
-    if (_autoPlayCurve != value) {
-      _autoPlayCurve = value;
+    final curveValue = TypeConverter.parseAutoPlayCurve(value);
+    if (_autoPlayCurve != curveValue) {
+      _autoPlayCurve = curveValue;
       _invalidateConfigAndRequestUpdate();
     }
   }
@@ -286,12 +263,13 @@ class CarouselSliderElement extends CarouselSliderBindings {
   }
 
   @override
-  String? get scrollDirection => _scrollDirection?.toString();
+  String? get scrollDirection => _scrollDirection.toString();
 
   @override
   set scrollDirection(dynamic value) {
-    if (_scrollDirection != value) {
-      _scrollDirection = value;
+    final directionValue = TypeConverter.parseScrollDirection(value);
+    if (_scrollDirection != directionValue) {
+      _scrollDirection = directionValue;
       _invalidateConfigAndRequestUpdate();
     }
   }
@@ -409,7 +387,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
   }
 
   @override
-  String? get enlargeStrategy => _enlargeStrategy?.toString();
+  String? get enlargeStrategy => _enlargeStrategy.toString();
 
   @override
   set enlargeStrategy(dynamic value) {
@@ -434,16 +412,6 @@ class CarouselSliderElement extends CarouselSliderBindings {
     final physicsValue = EnumConverter.parseScrollPhysics(value);
     if (_scrollPhysics != physicsValue) {
       _scrollPhysics = physicsValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  Clip? get clipBehavior => _clipBehavior;
-
-  set clipBehavior(dynamic value) {
-    final clipValue = EnumConverter.parseClip(value);
-    if (_clipBehavior != clipValue) {
-      _clipBehavior = clipValue;
       _invalidateConfigAndRequestUpdate();
     }
   }
@@ -493,14 +461,35 @@ class CarouselSliderElement extends CarouselSliderBindings {
   }
 
   Map<String, dynamic> _getCurrentOptions() {
+    final autoPlayCurve =
+        (_autoPlayCurve ?? Curves.fastOutSlowIn).toString();
+    final enlargeStrategy = _enlargeStrategy.toString();
+    final scrollDirection =
+        _scrollDirection == Axis.horizontal ? 'horizontal' : 'vertical';
+
     return {
-      'variant': variant,
       'autoplay': autoplay,
       'autoplayInterval': autoplayInterval,
+      'autoPlayAnimationDuration': _autoPlayAnimationDuration ?? 800.0,
+      'autoPlayCurve': autoPlayCurve,
       'enableInfiniteScroll': enableInfiniteScroll,
       'aspectRatio': aspectRatio,
       'enlargeCenterPage': enlargeCenterPage,
+      'enlargeFactor': enlargeFactor ?? 0.3,
       'viewportFraction': viewportFraction,
+      'initialPage': _initialPage ?? _currentIndex,
+      'reverse': reverse,
+      'scrollDirection': scrollDirection,
+      'padEnds': padEnds,
+      'pageSnapping': pageSnapping,
+      'pauseAutoPlayOnTouch': pauseAutoPlayOnTouch,
+      'pauseAutoPlayOnManualNavigate': pauseAutoPlayOnManualNavigate,
+      'scrollPhysics': scrollPhysics,
+      'animateToClosest': animateToClosest,
+      'pauseAutoPlayInFiniteScroll': pauseAutoPlayInFiniteScroll,
+      'disableCenter': disableCenter,
+      'enlargeStrategy': enlargeStrategy,
+      'height': height,
       'currentIndex': currentIndex,
     };
   }
@@ -561,34 +550,17 @@ class CarouselSliderElementState extends WebFWidgetElementState {
     final config = widgetElement._config ??= CarouselConfig(
       aspectRatio: widgetElement._aspectRatio,
       viewportFraction: widgetElement._viewportFraction,
-      initialPage: widgetElement._currentIndex.toDouble(),
+      initialPage:
+          (widgetElement._initialPage ?? widgetElement._currentIndex.toDouble()),
       enableInfiniteScroll: widgetElement._enableInfiniteScroll,
       reverse: widgetElement._reverse,
       autoPlay: widgetElement._autoplay,
       autoPlayInterval: widgetElement._autoplayInterval,
       autoPlayAnimationDuration: widgetElement._autoPlayAnimationDuration,
-      autoPlayCurve: widgetElement._autoPlayCurve == null
-          ? Curves.ease
-          : (widgetElement._autoPlayCurve ==
-                  CarouselSliderAutoPlayCurve.curvesEase
-              ? Curves.ease
-              : widgetElement._autoPlayCurve ==
-                      CarouselSliderAutoPlayCurve.curvesEaseIn
-                  ? Curves.easeIn
-                  : widgetElement._autoPlayCurve ==
-                          CarouselSliderAutoPlayCurve.curvesEaseOut
-                      ? Curves.easeOut
-                      : widgetElement._autoPlayCurve ==
-                              CarouselSliderAutoPlayCurve.curvesEaseInOut
-                          ? Curves.easeInOut
-                          : Curves.fastOutSlowIn),
+      autoPlayCurve: widgetElement._autoPlayCurve,
       enlargeCenterPage: widgetElement._enlargeCenterPage,
       enlargeFactor: widgetElement._enlargeFactor,
-      scrollDirection: widgetElement._scrollDirection == null ||
-              widgetElement._scrollDirection ==
-                  CarouselSliderScrollDirection.axisHorizontal
-          ? Axis.horizontal
-          : Axis.vertical,
+      scrollDirection: widgetElement._scrollDirection,
       padEnds: widgetElement._padEnds,
       pageSnapping: widgetElement._pageSnapping,
       scrollPhysics: widgetElement._scrollPhysics,
@@ -599,9 +571,7 @@ class CarouselSliderElementState extends WebFWidgetElementState {
       animateToClosest: widgetElement._animateToClosest,
       pauseAutoPlayInFiniteScroll: widgetElement._pauseAutoPlayInFiniteScroll,
       disableCenter: widgetElement._disableCenter,
-      enlargeStrategy:
-          widgetElement._enlargeStrategy ?? CenterPageEnlargeStrategy.scale,
-      clipBehavior: widgetElement._clipBehavior ?? Clip.hardEdge,
+      enlargeStrategy: widgetElement._enlargeStrategy,
     );
 
     return config.build();

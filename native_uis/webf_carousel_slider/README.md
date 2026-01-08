@@ -100,7 +100,7 @@ WebF(
 <body>
   <carousel-slider
     autoplay="true"
-    autoplay-interval="3000"
+    autoplay-interval="4"
     enable-infinite-scroll="true"
     aspect-ratio="16/9"
     viewport-fraction="0.8"
@@ -157,7 +157,7 @@ function App() {
     <div>
       <CarouselSlider
         autoplay={true}
-        autoplayInterval={3000}
+        autoplayInterval={4}
         aspectRatio={16 / 9}
         viewportFraction={0.8}
         enlargeCenterPage={true}
@@ -179,7 +179,7 @@ function App() {
   <div>
     <CarouselSlider
       :autoplay="true"
-      :autoplay-interval="3000"
+      :autoplay-interval="4"
       :aspect-ratio="16/9"
       :viewport-fraction="0.8"
       :enlarge-center-page="true"
@@ -208,17 +208,17 @@ const handleChange = (event) => {
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `autoplay` | `boolean` | `false` | Enable autoplay |
-| `autoplayInterval` | `number` | `3000` | Autoplay interval in milliseconds |
+| `autoplayInterval` | `number` | `4.0` | Autoplay interval in seconds |
 | `enableInfiniteScroll` | `boolean` | `true` | Enable infinite scroll loop |
-| `aspectRatio` | `number` | `0.0` | Aspect ratio (0 = disabled) |
+| `aspectRatio` | `number` | `16/9` | Aspect ratio |
 | `enlargeCenterPage` | `boolean` | `false` | Enlarge the center page |
-| `viewportFraction` | `number` | `1.0` | Fraction of viewport visible (0.0-1.0) |
+| `viewportFraction` | `number` | `0.8` | Fraction of viewport visible (0.0-1.0) |
 | `initialPage` | `number` | `0` | Initial page index |
 | `reverse` | `boolean` | `false` | Reverse carousel direction |
 | `scrollDirection` | `string` | `'horizontal'` | Scroll direction ('horizontal' or 'vertical') |
 | `height` | `string` | - | Fixed height (e.g., "400") |
 | `autoPlayAnimationDuration` | `number` | `800` | Animation duration in ms |
-| `autoPlayCurve` | `string` | `'Curves.ease'` | Animation curve |
+| `autoPlayCurve` | `string` | `'Curves.fastOutSlowIn'` | Animation curve |
 | `currentIndex` | `number` | `0` | Current page index (read/write) |
 | `options` | `string` | - | JSON string with all options |
 
@@ -253,7 +253,7 @@ carousel.options = JSON.stringify({
   aspectRatio: 16 / 9,
   viewportFraction: 0.8,
   autoPlay: true,
-  autoPlayInterval: 3000,
+  autoPlayInterval: 4.0,
   enlargeCenterPage: true,
 });
 ```

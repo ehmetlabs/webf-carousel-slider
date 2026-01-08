@@ -82,12 +82,12 @@ export enum Curve {
  *
  * @example
  * // HTML 方式
- * <carousel-slider autoplay="true" autoplay-interval="3000"></carousel-slider>
+ * <carousel-slider autoplay="true" autoplay-interval="4"></carousel-slider>
  *
  * @example
  * // JavaScript 方式
  * carousel.autoplay = true;
- * carousel.autoplayInterval = 3000;
+ * carousel.autoplayInterval = 4;
  */
 interface CarouselSliderProperties {
   // ========== 当前页面 ==========
@@ -114,7 +114,7 @@ interface CarouselSliderProperties {
    * @example
    * carousel.options = JSON.stringify({
    *   autoplay: true,
-   *   autoplayInterval: 3.0,
+   *   autoplayInterval: 4.0,
    *   viewportFraction: 0.8,
    *   enlargeCenterPage: true,
    *   enlargeFactor: 0.3

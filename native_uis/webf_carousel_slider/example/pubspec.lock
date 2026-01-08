@@ -267,14 +267,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.0.0"
-  logger:
-    dependency: transitive
-    description:
-      name: logger
-      sha256: a7967e31b703831a893bbc3c3dd11db08126fe5f369b5c648a36f821979f5be3
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.6.2"
   logging:
     dependency: transitive
     description:
@@ -588,10 +580,10 @@ packages:
     dependency: "direct main"
     description:
       name: webf
-      sha256: e0f3615388742c72b1b73957bff40d33bfb13199945d3dd413d75ca572e4cbb9
+      sha256: "668acfc5a58c8e310ad7b7d132f5bbf4fe12016b2ea5dc91ae22b1f48d919474"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.24.1"
+    version: "0.24.2"
   webf_carousel_slider:
     dependency: "direct main"
     description:

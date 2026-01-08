@@ -55,7 +55,7 @@ WebF Carousel Slider 是一个基于 Flutter 的高性能轮播组件库，通�
 ### 技术栈
 
 - **Flutter/Dart** - 原生渲染引擎 (Dart SDK >= 3.0.0, Flutter >= 3.16.0)
-- **WebF Framework** - 混合 UI 框架 (^0.24.1)
+- **WebF Framework** - 混合 UI 框架 (^0.24.2)
 - **carousel_slider_plus** - 底层轮播组件库 (^7.1.1)
 - **TypeScript** - JavaScript 生态类型定义
 - **React** - 前端框架绑定 (peer dependency)

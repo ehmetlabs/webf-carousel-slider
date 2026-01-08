@@ -9,7 +9,7 @@ void main() {
     test('should create default configuration', () {
       final config = CarouselConfig();
 
-      expect(config.viewportFraction, 1.0);
+      expect(config.viewportFraction, 0.8);
       expect(config.initialPage, 0);
       expect(config.enableInfiniteScroll, true);
       expect(config.reverse, false);
@@ -128,7 +128,7 @@ void main() {
 
       final options = config.build();
 
-      expect(options.autoPlayCurve, Curves.ease);
+      expect(options.autoPlayCurve, Curves.fastOutSlowIn);
     });
 
     test('should use custom autoPlayCurve when provided', () {
@@ -237,7 +237,7 @@ void main() {
       final config = CarouselConfig.fromJson(json);
 
       expect(config.autoPlay, true);
-      expect(config.viewportFraction, 1.0); // 默认值
+      expect(config.viewportFraction, 0.8); // 默认值
       expect(config.enableInfiniteScroll, true); // 默认值
     });
 
@@ -254,15 +254,11 @@ void main() {
     });
 
     test('should deserialize scrollDirection correctly', () {
-      // Note: fromJson doesn't parse scrollDirection string to Axis
-      // This is expected - scrollDirection should use default Axis.horizontal
       final json = {'scrollDirection': 'vertical'};
 
       final config = CarouselConfig.fromJson(json);
 
-      // scrollDirection 参数 expects Axis, not String
-      // So this test verifies the behavior
-      expect(config.scrollDirection, Axis.horizontal);
+      expect(config.scrollDirection, Axis.vertical);
     });
   });
 

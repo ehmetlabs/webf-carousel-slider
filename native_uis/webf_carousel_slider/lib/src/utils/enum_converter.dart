@@ -80,42 +80,4 @@ class EnumConverter {
     }
   }
 
-  /// 解析 Clip 枚举
-  ///
-  /// 支持格式:
-  /// - 枚举名（如 'none', 'hardEdge', 'antiAlias'）
-  /// - 完整枚举名（如 'Clip.none'）
-  /// - 不区分大小写
-  ///
-  /// 返回: 对应的 Clip，未找到返回 Clip.hardEdge
-  ///
-  /// 示例:
-  /// ```dart
-  /// EnumConverter.parseClip('none')                    // Clip.none
-  /// EnumConverter.parseClip('hardEdge')                // Clip.hardEdge
-  /// EnumConverter.parseClip('antiAlias')                // Clip.antiAlias
-  /// EnumConverter.parseClip('Clip.hardEdge')           // Clip.hardEdge
-  /// EnumConverter.parseClip('invalid')                 // Clip.hardEdge (默认)
-  /// EnumConverter.parseClip(null)                      // Clip.hardEdge (默认)
-  /// ```
-  static Clip parseClip(dynamic value) {
-    if (value == null) return Clip.hardEdge;
-    if (value is Clip) return value;
-
-    final strValue = value.toString().toLowerCase();
-
-    // 使用 Map 替代 if-else 链，提升性能和可维护性
-    const clipMap = <String, Clip>{
-      'clip.none': Clip.none,
-      'none': Clip.none,
-      'clip.hardedge': Clip.hardEdge,
-      'hardedge': Clip.hardEdge,
-      'clip.antialias': Clip.antiAlias,
-      'antialias': Clip.antiAlias,
-      'clip.antialiaswithsaveboundary': Clip.antiAliasWithSaveLayer,
-      'antialiaswithsaveboundary': Clip.antiAliasWithSaveLayer,
-    };
-
-    return clipMap[strValue] ?? Clip.hardEdge;
-  }
 }

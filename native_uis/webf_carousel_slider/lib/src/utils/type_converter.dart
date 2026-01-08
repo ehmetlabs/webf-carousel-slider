@@ -179,6 +179,8 @@ class TypeConverter {
       'easeinout': Curves.easeInOut,
       'curves.fastoutslowin': Curves.fastOutSlowIn,
       'fastoutslowin': Curves.fastOutSlowIn,
+      'curves.linear': Curves.linear,
+      'linear': Curves.linear,
     };
 
     return curveMap[strValue];
@@ -231,9 +233,12 @@ class TypeConverter {
   /// TypeConverter.validateViewportFraction(1.0)   // 1.0
   /// TypeConverter.validateViewportFraction(0.0)   // 0.01 (最小值)
   /// TypeConverter.validateViewportFraction(1.5)   // 1.0 (最大值)
-  /// TypeConverter.validateViewportFraction(null)  // 1.0 (默认值)
+  /// TypeConverter.validateViewportFraction(null)  // 0.8 (默认值)
   /// ```
-  static double validateViewportFraction(dynamic value, {double defaultValue = 1.0}) {
+  static double validateViewportFraction(
+    dynamic value, {
+    double defaultValue = 0.8,
+  }) {
     return toDouble(
       value,
       defaultValue: defaultValue,
@@ -284,9 +289,12 @@ class TypeConverter {
   /// TypeConverter.validateAutoplayInterval(3.0)   // 3.0
   /// TypeConverter.validateAutoplayInterval(0.3)   // 0.5 (最小值)
   /// TypeConverter.validateAutoplayInterval(120.0) // 60.0 (最大值)
-  /// TypeConverter.validateAutoplayInterval(null)  // 3.0 (默认值)
+  /// TypeConverter.validateAutoplayInterval(null)  // 4.0 (默认值)
   /// ```
-  static double validateAutoplayInterval(dynamic value, {double defaultValue = 3.0}) {
+  static double validateAutoplayInterval(
+    dynamic value, {
+    double defaultValue = 4.0,
+  }) {
     return toDouble(
       value,
       defaultValue: defaultValue,
