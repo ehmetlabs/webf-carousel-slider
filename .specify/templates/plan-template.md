@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] Dart ↔ TypeScript public API parity is planned (bindings + types + codegen)
+- [ ] Dart behavior changes include a `flutter_test` plan in `native_uis/webf_carousel_slider/test/`
+- [ ] Public API changes include README/example update plan
+- [ ] Dependency/performance impact is justified (avoid new runtime deps, avoid unnecessary rebuilds)
+- [ ] WebF compatibility considerations are documented for any new web APIs
 
 ## Project Structure
 

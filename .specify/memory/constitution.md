@@ -1,50 +1,83 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: N/A (template) → 1.0.0
+- Modified principles: Placeholder set → API 双层一致性; WebF 兼容性优先; 性能与依赖最小化;
+  可测试性与回归防护; 文档与示例同步
+- Added sections: None (filled template sections)
+- Removed sections: None
+- Templates requiring updates:
+  - ✅ .specify/templates/plan-template.md
+  - ✅ .specify/templates/tasks-template.md
+  - ✅ checked (no changes) .specify/templates/spec-template.md
+  - ✅ checked (no changes) .specify/templates/checklist-template.md
+  - ✅ checked (no changes) .specify/templates/agent-file-template.md
+  - ⚠ pending .specify/templates/commands/*.md (directory missing)
+- Runtime guidance checked:
+  - ✅ CLAUDE.md (no changes)
+  - ✅ native_uis/webf_carousel_slider/README.md (no changes)
+- Follow-up TODOs:
+  - TODO(RATIFICATION_DATE): ratification date not recorded in repo
+-->
+# WebF Carousel Slider Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### API 双层一致性
+- 任何对外 API 变更必须同步更新 Dart Custom Element、TypeScript 类型与 React
+  绑定，并通过 WebF CLI 重新生成绑定文件。
+- 禁止手改生成文件（`packages/webf-react-carousel-slider/src/index.ts`、
+  `packages/webf-react-carousel-slider/src/types.ts`、
+  `native_uis/webf_carousel_slider/lib/src/carousel_slider_bindings_generated.dart`、
+  `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts`）。
+- 理由：避免 Dart/JS 行为漂移，保证接口一致可追踪。
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### WebF 兼容性优先
+- 新增 DOM/CSS/JS API 前必须确认 WebF 支持；不支持则提供替代方案或不引入。
+- 兼容性假设必须记录在计划或实现说明中。
+- 理由：避免运行时不兼容导致的功能不可用。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### 性能与依赖最小化
+- 新增运行时依赖必须在计划中说明必要性与预期收益。
+- 轮播渲染与事件路径避免无意义的 state 更新或热路径日志。
+- 理由：保持组件轻量与稳定帧率。
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### 可测试性与回归防护
+- 任何 Dart 行为变更必须新增/更新
+  `native_uis/webf_carousel_slider/test/` 测试并通过 `flutter test`。
+- 新增事件/属性必须覆盖默认值与边界条件。
+- 理由：降低回归风险并确保行为可验证。
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### 文档与示例同步
+- 公开 API 变更必须同步更新
+  `native_uis/webf_carousel_slider/README.md` 与示例（`example/` 或代码生成说明）。
+- 破坏性变更必须更新
+  `native_uis/webf_carousel_slider/CHANGELOG.md` 并提供迁移说明。
+- 理由：保证使用者与绑定层能正确跟进变化。
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Engineering Standards
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- Dart/Flutter：Dart `>=3.0.0 <4.0.0`，Flutter `>=3.16.0`，使用
+  `flutter_lints`，遵循 Effective Dart。
+- TypeScript：`strict: true`，通过 `tsup` 构建并输出到 `dist/`。
+- 模块边界：Flutter 实现在 `native_uis/`，绑定包在 `packages/`，避免跨模块耦合。
+- 代码生成：通过 `webf codegen` 生成绑定文件，保留生成文件头部标记。
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow & Quality Gates
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- 需求/设计阶段必须完成 Constitution Check，记录兼容性与依赖决策。
+- 实现顺序：先更新 Dart 行为与配置，再更新类型与绑定并执行 codegen，
+  最后同步文档与示例。
+- 质量门槛：Dart 变更必须运行 `flutter test`；绑定包变更必须运行
+  `npm run build`。
+- 破坏性变更必须同步更新 `pubspec.yaml` 与
+  `packages/webf-react-carousel-slider/package.json` 的版本号。
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- 本宪章优先级高于其他开发约定，所有变更需通过 PR 并同步更新相关模板。
+- 版本策略遵循语义化版本：重大原则变更为 MAJOR，新原则/新增章节为 MINOR，
+  文案澄清为 PATCH。
+- 审核要求：每个计划文档必须完成 Constitution Check，代码评审需验证原则合规，
+  例外情况必须在计划中明确记录并给出理由。
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): ratification date not recorded | **Last Amended**: 2026-01-08
