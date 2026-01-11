@@ -152,6 +152,13 @@ function App() {
   const handleChange = (event) => {
     console.log('Page changed to:', event.detail.index);
   };
+  const handleItemClick = (event) => {
+    console.log('Clicked item id:', event.detail.id);
+  };
+  const items = [
+    { id: 1, url: 'https://example.com/slide1.jpg' },
+    { id: 2, url: 'https://example.com/slide2.jpg' },
+  ];
 
   return (
     <div>
@@ -167,10 +174,12 @@ function App() {
         <img src="slide2.jpg" alt="Slide 2" />
         <img src="slide3.jpg" alt="Slide 3" />
       </CarouselSlider>
+      <CarouselSlider items={items} onItemclick={handleItemClick} />
     </div>
   );
 }
 ```
+When `items` is provided and no children are rendered, the carousel builds image slides from `items`.
 
 ### Vue Example
 
@@ -222,6 +231,8 @@ const handleChange = (event) => {
 | `currentIndex` | `number` | `0` | Current page index (read/write) |
 | `options` | `string` | - | JSON string with all options |
 
+`options` 支持 `items: [{ id, url }]` 用于图片轮播数据源（当没有子元素时生效）。
+
 ### Events
 
 | Event | Detail | Description |
@@ -229,6 +240,9 @@ const handleChange = (event) => {
 | `change` | `{ index: number, reason: string }` | Fired when page changes |
 | `pageAnimationStart` | - | Fired when animation starts |
 | `pageAnimationEnd` | - | Fired when animation completes |
+| `itemclick` | `{ id: string \| number }` | Fired when an image item is clicked |
+
+`itemclick` 仅在使用 `items` 构建图片轮播时触发。
 
 ### Methods
 
@@ -255,6 +269,10 @@ carousel.options = JSON.stringify({
   autoPlay: true,
   autoPlayInterval: 4.0,
   enlargeCenterPage: true,
+  items: [
+    { id: 1, url: 'https://example.com/slide1.jpg' },
+    { id: 2, url: 'https://example.com/slide2.jpg' },
+  ],
 });
 ```
 

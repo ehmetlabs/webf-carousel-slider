@@ -682,6 +682,23 @@ interface CarouselSliderEvents {
    * @experimental 暂未实现，将在未来版本中添加
    */
   scrolled: CustomEvent<number | null>;
+
+  /**
+   * 单项点击事件
+   *
+   * 点击轮播图片项时触发
+   *
+   * @event itemclick
+   * @property {string | number} detail.id - 图片项 ID
+   *
+   * @example
+   * carousel.addEventListener('itemclick', (event) => {
+   *   console.log('Clicked item id:', event.detail.id);
+   * });
+   */
+  itemclick: CustomEvent<{
+    id: string | number;
+  }>;
 }
 
 // ========== 全局声明 ==========

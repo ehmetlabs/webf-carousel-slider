@@ -212,4 +212,26 @@ class CarouselEventManager {
       detail: pixels,
     ));
   }
+
+  /// 派发单项点击事件
+  ///
+  /// 点击轮播图片项时触发
+  ///
+  /// 参数:
+  /// - id: 图片项 ID
+  ///
+  /// JavaScript 监听:
+  /// ```javascript
+  /// carousel.addEventListener('itemclick', (event) => {
+  ///   console.log('点击项 ID:', event.detail.id);
+  /// });
+  /// ```
+  void dispatchItemClick(Object id) {
+    element.dispatchEvent(CustomEvent(
+      'itemclick',
+      detail: {
+        'id': id,
+      },
+    ));
+  }
 }

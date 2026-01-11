@@ -8,6 +8,7 @@ import 'carousel_slider_bindings_generated.dart';
 // 导入新的工具类和管理器
 import 'utils/type_converter.dart';
 import 'utils/enum_converter.dart';
+import 'utils/carousel_items_parser.dart';
 import 'config/carousel_config.dart';
 import 'event/event_manager.dart';
 import 'event/scroll_listener.dart';
@@ -35,6 +36,8 @@ class CarouselSliderElement extends CarouselSliderBindings {
   Axis _scrollDirection = Axis.horizontal;
   bool _padEnds = true;
   String? _height;
+  List<CarouselImageItem> _imageItems = const [];
+  int _imageItemsVersion = 0;
 
   // 新增的配置选项
   bool _pauseAutoPlayOnTouch = true;
@@ -56,6 +59,36 @@ class CarouselSliderElement extends CarouselSliderBindings {
   void _invalidateConfigAndRequestUpdate() {
     _config = null;
     state?.requestUpdateState();
+  }
+
+  void _setImageItems(dynamic value) {
+    final parsedItems = parseCarouselItems(value);
+    if (_areImageItemsEqual(_imageItems, parsedItems)) {
+      return;
+    }
+    _imageItems = parsedItems;
+    _imageItemsVersion += 1;
+    state?.requestUpdateState();
+  }
+
+  bool _areImageItemsEqual(
+    List<CarouselImageItem> current,
+    List<CarouselImageItem> next,
+  ) {
+    if (identical(current, next)) {
+      return true;
+    }
+    if (current.length != next.length) {
+      return false;
+    }
+    for (var i = 0; i < current.length; i++) {
+      final currentItem = current[i];
+      final nextItem = next[i];
+      if (currentItem.id != nextItem.id || currentItem.url != nextItem.url) {
+        return false;
+      }
+    }
+    return true;
   }
 
   CarouselEventManager? get _eventManager =>
@@ -191,6 +224,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
       applyIfPresent('pageSnapping', (v) => pageSnapping = v);
       applyIfPresent('enlargeFactor', (v) => enlargeFactor = v);
       applyIfPresent('currentIndex', (v) => currentIndex = v);
+      applyIfPresent('items', (v) => _setImageItems(v));
       // 新增属性处理
       applyIfPresent('animateToClosest', (v) => animateToClosest = v);
       applyIfPresent(
@@ -490,6 +524,7 @@ class CarouselSliderElement extends CarouselSliderBindings {
       'disableCenter': disableCenter,
       'enlargeStrategy': enlargeStrategy,
       'height': height,
+      'items': _imageItems.map((item) => item.toJson()).toList(),
       'currentIndex': currentIndex,
     };
   }
@@ -507,6 +542,7 @@ class CarouselSliderElementState extends WebFWidgetElementState {
   // 缓存子组件列表
   List<Widget>? _cachedItems;
   int? _cachedChildCount;
+  int? _cachedItemsVersion;
 
   CarouselSliderElementState(super.widgetElement);
 
@@ -599,11 +635,15 @@ class CarouselSliderElementState extends WebFWidgetElementState {
 
     // 获取当前子节点数量
     final currentChildCount = widgetElement.childNodes.length;
+    final currentItemsVersion = widgetElement._imageItemsVersion;
 
     // 只在子节点数量变化时重建子组件列表
-    if (_cachedItems == null || _cachedChildCount != currentChildCount) {
+    if (_cachedItems == null ||
+        _cachedChildCount != currentChildCount ||
+        _cachedItemsVersion != currentItemsVersion) {
       _cachedItems = _buildItems();
       _cachedChildCount = currentChildCount;
+      _cachedItemsVersion = currentItemsVersion;
     }
 
     final carousel = CarouselSlider(
@@ -675,10 +715,35 @@ class CarouselSliderElementState extends WebFWidgetElementState {
       }
     }
 
-    // Use placeholder if no children
-    return children.isNotEmpty
-        ? children
-        : [placeholder, placeholder, placeholder];
+    if (children.isNotEmpty) {
+      return children;
+    }
+
+    final imageItems = widgetElement._imageItems;
+    if (imageItems.isNotEmpty) {
+      return _buildImageItems(imageItems);
+    }
+
+    // Use placeholder if no children or items
+    return [placeholder, placeholder, placeholder];
+  }
+
+  List<Widget> _buildImageItems(List<CarouselImageItem> items) {
+    return items
+        .map(
+          (item) => GestureDetector(
+            key: ValueKey(item.id),
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              _eventManager.dispatchItemClick(item.id);
+            },
+            child: Image.network(
+              item.url,
+              fit: BoxFit.cover,
+            ),
+          ),
+        )
+        .toList();
   }
 
   /// 解析高度字符串
