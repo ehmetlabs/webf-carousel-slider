@@ -75,6 +75,110 @@ class TypeConverter {
     return strValue.contains('vertical') ? Axis.vertical : Axis.horizontal;
   }
 
+  static List<double>? _parseCubicBezier(String value) {
+    final match =
+        RegExp(r'cubic-bezier\s*\(([^)]+)\)').firstMatch(value);
+    if (match == null) return null;
+    final parts = match.group(1)!.split(RegExp(r'\s*,\s*'));
+    if (parts.length != 4) return null;
+
+    final values = <double>[];
+    for (final part in parts) {
+      final parsed = double.tryParse(part.trim());
+      if (parsed == null) return null;
+      values.add(parsed);
+    }
+
+    final x1 = values[0].clamp(0.0, 1.0).toDouble();
+    final y1 = values[1];
+    final x2 = values[2].clamp(0.0, 1.0).toDouble();
+    final y2 = values[3];
+    return [x1, y1, x2, y2];
+  }
+
+  /// 解析 easing 字符串为 Flutter Curve
+  static Curve parseEasing(
+    dynamic value, {
+    Curve fallback = Curves.ease,
+  }) {
+    if (value == null) return fallback;
+    if (value is Curve) return value;
+
+    final strValue = value.toString().trim().toLowerCase();
+    if (strValue.isEmpty) return fallback;
+
+    final cubicValues = _parseCubicBezier(strValue);
+    if (cubicValues != null) {
+      return Cubic(
+        cubicValues[0],
+        cubicValues[1],
+        cubicValues[2],
+        cubicValues[3],
+      );
+    }
+
+    const curveMap = <String, Curve>{
+      'curves.ease': Curves.ease,
+      'ease': Curves.ease,
+      'ease-in': Curves.easeIn,
+      'easein': Curves.easeIn,
+      'curves.easein': Curves.easeIn,
+      'ease-out': Curves.easeOut,
+      'easeout': Curves.easeOut,
+      'curves.easeout': Curves.easeOut,
+      'ease-in-out': Curves.easeInOut,
+      'easeinout': Curves.easeInOut,
+      'curves.easeinout': Curves.easeInOut,
+      'linear': Curves.linear,
+      'curves.linear': Curves.linear,
+      'fast-out-slow-in': Curves.fastOutSlowIn,
+      'fastoutslowin': Curves.fastOutSlowIn,
+      'curves.fastoutslowin': Curves.fastOutSlowIn,
+    };
+
+    return curveMap[strValue] ?? fallback;
+  }
+
+  /// 标准化 easing 名称
+  static String normalizeEasingName(
+    dynamic value, {
+    String fallback = 'ease',
+  }) {
+    if (value == null) return fallback;
+    if (value is Curve) return fallback;
+
+    final strValue = value.toString().trim();
+    if (strValue.isEmpty) return fallback;
+
+    final lower = strValue.toLowerCase();
+    final cubicValues = _parseCubicBezier(lower);
+    if (cubicValues != null) {
+      return 'cubic-bezier('
+          '${cubicValues[0]}, ${cubicValues[1]}, ${cubicValues[2]}, ${cubicValues[3]})';
+    }
+
+    const aliasMap = <String, String>{
+      'curves.ease': 'ease',
+      'ease': 'ease',
+      'ease-in': 'ease-in',
+      'easein': 'ease-in',
+      'curves.easein': 'ease-in',
+      'ease-out': 'ease-out',
+      'easeout': 'ease-out',
+      'curves.easeout': 'ease-out',
+      'ease-in-out': 'ease-in-out',
+      'easeinout': 'ease-in-out',
+      'curves.easeinout': 'ease-in-out',
+      'linear': 'linear',
+      'curves.linear': 'linear',
+      'fast-out-slow-in': 'fast-out-slow-in',
+      'fastoutslowin': 'fast-out-slow-in',
+      'curves.fastoutslowin': 'fast-out-slow-in',
+    };
+
+    return aliasMap[lower] ?? fallback;
+  }
+
   /// 验证并限制 viewportFraction 在有效范围内
   static double clampViewportFraction(
     dynamic value, {

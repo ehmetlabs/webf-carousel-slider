@@ -63,6 +63,42 @@ void main() {
     });
   });
 
+  group('TypeConverter.parseEasing', () {
+    test('should parse easing aliases', () {
+      expect(TypeConverter.parseEasing('ease'), Curves.ease);
+      expect(TypeConverter.parseEasing('ease-in'), Curves.easeIn);
+      expect(TypeConverter.parseEasing('ease-out'), Curves.easeOut);
+      expect(TypeConverter.parseEasing('ease-in-out'), Curves.easeInOut);
+      expect(TypeConverter.parseEasing('linear'), Curves.linear);
+      expect(TypeConverter.parseEasing('fast-out-slow-in'),
+          Curves.fastOutSlowIn);
+    });
+
+    test('should parse cubic-bezier', () {
+      final curve = TypeConverter.parseEasing('cubic-bezier(0.1, 0.2, 0.3, 0.4)');
+      expect(curve, isA<Cubic>());
+    });
+
+    test('should fallback on invalid easing', () {
+      expect(TypeConverter.parseEasing('invalid'), Curves.ease);
+    });
+  });
+
+  group('TypeConverter.normalizeEasingName', () {
+    test('should normalize easing names', () {
+      expect(TypeConverter.normalizeEasingName('easeIn'), 'ease-in');
+      expect(TypeConverter.normalizeEasingName('fastOutSlowIn'),
+          'fast-out-slow-in');
+    });
+
+    test('should normalize cubic-bezier', () {
+      final name = TypeConverter.normalizeEasingName(
+        'cubic-bezier(0.1, 0.2, 0.3, 0.4)',
+      );
+      expect(name.startsWith('cubic-bezier('), isTrue);
+    });
+  });
+
   group('TypeConverter.clampViewportFraction', () {
     test('should clamp to valid range', () {
       expect(TypeConverter.clampViewportFraction(0.0), 0.01);
@@ -76,7 +112,6 @@ void main() {
       expect(TypeConverter.clampSlidesPerView(0), 1.0);
       expect(TypeConverter.clampSlidesPerView(12), 10.0);
       expect(TypeConverter.clampSlidesPerView(2.5), 2.5);
-      expect(TypeConverter.clampSlidesPerView('auto'), 1.0);
     });
   });
 

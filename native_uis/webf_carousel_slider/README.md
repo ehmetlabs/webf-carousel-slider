@@ -53,6 +53,7 @@ void main() {
   autoplay
   autoplay-delay="3000"
   speed="300"
+  easing="ease-in-out"
   slides-per-view="1"
   centered-slides
   loop
@@ -79,6 +80,7 @@ carousel.autoplayStart();
 ## API reference
 
 This custom element keeps a Swiper-compatible subset of attributes and methods.
+`easing` is a non-standard extension for WebF.
 
 ### Attributes (kebab-case)
 
@@ -88,6 +90,7 @@ This custom element keeps a Swiper-compatible subset of attributes and methods.
 | `autoplay-delay` | number (ms) | 3000 | 500-60000. |
 | `autoplay-disable-on-interaction` | boolean | false | Stops autoplay after interaction. |
 | `speed` | number (ms) | 300 | 0-5000. |
+| `easing` | string | `ease` | `ease`, `linear`, `ease-in`, `ease-out`, `ease-in-out`, `fast-out-slow-in`, `cubic-bezier(x1, y1, x2, y2)`. |
 | `loop` | boolean | false | Enables infinite loop. |
 | `direction` | string | `horizontal` | `horizontal` or `vertical`. |
 | `slides-per-view` | number | 1 | - |

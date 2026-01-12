@@ -18,6 +18,8 @@ abstract class CarouselSliderBindings extends WidgetElement {
   set autoplayDisableOnInteraction(value);
   double? get speed;
   set speed(value);
+  String? get easing;
+  set easing(value);
   bool get loop;
   set loop(value);
   String? get direction;
@@ -54,6 +56,11 @@ abstract class CarouselSliderBindings extends WidgetElement {
       getter: () => speed?.toString(),
       setter: (value) => speed = double.tryParse(value) ?? 0.0,
       deleter: () => speed = 0.0
+    );
+    attributes['easing'] = ElementAttributeProperty(
+      getter: () => easing?.toString(),
+      setter: (value) => easing = value,
+      deleter: () => easing = null
     );
     attributes['loop'] = ElementAttributeProperty(
       getter: () => loop.toString(),
@@ -111,6 +118,11 @@ abstract class CarouselSliderBindings extends WidgetElement {
       getter: (element) => castToType<CarouselSliderBindings>(element).speed,
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).speed = value,
+    ),
+    'easing': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).easing,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).easing = value,
     ),
     'loop': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).loop,

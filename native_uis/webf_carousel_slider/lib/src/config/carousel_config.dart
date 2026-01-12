@@ -16,6 +16,7 @@ class CarouselConfig {
   final bool autoplay;
   final Duration autoplayDelay;
   final Duration speed;
+  final Curve easing;
   final Axis direction;
   final bool centeredSlides;
   final bool allowTouchMove;
@@ -32,6 +33,7 @@ class CarouselConfig {
     bool? autoplay,
     double? autoplayDelayMs,
     double? speedMs,
+    Curve? easing,
     Axis? direction,
     bool? centeredSlides,
     bool? allowTouchMove,
@@ -53,6 +55,7 @@ class CarouselConfig {
             speedMs,
           ),
         ),
+        easing = easing ?? Curves.ease,
         direction = direction ?? Axis.horizontal,
         centeredSlides = TypeConverter.toBool(centeredSlides),
         allowTouchMove =
@@ -70,7 +73,7 @@ class CarouselConfig {
       autoPlay: autoplay,
       autoPlayInterval: autoplayDelay,
       autoPlayAnimationDuration: speed,
-      autoPlayCurve: Curves.ease,
+      autoPlayCurve: easing,
       scrollDirection: direction,
       enlargeCenterPage: false,
       pageSnapping: true,

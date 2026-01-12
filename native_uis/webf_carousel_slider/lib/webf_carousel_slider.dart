@@ -31,7 +31,7 @@
 ///
 /// ```javascript
 /// // Add to HTML
-/// <webf-carousel-slider autoplay autoplay-delay="3000" speed="300" slides-per-view="1">
+/// <webf-carousel-slider autoplay autoplay-delay="3000" speed="300" easing="ease-in-out" slides-per-view="1">
 ///   <img src="image1.jpg" />
 ///   <img src="image2.jpg" />
 ///   <img src="image3.jpg" />
@@ -60,6 +60,7 @@
 /// - ✅ Swiper-compatible API subset
 /// - ✅ Autoplay with customizable delay
 /// - ✅ Infinite scroll support
+/// - ✅ Custom easing (cubic-bezier)
 /// - ✅ Centered slides
 /// - ✅ Vertical and horizontal scroll directions
 /// - ✅ Programmatic control methods

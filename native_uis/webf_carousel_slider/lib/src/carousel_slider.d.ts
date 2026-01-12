@@ -39,6 +39,14 @@ interface CarouselSliderProperties {
   speed?: number;
 
   /**
+   * Transition easing.
+   * Supported: 'ease', 'linear', 'ease-in', 'ease-out', 'ease-in-out',
+   * 'fast-out-slow-in', 'cubic-bezier(x1, y1, x2, y2)'.
+   * Default: 'ease'
+   */
+  easing?: string;
+
+  /**
    * Whether to loop infinitely.
    * Default: false
    */

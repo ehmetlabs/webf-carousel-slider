@@ -113,5 +113,13 @@ void main() {
 
       expect(options.autoPlayCurve, Curves.ease);
     });
+
+    test('should use custom easing curve when provided', () {
+      final config = CarouselConfig(easing: Curves.linear);
+
+      final options = config.build();
+
+      expect(options.autoPlayCurve, Curves.linear);
+    });
   });
 }

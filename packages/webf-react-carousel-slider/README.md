@@ -30,6 +30,7 @@ export function App() {
       autoplay
       autoplayDelay={3000}
       speed={300}
+      easing="ease-in-out"
       loop
       direction="horizontal"
       slidesPerView={1}
@@ -49,6 +50,7 @@ export function App() {
 ## Props
 
 This React wrapper keeps a Swiper-compatible subset of props.
+`easing` is a non-standard extension for WebF.
 
 All props map to kebab-case attributes on `<webf-carousel-slider>` unless noted.
 
@@ -58,6 +60,7 @@ All props map to kebab-case attributes on `<webf-carousel-slider>` unless noted.
 | `autoplayDelay` | number (ms) | 3000 | `autoplay-delay` |
 | `autoplayDisableOnInteraction` | boolean | false | `autoplay-disable-on-interaction` |
 | `speed` | number (ms) | 300 | `speed` |
+| `easing` | string | `ease` | `easing` |
 | `loop` | boolean | false | `loop` |
 | `direction` | string | `horizontal` | `direction` |
 | `slidesPerView` | number | 1 | `slides-per-view` |
@@ -72,6 +75,7 @@ All props map to kebab-case attributes on `<webf-carousel-slider>` unless noted.
 Value notes:
 
 - `direction`: `horizontal` or `vertical`.
+- `easing`: `ease`, `linear`, `ease-in`, `ease-out`, `ease-in-out`, `fast-out-slow-in`, `cubic-bezier(x1, y1, x2, y2)`.
 
 ### Event props
 

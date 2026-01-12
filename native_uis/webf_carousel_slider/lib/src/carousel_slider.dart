@@ -17,6 +17,8 @@ class WebFCarouselSlider extends CarouselSliderBindings {
   bool _autoplay = false;
   int _autoplayDelayMs = 3000;
   int _speedMs = 300;
+  Curve _easingCurve = Curves.ease;
+  String _easingName = 'ease';
   bool _loop = false;
   Axis _direction = Axis.horizontal;
   double _slidesPerView = 1.0;
@@ -84,6 +86,22 @@ class WebFCarouselSlider extends CarouselSliderBindings {
     final next = TypeConverter.clampSpeedMs(value, defaultValue: _speedMs);
     if (_speedMs != next) {
       _speedMs = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  String? get easing => _easingName;
+
+  @override
+  set easing(dynamic value) {
+    final curve =
+        TypeConverter.parseEasing(value, fallback: _easingCurve);
+    final name =
+        TypeConverter.normalizeEasingName(value, fallback: _easingName);
+    if (_easingCurve != curve || _easingName != name) {
+      _easingCurve = curve;
+      _easingName = name;
       _requestUpdate();
     }
   }
@@ -188,7 +206,7 @@ class WebFCarouselSlider extends CarouselSliderBindings {
       defaultValue: _speedMs,
     );
     (state as WebFCarouselSliderState?)
-        ?.nextPage(durationMs: durationMs, curve: Curves.ease);
+        ?.nextPage(durationMs: durationMs, curve: _easingCurve);
   }
 
   void _slidePrevSync(List<dynamic> args) {
@@ -197,7 +215,7 @@ class WebFCarouselSlider extends CarouselSliderBindings {
       defaultValue: _speedMs,
     );
     (state as WebFCarouselSliderState?)
-        ?.previousPage(durationMs: durationMs, curve: Curves.ease);
+        ?.previousPage(durationMs: durationMs, curve: _easingCurve);
   }
 
   void _slideToSync(List<dynamic> args) {
@@ -217,7 +235,7 @@ class WebFCarouselSlider extends CarouselSliderBindings {
     (state as WebFCarouselSliderState?)?.animateToPage(
       page: index,
       durationMs: durationMs,
-      curve: Curves.ease,
+      curve: _easingCurve,
     );
   }
 
@@ -343,6 +361,7 @@ class WebFCarouselSliderState extends WebFWidgetElementState {
       autoplay: widgetElement._autoplay,
       autoplayDelayMs: widgetElement._autoplayDelayMs.toDouble(),
       speedMs: widgetElement._speedMs.toDouble(),
+      easing: widgetElement._easingCurve,
       direction: widgetElement._direction,
       centeredSlides: widgetElement._centeredSlides,
       allowTouchMove: widgetElement._allowTouchMove,
