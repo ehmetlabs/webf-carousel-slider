@@ -1,688 +1,450 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:webf/webf.dart';
-import 'package:webf/dom.dart' as dom;
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-import 'carousel_slider_bindings_generated.dart';
+import 'package:flutter/material.dart';
+import 'package:webf/css.dart';
+import 'package:webf/dom.dart' as dom;
+import 'package:webf/webf.dart';
 
-// 导入新的工具类和管理器
-import 'utils/type_converter.dart';
-import 'utils/enum_converter.dart';
-import 'utils/carousel_items_parser.dart';
+import 'carousel_slider_bindings_generated.dart';
 import 'config/carousel_config.dart';
 import 'event/event_manager.dart';
-import 'event/scroll_listener.dart';
-import 'controller/controller_manager.dart';
+import 'utils/type_converter.dart';
 
 /// WebF Custom Element wrapper for carousel_slider_plus.
 /// Provides a high-performance carousel component accessible from JavaScript.
-///
-/// Extends the generated bindings class to enable automatic property mapping.
-class CarouselSliderElement extends CarouselSliderBindings {
-  CarouselSliderElement(super.context);
+class WebFCarouselSlider extends CarouselSliderBindings {
+  WebFCarouselSlider(super.context);
 
-  // Internal state
   bool _autoplay = false;
-  double _autoplayInterval = 4.0;
-  bool _enableInfiniteScroll = true;
-  double _aspectRatio = 16 / 9;
-  bool _enlargeCenterPage = false;
-  double _viewportFraction = 0.8;
-  int _currentIndex = 0;
-  double? _autoPlayAnimationDuration;
-  Curve? _autoPlayCurve = Curves.fastOutSlowIn;
-  double? _initialPage;
-  bool _reverse = false;
-  Axis _scrollDirection = Axis.horizontal;
-  bool _padEnds = true;
-  String? _height;
-  List<CarouselImageItem> _imageItems = const [];
-  int _imageItemsVersion = 0;
-
-  // 新增的配置选项
-  bool _pauseAutoPlayOnTouch = true;
-  bool _pauseAutoPlayOnManualNavigate = true;
-  bool _pageSnapping = true;
-  double? _enlargeFactor;
-
-  // 新增属性状态
-  bool _animateToClosest = true;
-  bool _pauseAutoPlayInFiniteScroll = false;
-  bool _disableCenter = false;
-  CenterPageEnlargeStrategy _enlargeStrategy =
-      CenterPageEnlargeStrategy.scale;
-  ScrollPhysics? _scrollPhysics;
-
-  // 新的配置和管理器
-  CarouselConfig? _config;
-
-  void _invalidateConfigAndRequestUpdate() {
-    _config = null;
-    state?.requestUpdateState();
-  }
-
-  void _setImageItems(dynamic value) {
-    final parsedItems = parseCarouselItems(value);
-    if (_areImageItemsEqual(_imageItems, parsedItems)) {
-      return;
-    }
-    _imageItems = parsedItems;
-    _imageItemsVersion += 1;
-    state?.requestUpdateState();
-  }
-
-  bool _areImageItemsEqual(
-    List<CarouselImageItem> current,
-    List<CarouselImageItem> next,
-  ) {
-    if (identical(current, next)) {
-      return true;
-    }
-    if (current.length != next.length) {
-      return false;
-    }
-    for (var i = 0; i < current.length; i++) {
-      final currentItem = current[i];
-      final nextItem = next[i];
-      if (currentItem.id != nextItem.id || currentItem.url != nextItem.url) {
-        return false;
-      }
-    }
-    return true;
-  }
+  int _autoplayDelayMs = 3000;
+  int _speedMs = 300;
+  bool _loop = false;
+  Axis _direction = Axis.horizontal;
+  double _slidesPerView = 1.0;
+  bool _centeredSlides = false;
+  int _initialSlide = 0;
+  int _activeIndex = 0;
+  bool _allowTouchMove = true;
+  bool _autoplayDisableOnInteraction = false;
+  final double _aspectRatio = 16 / 9;
 
   CarouselEventManager? get _eventManager =>
-      (state as CarouselSliderElementState?)?._eventManager;
+      (state as WebFCarouselSliderState?)?._eventManager;
+
+  void _requestUpdate() {
+    state?.requestUpdateState(() {});
+  }
+
+  void _setAutoplay(bool value) {
+    if (_autoplay == value) {
+      if (_autoplay) {
+        (state as WebFCarouselSliderState?)?.startAutoplay();
+      } else {
+        (state as WebFCarouselSliderState?)?.stopAutoplay();
+      }
+      return;
+    }
+    _autoplay = value;
+    _requestUpdate();
+    if (_autoplay) {
+      _eventManager?.dispatchPlay();
+      (state as WebFCarouselSliderState?)?.startAutoplay();
+    } else {
+      _eventManager?.dispatchPause();
+      (state as WebFCarouselSliderState?)?.stopAutoplay();
+    }
+  }
 
   @override
   bool get autoplay => _autoplay;
 
   @override
   set autoplay(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: false);
-    if (_autoplay != boolValue) {
-      _autoplay = boolValue;
-      _config = null; // 清除缓存，触发重建
-      state?.requestUpdateState();
+    final boolValue = TypeConverter.toBool(value);
+    _setAutoplay(boolValue);
+  }
+
+  @override
+  double? get autoplayDelay => _autoplayDelayMs.toDouble();
+
+  @override
+  set autoplayDelay(dynamic value) {
+    final next = TypeConverter.clampAutoplayDelayMs(value,
+        defaultValue: _autoplayDelayMs);
+    if (_autoplayDelayMs != next) {
+      _autoplayDelayMs = next;
+      _requestUpdate();
     }
   }
 
   @override
-  double? get autoplayInterval => _autoplayInterval;
+  double? get speed => _speedMs.toDouble();
 
   @override
-  set autoplayInterval(dynamic value) {
-    final doubleValue = TypeConverter.validateAutoplayInterval(value);
-    if (_autoplayInterval != doubleValue) {
-      _autoplayInterval = doubleValue;
-      _invalidateConfigAndRequestUpdate();
+  set speed(dynamic value) {
+    final next = TypeConverter.clampSpeedMs(value, defaultValue: _speedMs);
+    if (_speedMs != next) {
+      _speedMs = next;
+      _requestUpdate();
     }
   }
 
   @override
-  bool get enableInfiniteScroll => _enableInfiniteScroll;
+  bool get loop => _loop;
 
   @override
-  set enableInfiniteScroll(dynamic value) {
+  set loop(dynamic value) {
+    final boolValue = TypeConverter.toBool(value);
+    if (_loop != boolValue) {
+      _loop = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  String? get direction =>
+      _direction == Axis.horizontal ? 'horizontal' : 'vertical';
+
+  @override
+  set direction(dynamic value) {
+    final next = TypeConverter.parseDirection(value);
+    if (_direction != next) {
+      _direction = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  double? get slidesPerView => _slidesPerView;
+
+  @override
+  set slidesPerView(dynamic value) {
+    final next =
+        TypeConverter.clampSlidesPerView(value, defaultValue: _slidesPerView);
+    if (_slidesPerView != next) {
+      _slidesPerView = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get centeredSlides => _centeredSlides;
+
+  @override
+  set centeredSlides(dynamic value) {
+    final boolValue = TypeConverter.toBool(value);
+    if (_centeredSlides != boolValue) {
+      _centeredSlides = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  double? get initialSlide => _initialSlide.toDouble();
+
+  @override
+  set initialSlide(dynamic value) {
+    final next = TypeConverter.toInt(value, min: 0);
+    if (_initialSlide != next) {
+      _initialSlide = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  double? get activeIndex => _activeIndex.toDouble();
+
+  @override
+  set activeIndex(dynamic value) {
+    // 只读属性，忽略外部设置
+  }
+
+  @override
+  bool get allowTouchMove => _allowTouchMove;
+
+  @override
+  set allowTouchMove(dynamic value) {
     final boolValue = TypeConverter.toBool(value, defaultValue: true);
-    if (_enableInfiniteScroll != boolValue) {
-      _enableInfiniteScroll = boolValue;
-      _invalidateConfigAndRequestUpdate();
+    if (_allowTouchMove != boolValue) {
+      _allowTouchMove = boolValue;
+      _requestUpdate();
     }
   }
 
   @override
-  double? get aspectRatio => _aspectRatio;
+  bool get autoplayDisableOnInteraction => _autoplayDisableOnInteraction;
 
   @override
-  set aspectRatio(dynamic value) {
-    final doubleValue = TypeConverter.validateAspectRatio(value);
-    if (_aspectRatio != doubleValue) {
-      _aspectRatio = doubleValue;
-      _invalidateConfigAndRequestUpdate();
+  set autoplayDisableOnInteraction(dynamic value) {
+    final boolValue = TypeConverter.toBool(value);
+    if (_autoplayDisableOnInteraction != boolValue) {
+      _autoplayDisableOnInteraction = boolValue;
+      _requestUpdate();
     }
   }
 
-  @override
-  bool get enlargeCenterPage => _enlargeCenterPage;
-
-  @override
-  set enlargeCenterPage(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: false);
-    if (_enlargeCenterPage != boolValue) {
-      _enlargeCenterPage = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
+  void _slideNextSync(List<dynamic> args) {
+    final durationMs = TypeConverter.clampSpeedMs(
+      args.isNotEmpty ? args[0] : null,
+      defaultValue: _speedMs,
+    );
+    (state as WebFCarouselSliderState?)
+        ?.nextPage(durationMs: durationMs, curve: Curves.ease);
   }
 
-  @override
-  double? get viewportFraction => _viewportFraction;
-
-  @override
-  set viewportFraction(dynamic value) {
-    final doubleValue = TypeConverter.validateViewportFraction(value);
-    if (_viewportFraction != doubleValue) {
-      _viewportFraction = doubleValue;
-      _invalidateConfigAndRequestUpdate();
-    }
+  void _slidePrevSync(List<dynamic> args) {
+    final durationMs = TypeConverter.clampSpeedMs(
+      args.isNotEmpty ? args[0] : null,
+      defaultValue: _speedMs,
+    );
+    (state as WebFCarouselSliderState?)
+        ?.previousPage(durationMs: durationMs, curve: Curves.ease);
   }
 
-  @override
-  double? get currentIndex => _currentIndex.toDouble();
-
-  @override
-  set currentIndex(dynamic value) {
-    final intValue = TypeConverter.toInt(value, defaultValue: 0, min: 0);
-    if (_currentIndex != intValue) {
-      _currentIndex = intValue;
-      // Trigger page change
-      final sliderState = state as CarouselSliderElementState?;
-      sliderState?.jumpToPage(intValue);
-    }
-  }
-
-  @override
-  String? get options => jsonEncode(_getCurrentOptions());
-
-  @override
-  set options(dynamic value) {
-    if (value == null || value.toString().isEmpty) {
+  void _slideToSync(List<dynamic> args) {
+    final index = TypeConverter.toInt(
+      args.isNotEmpty ? args[0] : null,
+      defaultValue: _activeIndex,
+      min: 0,
+    );
+    final durationMs = TypeConverter.clampSpeedMs(
+      args.length > 1 ? args[1] : null,
+      defaultValue: _speedMs,
+    );
+    if (durationMs <= 0) {
+      (state as WebFCarouselSliderState?)?.jumpToPage(index);
       return;
     }
-
-    try {
-      final json = jsonDecode(value.toString()) as Map<String, dynamic>;
-
-      void applyIfPresent(String key, void Function(dynamic) apply) {
-        if (json.containsKey(key)) {
-          apply(json[key]);
-        }
-      }
-
-      // 批量更新属性（保持顺序，避免潜在的依赖差异）
-      applyIfPresent('autoplay', (v) => autoplay = v);
-      applyIfPresent('autoplayInterval', (v) => autoplayInterval = v);
-      applyIfPresent('enableInfiniteScroll', (v) => enableInfiniteScroll = v);
-      applyIfPresent('aspectRatio', (v) => aspectRatio = v);
-      applyIfPresent('enlargeCenterPage', (v) => enlargeCenterPage = v);
-      applyIfPresent('viewportFraction', (v) => viewportFraction = v);
-      applyIfPresent('initialPage', (v) => initialPage = v);
-      applyIfPresent('height', (v) => height = v);
-      applyIfPresent(
-        'autoPlayAnimationDuration',
-        (v) => autoPlayAnimationDuration = v,
-      );
-      applyIfPresent('autoPlayCurve', (v) => autoPlayCurve = v);
-      applyIfPresent('reverse', (v) => reverse = v);
-      applyIfPresent('scrollDirection', (v) => scrollDirection = v);
-      applyIfPresent('padEnds', (v) => padEnds = v);
-      applyIfPresent('pauseAutoPlayOnTouch', (v) => pauseAutoPlayOnTouch = v);
-      applyIfPresent(
-        'pauseAutoPlayOnManualNavigate',
-        (v) => pauseAutoPlayOnManualNavigate = v,
-      );
-      applyIfPresent('pageSnapping', (v) => pageSnapping = v);
-      applyIfPresent('enlargeFactor', (v) => enlargeFactor = v);
-      applyIfPresent('currentIndex', (v) => currentIndex = v);
-      applyIfPresent('items', (v) => _setImageItems(v));
-      // 新增属性处理
-      applyIfPresent('animateToClosest', (v) => animateToClosest = v);
-      applyIfPresent(
-        'pauseAutoPlayInFiniteScroll',
-        (v) => pauseAutoPlayInFiniteScroll = v,
-      );
-      applyIfPresent('disableCenter', (v) => disableCenter = v);
-      applyIfPresent('enlargeStrategy', (v) => enlargeStrategy = v);
-      applyIfPresent('scrollPhysics', (v) => scrollPhysics = v);
-
-      // 触发重建
-      state?.requestUpdateState();
-    } catch (e) {
-      // 派发错误事件
-      final eventManager =
-          (state as CarouselSliderElementState?)?._eventManager;
-      eventManager?.dispatchError('Failed to parse options: $e');
-    }
+    (state as WebFCarouselSliderState?)?.animateToPage(
+      page: index,
+      durationMs: durationMs,
+      curve: Curves.ease,
+    );
   }
 
-  @override
-  double? get autoPlayAnimationDuration => _autoPlayAnimationDuration;
-
-  @override
-  set autoPlayAnimationDuration(dynamic value) {
-    final doubleValue =
-        TypeConverter.toDouble(value, defaultValue: 800.0, min: 100, max: 5000);
-    if (_autoPlayAnimationDuration != doubleValue) {
-      _autoPlayAnimationDuration = doubleValue;
-      _config = null;
-      state?.requestUpdateState();
-    }
+  void _autoplayStartSync(List<dynamic> args) {
+    _setAutoplay(true);
   }
 
-  @override
-  String? get autoPlayCurve => _autoPlayCurve?.toString();
-
-  @override
-  set autoPlayCurve(dynamic value) {
-    final curveValue = TypeConverter.parseAutoPlayCurve(value);
-    if (_autoPlayCurve != curveValue) {
-      _autoPlayCurve = curveValue;
-      _invalidateConfigAndRequestUpdate();
-    }
+  void _autoplayStopSync(List<dynamic> args) {
+    _setAutoplay(false);
   }
 
-  @override
-  double? get initialPage => _initialPage?.toDouble();
+  static final StaticDefinedSyncBindingObjectMethodMap carouselMethods = {
+    'slideNext': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        castToType<WebFCarouselSlider>(element)._slideNextSync(args);
+        return null;
+      },
+    ),
+    'slidePrev': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        castToType<WebFCarouselSlider>(element)._slidePrevSync(args);
+        return null;
+      },
+    ),
+    'slideTo': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        castToType<WebFCarouselSlider>(element)._slideToSync(args);
+        return null;
+      },
+    ),
+    'autoplayStart': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        castToType<WebFCarouselSlider>(element)._autoplayStartSync(args);
+        return null;
+      },
+    ),
+    'autoplayStop': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        castToType<WebFCarouselSlider>(element)._autoplayStopSync(args);
+        return null;
+      },
+    ),
+  };
 
   @override
-  set initialPage(dynamic value) {
-    final doubleValue =
-        TypeConverter.toDouble(value, defaultValue: 0.0, min: 0);
-    if (_initialPage != doubleValue) {
-      _initialPage = doubleValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  bool get reverse => _reverse;
-
-  @override
-  set reverse(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: false);
-    if (_reverse != boolValue) {
-      _reverse = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  String? get scrollDirection => _scrollDirection.toString();
-
-  @override
-  set scrollDirection(dynamic value) {
-    final directionValue = TypeConverter.parseScrollDirection(value);
-    if (_scrollDirection != directionValue) {
-      _scrollDirection = directionValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  bool get padEnds => _padEnds;
-
-  @override
-  set padEnds(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: true);
-    if (_padEnds != boolValue) {
-      _padEnds = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  String? get height => _height;
-
-  @override
-  set height(dynamic value) {
-    final stringValue = TypeConverter.asString(value);
-    if (_height != stringValue) {
-      _height = stringValue.isNotEmpty ? stringValue : null;
-      state?.requestUpdateState();
-    }
-  }
-
-  // 新增属性的 getter/setter
-
-  @override
-  bool get pauseAutoPlayOnTouch => _pauseAutoPlayOnTouch;
-
-  @override
-  set pauseAutoPlayOnTouch(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: true);
-    if (_pauseAutoPlayOnTouch != boolValue) {
-      _pauseAutoPlayOnTouch = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  bool get pauseAutoPlayOnManualNavigate => _pauseAutoPlayOnManualNavigate;
-
-  @override
-  set pauseAutoPlayOnManualNavigate(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: true);
-    if (_pauseAutoPlayOnManualNavigate != boolValue) {
-      _pauseAutoPlayOnManualNavigate = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  bool get pageSnapping => _pageSnapping;
-
-  @override
-  set pageSnapping(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: true);
-    if (_pageSnapping != boolValue) {
-      _pageSnapping = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  double? get enlargeFactor => _enlargeFactor;
-
-  @override
-  set enlargeFactor(dynamic value) {
-    final doubleValue = TypeConverter.validateEnlargeFactor(value);
-    if (_enlargeFactor != doubleValue) {
-      _enlargeFactor = doubleValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  // 新增属性的 getter/setter
-
-  @override
-  bool get animateToClosest => _animateToClosest;
-
-  @override
-  set animateToClosest(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: true);
-    if (_animateToClosest != boolValue) {
-      _animateToClosest = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  bool get pauseAutoPlayInFiniteScroll => _pauseAutoPlayInFiniteScroll;
-
-  @override
-  set pauseAutoPlayInFiniteScroll(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: false);
-    if (_pauseAutoPlayInFiniteScroll != boolValue) {
-      _pauseAutoPlayInFiniteScroll = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  bool get disableCenter => _disableCenter;
-
-  @override
-  set disableCenter(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: false);
-    if (_disableCenter != boolValue) {
-      _disableCenter = boolValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  String? get enlargeStrategy => _enlargeStrategy.toString();
-
-  @override
-  set enlargeStrategy(dynamic value) {
-    final enumValue = EnumConverter.parseEnlargeStrategy(value);
-    if (_enlargeStrategy != enumValue) {
-      _enlargeStrategy = enumValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  @override
-  String? get scrollPhysics {
-    if (_scrollPhysics == null) return null;
-    if (_scrollPhysics is ClampingScrollPhysics) return 'clamping';
-    if (_scrollPhysics is BouncingScrollPhysics) return 'bouncing';
-    if (_scrollPhysics is FixedExtentScrollPhysics) return 'fixed';
-    return null;
-  }
-
-  @override
-  set scrollPhysics(dynamic value) {
-    final physicsValue = EnumConverter.parseScrollPhysics(value);
-    if (_scrollPhysics != physicsValue) {
-      _scrollPhysics = physicsValue;
-      _invalidateConfigAndRequestUpdate();
-    }
-  }
-
-  // Methods for programmatic control
-  void next(List<dynamic>? args) {
-    final sliderState = state as CarouselSliderElementState?;
-    sliderState?.nextPage();
-  }
-
-  void previous(List<dynamic>? args) {
-    final sliderState = state as CarouselSliderElementState?;
-    sliderState?.previousPage();
-  }
-
-  void jumpToPage(List<dynamic>? args) {
-    final sliderState = state as CarouselSliderElementState?;
-    sliderState?.jumpToPage(args?.first as int? ?? 0);
-  }
-
-  void pause(List<dynamic>? args) {
-    _autoplay = false;
-    // 派发自动播放暂停事件
-    _eventManager?.dispatchAutoplayPause();
-    state?.requestUpdateState();
-  }
-
-  void resume(List<dynamic>? args) {
-    _autoplay = true;
-    // 派发自动播放恢复事件
-    _eventManager?.dispatchAutoplayResume();
-    state?.requestUpdateState();
-  }
-
-  void startAutoPlay(List<dynamic>? args) {
-    _autoplay = true;
-    // 派发自动播放恢复事件
-    _eventManager?.dispatchAutoplayResume();
-    state?.requestUpdateState();
-  }
-
-  void stopAutoPlay(List<dynamic>? args) {
-    _autoplay = false;
-    // 派发自动播放暂停事件
-    _eventManager?.dispatchAutoplayPause();
-    state?.requestUpdateState();
-  }
-
-  Map<String, dynamic> _getCurrentOptions() {
-    final autoPlayCurve =
-        (_autoPlayCurve ?? Curves.fastOutSlowIn).toString();
-    final enlargeStrategy = _enlargeStrategy.toString();
-    final scrollDirection =
-        _scrollDirection == Axis.horizontal ? 'horizontal' : 'vertical';
-
-    return {
-      'autoplay': autoplay,
-      'autoplayInterval': autoplayInterval,
-      'autoPlayAnimationDuration': _autoPlayAnimationDuration ?? 800.0,
-      'autoPlayCurve': autoPlayCurve,
-      'enableInfiniteScroll': enableInfiniteScroll,
-      'aspectRatio': aspectRatio,
-      'enlargeCenterPage': enlargeCenterPage,
-      'enlargeFactor': enlargeFactor ?? 0.3,
-      'viewportFraction': viewportFraction,
-      'initialPage': _initialPage ?? _currentIndex,
-      'reverse': reverse,
-      'scrollDirection': scrollDirection,
-      'padEnds': padEnds,
-      'pageSnapping': pageSnapping,
-      'pauseAutoPlayOnTouch': pauseAutoPlayOnTouch,
-      'pauseAutoPlayOnManualNavigate': pauseAutoPlayOnManualNavigate,
-      'scrollPhysics': scrollPhysics,
-      'animateToClosest': animateToClosest,
-      'pauseAutoPlayInFiniteScroll': pauseAutoPlayInFiniteScroll,
-      'disableCenter': disableCenter,
-      'enlargeStrategy': enlargeStrategy,
-      'height': height,
-      'items': _imageItems.map((item) => item.toJson()).toList(),
-      'currentIndex': currentIndex,
-    };
-  }
+  List<StaticDefinedSyncBindingObjectMethodMap> get methods => [
+        ...super.methods,
+        carouselMethods,
+      ];
 
   @override
   WebFWidgetElementState createState() {
-    return CarouselSliderElementState(this);
+    return WebFCarouselSliderState(this);
   }
 }
 
-class CarouselSliderElementState extends WebFWidgetElementState {
-  late final CarouselControllerManager _controllerManager;
+class WebFCarouselSliderState extends WebFWidgetElementState {
+  late final CarouselSliderController _controller;
   late final CarouselEventManager _eventManager;
+  bool _isDragging = false;
 
-  // 缓存子组件列表
-  List<Widget>? _cachedItems;
-  int? _cachedChildCount;
-  int? _cachedItemsVersion;
-
-  CarouselSliderElementState(super.widgetElement);
+  WebFCarouselSliderState(super.widgetElement);
 
   @override
-  CarouselSliderElement get widgetElement =>
-      super.widgetElement as CarouselSliderElement;
+  WebFCarouselSlider get widgetElement =>
+      super.widgetElement as WebFCarouselSlider;
 
   @override
   void initState() {
     super.initState();
-    _controllerManager = CarouselControllerManager();
+    _controller = CarouselSliderController();
     _eventManager = CarouselEventManager(widgetElement);
   }
 
-  @override
-  void dispose() {
-    _controllerManager.dispose();
-    super.dispose();
-  }
-
-  void nextPage() {
-    _controllerManager.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.ease,
+  void nextPage({required int durationMs, required Curve curve}) {
+    _controller.nextPage(
+      duration: Duration(milliseconds: durationMs),
+      curve: curve,
     );
   }
 
-  void previousPage() {
-    _controllerManager.previousPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.ease,
+  void previousPage({required int durationMs, required Curve curve}) {
+    _controller.previousPage(
+      duration: Duration(milliseconds: durationMs),
+      curve: curve,
     );
   }
 
   void jumpToPage(int page) {
-    _controllerManager.jumpToPage(page);
+    _controller.jumpToPage(page);
   }
 
-  CarouselOptions _buildOptions() {
-    // 复用或创建配置对象
-    final config = widgetElement._config ??= CarouselConfig(
+  void animateToPage({
+    required int page,
+    required int durationMs,
+    required Curve curve,
+  }) {
+    _controller.animateToPage(
+      page,
+      duration: Duration(milliseconds: durationMs),
+      curve: curve,
+    );
+  }
+
+  void startAutoplay() {
+    _controller.startAutoPlay();
+  }
+
+  void stopAutoplay() {
+    _controller.stopAutoPlay();
+  }
+
+  CarouselOptions _buildOptions(double? height) {
+    final viewportFraction = TypeConverter.slidesPerViewToViewportFraction(
+      widgetElement._slidesPerView,
+    );
+    final config = CarouselConfig(
+      height: height,
       aspectRatio: widgetElement._aspectRatio,
-      viewportFraction: widgetElement._viewportFraction,
-      initialPage:
-          (widgetElement._initialPage ?? widgetElement._currentIndex.toDouble()),
-      enableInfiniteScroll: widgetElement._enableInfiniteScroll,
-      reverse: widgetElement._reverse,
-      autoPlay: widgetElement._autoplay,
-      autoPlayInterval: widgetElement._autoplayInterval,
-      autoPlayAnimationDuration: widgetElement._autoPlayAnimationDuration,
-      autoPlayCurve: widgetElement._autoPlayCurve,
-      enlargeCenterPage: widgetElement._enlargeCenterPage,
-      enlargeFactor: widgetElement._enlargeFactor,
-      scrollDirection: widgetElement._scrollDirection,
-      padEnds: widgetElement._padEnds,
-      pageSnapping: widgetElement._pageSnapping,
-      scrollPhysics: widgetElement._scrollPhysics,
-      pauseAutoPlayOnTouch: widgetElement._pauseAutoPlayOnTouch,
-      pauseAutoPlayOnManualNavigate:
-          widgetElement._pauseAutoPlayOnManualNavigate,
+      viewportFraction: viewportFraction,
+      initialIndex: widgetElement._initialSlide,
+      loop: widgetElement._loop,
+      autoplay: widgetElement._autoplay,
+      autoplayDelayMs: widgetElement._autoplayDelayMs.toDouble(),
+      speedMs: widgetElement._speedMs.toDouble(),
+      direction: widgetElement._direction,
+      centeredSlides: widgetElement._centeredSlides,
+      allowTouchMove: widgetElement._allowTouchMove,
+      autoplayDisableOnInteraction: widgetElement._autoplayDisableOnInteraction,
       onPageChanged: _onPageChanged,
-      animateToClosest: widgetElement._animateToClosest,
-      pauseAutoPlayInFiniteScroll: widgetElement._pauseAutoPlayInFiniteScroll,
-      disableCenter: widgetElement._disableCenter,
-      enlargeStrategy: widgetElement._enlargeStrategy,
     );
 
     return config.build();
   }
 
+  String _mapChangeReason(CarouselPageChangedReason reason) {
+    switch (reason) {
+      case CarouselPageChangedReason.timed:
+        return 'autoplay';
+      case CarouselPageChangedReason.manual:
+        return 'drag';
+      case CarouselPageChangedReason.controller:
+        return 'api';
+    }
+  }
+
   void _onPageChanged(int index, CarouselPageChangedReason reason) {
-    final previousIndex = widgetElement._currentIndex;
-    widgetElement._currentIndex = index;
+    final previousIndex = widgetElement._activeIndex;
+    widgetElement._activeIndex = index;
 
-    // 派发页面动画开始事件
-    _eventManager.dispatchAnimationStart(previousIndex, index);
-
-    // 使用 EventManager 派发事件
-    _eventManager.dispatchPageChanged(index, reason);
-
-    // 派发页面动画结束事件（延迟执行，模拟动画完成）
-    Future.delayed(const Duration(milliseconds: 300), () {
-      _eventManager.dispatchAnimationEnd(index);
-    });
+    _eventManager.dispatchChange(
+      index: index,
+      previousIndex: previousIndex,
+      reason: _mapChangeReason(reason),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final options = _buildOptions();
+    final CSSRenderStyle renderStyle = widgetElement.renderStyle;
+    double? width = renderStyle.width.computedValue;
+    double? height = renderStyle.height.computedValue;
+    if (width == 0) width = null;
+    if (height == 0) height = null;
 
-    // 获取当前子节点数量
-    final currentChildCount = widgetElement.childNodes.length;
-    final currentItemsVersion = widgetElement._imageItemsVersion;
-
-    // 只在子节点数量变化时重建子组件列表
-    if (_cachedItems == null ||
-        _cachedChildCount != currentChildCount ||
-        _cachedItemsVersion != currentItemsVersion) {
-      _cachedItems = _buildItems();
-      _cachedChildCount = currentChildCount;
-      _cachedItemsVersion = currentItemsVersion;
-    }
+    final options = _buildOptions(height);
+    final items = _buildItems();
 
     final carousel = CarouselSlider(
       options: options,
-      items: _cachedItems!,
-      controller: _controllerManager.controller,
+      items: items,
+      controller: _controller,
     );
 
-    // 用 GestureDetector 包裹以捕获滑动手势
+    final allowTouchMove = widgetElement._allowTouchMove;
     final gestureCarousel = GestureDetector(
-      onPanStart: (_) {
-        _eventManager.dispatchSlideStart();
-      },
-      onPanEnd: (_) {
-        _eventManager.dispatchSlideEnd();
-      },
+      onPanStart: allowTouchMove
+          ? (_) {
+              if (widgetElement._autoplayDisableOnInteraction &&
+                  widgetElement._autoplay) {
+                widgetElement._setAutoplay(false);
+              }
+              _isDragging = true;
+              _eventManager.dispatchChangeStart(widgetElement._activeIndex);
+            }
+          : null,
+      onPanEnd: allowTouchMove
+          ? (_) {
+              if (!_isDragging) return;
+              _isDragging = false;
+              _eventManager.dispatchChangeEnd(widgetElement._activeIndex);
+            }
+          : null,
+      onPanCancel: allowTouchMove
+          ? () {
+              if (!_isDragging) return;
+              _isDragging = false;
+              _eventManager.dispatchChangeEnd(widgetElement._activeIndex);
+            }
+          : null,
       child: carousel,
     );
 
-    // 包裹滚动监听器以派发 scrolled 事件
-    final scrollListener = CarouselScrollListener(
-      element: widgetElement,
-      child: gestureCarousel,
-    );
+    Widget content = gestureCarousel;
+    if (width != null || height != null) {
+      content = SizedBox(
+        width: width,
+        height: height,
+        child: content,
+      );
+    }
 
-    // 应用 height 属性
-    if (widgetElement._height != null && widgetElement._height!.isNotEmpty) {
-      final heightValue = _parseHeight(widgetElement._height!);
-      if (heightValue != null) {
-        return SizedBox(height: heightValue, child: scrollListener);
+    return ClipRect(child: content);
+  }
+
+  List<Widget> _buildItems() {
+    final List<Widget> children = [];
+    for (var child in widgetElement.childNodes) {
+      if (child is dom.Element) {
+        children.add(child.toWidget());
       }
     }
 
-    return scrollListener;
-  }
+    if (children.isNotEmpty) {
+      return children;
+    }
 
-  /// 构建子组件列表
-  List<Widget> _buildItems() {
-    // Build placeholder widgets
     final placeholder = Container(
       color: Colors.grey[300],
       child: const Center(
@@ -704,60 +466,6 @@ class CarouselSliderElementState extends WebFWidgetElementState {
       ),
     );
 
-    // Build child widgets from element children
-    final List<Widget> children = [];
-    for (var child in widgetElement.childNodes) {
-      // Only process element nodes
-      if (child is dom.Element) {
-        final element = child;
-        // Convert element to widget
-        children.add(element.toWidget());
-      }
-    }
-
-    if (children.isNotEmpty) {
-      return children;
-    }
-
-    final imageItems = widgetElement._imageItems;
-    if (imageItems.isNotEmpty) {
-      return _buildImageItems(imageItems);
-    }
-
-    // Use placeholder if no children or items
     return [placeholder, placeholder, placeholder];
-  }
-
-  List<Widget> _buildImageItems(List<CarouselImageItem> items) {
-    return items
-        .map(
-          (item) => GestureDetector(
-            key: ValueKey(item.id),
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              _eventManager.dispatchItemClick(item.id);
-            },
-            child: Image.network(
-              item.url,
-              fit: BoxFit.cover,
-            ),
-          ),
-        )
-        .toList();
-  }
-
-  /// 解析高度字符串
-  /// 支持 "400", "400px", "400.0" 等格式
-  double? _parseHeight(String heightStr) {
-    final str = heightStr.trim().toLowerCase();
-
-    // 移除 px 后缀
-    if (str.endsWith('px')) {
-      final numStr = str.replaceAll('px', '').trim();
-      return double.tryParse(numStr);
-    }
-
-    // 直接解析数字
-    return double.tryParse(str);
   }
 }

@@ -4,15 +4,15 @@ A WebF carousel custom element implemented in Flutter, with a React wrapper for 
 
 ## Repository layout
 
-- `native_uis/webf_carousel_slider`: Flutter package that registers the `<carousel-slider>` custom element.
+- `native_uis/webf_carousel_slider`: Flutter package that registers the `<webf-carousel-slider>` custom element.
 - `packages/webf-react-carousel-slider`: React wrapper package published as `@ehmetlabs/webf-react-carousel-slider`.
 
 ## Features
 
 - Flutter-rendered carousel with smooth animations
 - Autoplay, pause/resume, infinite scroll
-- Center enlargement, vertical/horizontal modes
-- JavaScript methods and custom events
+- Centered slides, vertical/horizontal modes
+- Swiper-compatible subset of JavaScript methods and custom events
 - Typed React wrapper for WebF projects
 
 ## Documentation

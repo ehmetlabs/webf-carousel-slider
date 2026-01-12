@@ -31,14 +31,14 @@
 ///
 /// ```javascript
 /// // Add to HTML
-/// <carousel-slider autoplay="true" autoplay-interval="4">
+/// <webf-carousel-slider autoplay autoplay-delay="3000" speed="300" slides-per-view="1">
 ///   <img src="image1.jpg" />
 ///   <img src="image2.jpg" />
 ///   <img src="image3.jpg" />
-/// </carousel-slider>
+/// </webf-carousel-slider>
 ///
 /// // In JavaScript
-/// const carousel = document.querySelector('carousel-slider');
+/// const carousel = document.querySelector('webf-carousel-slider');
 ///
 /// // Listen to changes
 /// carousel.addEventListener('change', (event) => {
@@ -46,21 +46,21 @@
 /// });
 ///
 /// // Control programmatically
-/// carousel.next();        // Next page
-/// carousel.previous();    // Previous page
-/// carousel.jumpToPage(2); // Jump to page 2
-/// carousel.pause();       // Pause autoplay
-/// carousel.resume();      // Resume autoplay
+/// carousel.slideNext();        // Next page
+/// carousel.slidePrev();        // Previous page
+/// carousel.slideTo(2);         // Slide to page 2
+/// carousel.autoplayStop();     // Stop autoplay
+/// carousel.autoplayStart();    // Start autoplay
 /// ```
 ///
 /// ## Features
 ///
 /// - ✅ High-performance Flutter rendering
 /// - ✅ Smooth animations and transitions
-/// - ✅ Autoplay with customizable interval
+/// - ✅ Swiper-compatible API subset
+/// - ✅ Autoplay with customizable delay
 /// - ✅ Infinite scroll support
-/// - ✅ Responsive design with aspect ratio
-/// - ✅ Center page enlargement effect
+/// - ✅ Centered slides
 /// - ✅ Vertical and horizontal scroll directions
 /// - ✅ Programmatic control methods
 /// - ✅ Event-driven API
@@ -86,7 +86,7 @@ export 'src/carousel_slider.dart';
 /// ```
 void installWebFCarouselSlider() {
   // Register the custom element with WebF
-  WebF.defineCustomElement('carousel-slider', (context) {
-    return CarouselSliderElement(context);
+  WebF.defineCustomElement('webf-carousel-slider', (context) {
+    return WebFCarouselSlider(context);
   });
 }
