@@ -1,29 +1,21 @@
-# WebF Carousel Slider
+# WebF Carousel Slider (Flutter Custom Element)
 
-A WebF Custom Element wrapper for [carousel_slider_plus](https://pub.dev/packages/carousel_slider_plus). Provides a high-performance hybrid UI carousel component with Flutter rendering and JavaScript API.
+WebF custom element wrapper for `carousel_slider_plus`. It exposes a high-performance `<carousel-slider>` element to JavaScript while rendering with Flutter.
 
-## Features
+## Requirements
 
-- ✅ **High-performance Flutter rendering** - Smooth 60fps animations
-- ✅ **Autoplay support** - Customizable intervals and pause/resume control
-- ✅ **Infinite scroll** - Seamless looping navigation
-- ✅ **Responsive design** - Aspect ratio and viewport customization
-- ✅ **Center enlargement** - Scale effect for center item
-- ✅ **Multiple orientations** - Horizontal and vertical scroll
-- ✅ **Programmatic control** - Methods for navigation and playback
-- ✅ **Event-driven API** - Listen to page changes and animations
-- ✅ **TypeScript definitions** - Full type safety for TypeScript projects
-- ✅ **React/Vue support** - Generated components via WebF CLI
+- Flutter >= 3.16.0
+- Dart >= 3.0.0
+- webf ^0.24.2
+- carousel_slider_plus ^7.1.1
 
 ## Installation
 
-### Flutter Package
-
-Add this to your package's `pubspec.yaml` file:
+Add the dependency in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  webf_carousel_slider: ^1.0.0
+  webf_carousel_slider: ^0.1.0
 ```
 
 Then run:
@@ -32,27 +24,15 @@ Then run:
 flutter pub get
 ```
 
-### JavaScript/TypeScript
+## Flutter setup
 
-After generating the JavaScript package with WebF CLI:
-
-```bash
-npm install @your-org/webf-carousel-slider-react
-# or
-npm install @your-org/webf-carousel-slider-vue
-```
-
-## Getting Started
-
-### Flutter App Setup
-
-1. **Install the component in your app's initialization:**
+Register the custom element once during app initialization:
 
 ```dart
+import 'package:webf/webf.dart';
 import 'package:webf_carousel_slider/webf_carousel_slider.dart';
 
 void main() {
-  // Initialize WebF
   WebFControllerManager.instance.initialize(
     WebFControllerManagerConfig(
       maxAliveInstances: 2,
@@ -60,324 +40,149 @@ void main() {
     ),
   );
 
-  // Install carousel slider component
   installWebFCarouselSlider();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 ```
 
-2. **Use in your WebF widget:**
-
-```dart
-WebF(
-  bundle: WebFBundle.fromUrl('assets/index.html'),
-  // The carousel-slider custom element is now available
-)
-```
-
-### HTML/JavaScript Usage
+## HTML usage
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Carousel Slider Demo</title>
-  <style>
-    carousel-slider {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    carousel-slider img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  </style>
-</head>
-<body>
-  <carousel-slider
-    autoplay="true"
-    autoplay-interval="4"
-    enable-infinite-scroll="true"
-    aspect-ratio="16/9"
-    viewport-fraction="0.8"
-    enlarge-center-page="true"
-  >
-    <img src="https://via.placeholder.com/800x400/FF6B6B/FFFFFF?text=Slide+1" />
-    <img src="https://via.placeholder.com/800x400/4ECDC4/FFFFFF?text=Slide+2" />
-    <img src="https://via.placeholder.com/800x400/45B7D1/FFFFFF?text=Slide+3" />
-    <img src="https://via.placeholder.com/800x400/96CEB4/FFFFFF?text=Slide+4" />
-  </carousel-slider>
-
-  <script>
-    const carousel = document.querySelector('carousel-slider');
-
-    // Listen to page changes
-    carousel.addEventListener('change', (event) => {
-      console.log('Current index:', event.detail.index);
-      console.log('Reason:', event.detail.reason);
-    });
-
-    // Control programmatically
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      carousel.next();
-    });
-
-    document.getElementById('prevBtn').addEventListener('click', () => {
-      carousel.previous();
-    });
-
-    // Pause/Resume autoplay
-    document.getElementById('pauseBtn').addEventListener('click', () => {
-      carousel.pause();
-    });
-
-    document.getElementById('resumeBtn').addEventListener('click', () => {
-      carousel.resume();
-    });
-  </script>
-</body>
-</html>
+<carousel-slider
+  autoplay="true"
+  autoplay-interval="4"
+  aspect-ratio="16/9"
+  viewport-fraction="0.8"
+  enlarge-center-page="true"
+>
+  <img src="https://example.com/slide-1.jpg" />
+  <img src="https://example.com/slide-2.jpg" />
+  <img src="https://example.com/slide-3.jpg" />
+</carousel-slider>
 ```
-
-### React Example
-
-```tsx
-import { CarouselSlider } from '@your-org/webf-carousel-slider-react';
-
-function App() {
-  const handleChange = (event) => {
-    console.log('Page changed to:', event.detail.index);
-  };
-  const handleItemClick = (event) => {
-    console.log('Clicked item id:', event.detail.id);
-  };
-  const items = [
-    { id: 1, url: 'https://example.com/slide1.jpg' },
-    { id: 2, url: 'https://example.com/slide2.jpg' },
-  ];
-
-  return (
-    <div>
-      <CarouselSlider
-        autoplay={true}
-        autoplayInterval={4}
-        aspectRatio={16 / 9}
-        viewportFraction={0.8}
-        enlargeCenterPage={true}
-        onChange={handleChange}
-      >
-        <img src="slide1.jpg" alt="Slide 1" />
-        <img src="slide2.jpg" alt="Slide 2" />
-        <img src="slide3.jpg" alt="Slide 3" />
-      </CarouselSlider>
-      <CarouselSlider items={items} onItemclick={handleItemClick} />
-    </div>
-  );
-}
-```
-When `items` is provided and no children are rendered, the carousel builds image slides from `items`.
-
-### Vue Example
-
-```vue
-<template>
-  <div>
-    <CarouselSlider
-      :autoplay="true"
-      :autoplay-interval="4"
-      :aspect-ratio="16/9"
-      :viewport-fraction="0.8"
-      :enlarge-center-page="true"
-      @change="handleChange"
-    >
-      <img src="slide1.jpg" alt="Slide 1" />
-      <img src="slide2.jpg" alt="Slide 2" />
-      <img src="slide3.jpg" alt="Slide 3" />
-    </CarouselSlider>
-  </div>
-</template>
-
-<script setup>
-import { CarouselSlider } from '@your-org/webf-carousel-slider-vue';
-
-const handleChange = (event) => {
-  console.log('Page changed to:', event.detail.index);
-};
-</script>
-```
-
-## API Reference
-
-### Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `autoplay` | `boolean` | `false` | Enable autoplay |
-| `autoplayInterval` | `number` | `4.0` | Autoplay interval in seconds |
-| `enableInfiniteScroll` | `boolean` | `true` | Enable infinite scroll loop |
-| `aspectRatio` | `number` | `16/9` | Aspect ratio |
-| `enlargeCenterPage` | `boolean` | `false` | Enlarge the center page |
-| `viewportFraction` | `number` | `0.8` | Fraction of viewport visible (0.0-1.0) |
-| `initialPage` | `number` | `0` | Initial page index |
-| `reverse` | `boolean` | `false` | Reverse carousel direction |
-| `scrollDirection` | `string` | `'horizontal'` | Scroll direction ('horizontal' or 'vertical') |
-| `height` | `string` | - | Fixed height (e.g., "400") |
-| `autoPlayAnimationDuration` | `number` | `800` | Animation duration in ms |
-| `autoPlayCurve` | `string` | `'Curves.fastOutSlowIn'` | Animation curve |
-| `currentIndex` | `number` | `0` | Current page index (read/write) |
-| `options` | `string` | - | JSON string with all options |
-
-`options` 支持 `items: [{ id, url }]` 用于图片轮播数据源（当没有子元素时生效）。
-
-### Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `change` | `{ index: number, reason: string }` | Fired when page changes |
-| `pageAnimationStart` | - | Fired when animation starts |
-| `pageAnimationEnd` | - | Fired when animation completes |
-| `itemclick` | `{ id: string \| number }` | Fired when an image item is clicked |
-
-`itemclick` 仅在使用 `items` 构建图片轮播时触发。
-
-### Methods
-
-| Method | Parameters | Description |
-|--------|-----------|-------------|
-| `next()` | - | Navigate to next page |
-| `previous()` | - | Navigate to previous page |
-| `jumpToPage(page)` | `page: number` | Jump to specific page |
-| `pause()` | - | Pause autoplay |
-| `resume()` | - | Resume autoplay |
-
-## Advanced Usage
-
-### Dynamic Options
 
 ```javascript
 const carousel = document.querySelector('carousel-slider');
 
-// Set multiple options at once via JSON
+carousel.addEventListener('change', (event) => {
+  console.log('Index:', event.detail.index);
+  console.log('Reason:', event.detail.reason); // timed | manual | controller
+});
+
+carousel.next();
+carousel.pause();
+carousel.resume();
+```
+
+## Options JSON (batch config + items)
+
+You can set multiple attributes with a single JSON string via `options`. The keys use camelCase.
+
+```javascript
 carousel.options = JSON.stringify({
-  height: 400,
-  aspectRatio: 16 / 9,
-  viewportFraction: 0.8,
-  autoPlay: true,
-  autoPlayInterval: 4.0,
+  autoplay: true,
+  autoplayInterval: 3,
+  viewportFraction: 0.9,
   enlargeCenterPage: true,
+  enlargeFactor: 0.2,
   items: [
-    { id: 1, url: 'https://example.com/slide1.jpg' },
-    { id: 2, url: 'https://example.com/slide2.jpg' },
+    { id: 1, url: 'https://example.com/1.jpg' },
+    { id: 2, url: 'https://example.com/2.jpg' },
   ],
 });
 ```
 
-### Custom Styling
+Notes:
 
-```css
-carousel-slider {
-  width: 100%;
-  max-width: 1200px;
-  margin: 20px auto;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
+- `items` is used only when there are no child elements.
+- Invalid JSON will emit an `error` event with the parse message.
 
-carousel-slider img {
-  border-radius: 8px;
-}
-```
+Supported keys:
 
-### Integration with State Management
+- `autoplay`
+- `autoplayInterval`
+- `enableInfiniteScroll`
+- `aspectRatio`
+- `enlargeCenterPage`
+- `viewportFraction`
+- `initialPage`
+- `height`
+- `autoPlayAnimationDuration`
+- `autoPlayCurve`
+- `reverse`
+- `scrollDirection`
+- `padEnds`
+- `pauseAutoPlayOnTouch`
+- `pauseAutoPlayOnManualNavigate`
+- `pageSnapping`
+- `enlargeFactor`
+- `currentIndex`
+- `animateToClosest`
+- `pauseAutoPlayInFiniteScroll`
+- `disableCenter`
+- `enlargeStrategy`
+- `scrollPhysics`
+- `items`
 
-```javascript
-import { useState, useEffect } from 'react';
+## API reference
 
-function GalleryApp() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const carouselRef = useRef(null);
+### Attributes (kebab-case)
 
-  useEffect(() => {
-    const carousel = carouselRef.current;
+| Attribute | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `current-index` | number | 0 | Read/write. Setting triggers a jump. |
+| `options` | string (JSON) | - | Batch config via camelCase keys. |
+| `height` | string | - | Overrides `aspect-ratio` when provided. |
+| `aspect-ratio` | number | 16/9 | Clamped to 0.1-10.0. |
+| `viewport-fraction` | number | 0.8 | Clamped to 0.01-1.0. |
+| `initial-page` | number | 0 | Only used on first build. |
+| `pad-ends` | boolean | true | Adds padding when `viewport-fraction` < 1. |
+| `disable-center` | boolean | false | Disables the Center wrapper. |
+| `enable-infinite-scroll` | boolean | true | Enables circular scrolling. |
+| `animate-to-closest` | boolean | true | Chooses the nearest loop path. |
+| `reverse` | boolean | false | Reverses scroll direction. |
+| `scroll-direction` | string | Axis.horizontal | Accepts `Axis.horizontal`, `Axis.vertical`, `horizontal`, `vertical`. |
+| `page-snapping` | boolean | true | Snaps to page boundaries. |
+| `scroll-physics` | string | - | `clamping`, `bouncing`, `fixed`. |
+| `autoplay` | boolean | false | Enables autoplay. |
+| `autoplay-interval` | number (seconds) | 4.0 | Clamped to 0.5-60.0. |
+| `auto-play-animation-duration` | number (ms) | 800 | Clamped to 100-5000. |
+| `auto-play-curve` | string | Curves.fastOutSlowIn | Accepts Curves.* or short names like `ease`. |
+| `pause-auto-play-on-touch` | boolean | true | Pauses on touch. |
+| `pause-auto-play-on-manual-navigate` | boolean | true | Pauses when calling navigation methods. |
+| `pause-auto-play-in-finite-scroll` | boolean | false | Pauses at the end when infinite scroll is off. |
+| `enlarge-center-page` | boolean | false | Enlarges the active page. |
+| `enlarge-strategy` | string | scale | `scale`, `height`, `zoom`. |
+| `enlarge-factor` | number | 0.3 | Clamped to 0.0-1.0. |
 
-    const handleChange = (e) => {
-      setCurrentIndex(e.detail.index);
-    };
+### Methods
 
-    carousel.addEventListener('change', handleChange);
-    return () => carousel.removeEventListener('change', handleChange);
-  }, []);
+These methods are available on the element instance:
 
-  return (
-    <div>
-      <CarouselSlider ref={carouselRef} autoplay={true}>
-        {images.map((img) => (
-          <img key={img.id} src={img.url} alt={img.alt} />
-        ))}
-      </CarouselSlider>
-      <p>Current slide: {currentIndex + 1}</p>
-    </div>
-  );
-}
-```
+- `next()` - move to the next page (fixed 300ms ease animation)
+- `previous()` - move to the previous page (fixed 300ms ease animation)
+- `jumpToPage(page: number)` - jump without animation
+- `pause()` / `resume()` - pause or resume autoplay
+- `startAutoPlay()` / `stopAutoPlay()` - explicit autoplay control
 
-## Code Generation
+### Events
 
-To generate React/Vue components from this package:
+| Event | Detail | Description |
+| --- | --- | --- |
+| `change` | `{ index, reason }` | Fired when the page changes. |
+| `slidestart` | - | Fired when the user starts dragging. |
+| `slideend` | - | Fired when the user stops dragging. |
+| `pageanimationstart` | `{ from, to }` | Fired when page animation starts. |
+| `pageanimationend` | `{ index }` | Fired when page animation ends. |
+| `autoplaypause` | - | Fired when autoplay is paused. |
+| `autoplayresume` | - | Fired when autoplay resumes. |
+| `scrolled` | `number` | Fired on scroll (throttled to 100ms). |
+| `itemclick` | `{ id }` | Fired when an image item is clicked. |
+| `error` | `{ message, stack? }` | Fired on options parsing errors. |
+
+## Testing
 
 ```bash
-# Install WebF CLI
-npm install -g @openwebf/webf-cli
-
-# Generate React package
-webf codegen webf-carousel-slider-react \
-  --flutter-package-src=./native_uis/webf_carousel_slider \
-  --framework=react
-
-# Generate Vue package
-webf codegen webf-carousel-slider-vue \
-  --flutter-package-src=./native_uis/webf_carousel_slider \
-  --framework=vue
-
-# Publish to npm (optional)
-webf codegen webf-carousel-slider-react \
-  --flutter-package-src=./native_uis/webf_carousel_slider \
-  --framework=react \
-  --publish-to-npm
+flutter test
 ```
-
-## Architecture
-
-This package follows the WebF Hybrid UI architecture:
-
-```
-┌─────────────────────────────────────┐
-│  JavaScript/TypeScript (React/Vue)  │  ← Generated by CLI
-│  @your-org/webf-carousel-slider     │
-├─────────────────────────────────────┤
-│  TypeScript Definitions (.d.ts)     │  ← Type definitions
-│  Carousel slider interfaces         │
-├─────────────────────────────────────┤
-│  Dart (Flutter)                     │  ← This package
-│  CarouselSliderElement wrapper      │
-└─────────────────────────────────────┘
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Built with [WebF](https://openwebf.com/)
-- Based on [carousel_slider_plus](https://pub.dev/packages/carousel_slider_plus)
-- Follows [WebF Hybrid UI Development Guide](https://github.com/openwebf/webf/tree/main/.claude/skills/webf-hybrid-ui-dev)
