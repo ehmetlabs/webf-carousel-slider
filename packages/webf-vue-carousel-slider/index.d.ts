@@ -40,6 +40,7 @@ export type CarouselSliderProps = {
   'autoplay-delay'?: number;
   'autoplay-disable-on-interaction'?: boolean;
   'speed'?: number;
+  'easing'?: string;
   'loop'?: boolean;
   'direction'?: string;
   'slides-per-view'?: number;
@@ -56,6 +57,7 @@ export interface CarouselSliderElement {
   autoplayDelay?: number;
   autoplayDisableOnInteraction?: boolean;
   speed?: number;
+  easing?: string;
   loop?: boolean;
   direction?: string;
   slidesPerView?: number;
@@ -70,11 +72,22 @@ export interface CarouselSliderElement {
   autoplayStop(): void;
 }
 export type CarouselSliderEvents = {
-  change: CustomEvent<any>;
-  changestart: CustomEvent<any>;
-  changeend: CustomEvent<any>;
+  change: CustomEvent<{ index: number; previousIndex: number; reason: CarouselChangeReason }>;
+  changestart: CustomEvent<{ index: number }>;
+  changeend: CustomEvent<{ index: number }>;
   play: Event;
   pause: Event;
+}
+export type CarouselSliderItemProps = {
+  'image-url'?: string;
+  'id'?: string;
+  'class'?: ClassValue;
+  'style'?: StyleValue;
+}
+export interface CarouselSliderItemElement {
+  imageUrl?: string;
+}
+export type CarouselSliderItemEvents = {
 }
 declare const flutterAttached: (typeof import('@openwebf/vue-core-ui')) extends { flutterAttached: infer T } ? T : any;
 declare module '@vue/runtime-core' {
@@ -86,6 +99,11 @@ declare module '@vue/runtime-core' {
       CarouselSliderElement,
       CarouselSliderProps,
       CarouselSliderEvents
+    >
+    'carousel-slider-item': DefineCustomElement<
+      CarouselSliderItemElement,
+      CarouselSliderItemProps,
+      CarouselSliderItemEvents
     >
   }
 }

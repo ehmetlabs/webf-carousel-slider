@@ -4,7 +4,7 @@
   "description": "WebF Custom Element wrapper for carousel_slider_plus. Provides hybrid UI carousel component with Flutter performance and JavaScript API.",
   "main": "",
   "types": "index.d.ts",
-  "files": ["index.d.ts"],
+  "files": ["index.d.ts", "README.md"],
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -3,8 +3,8 @@
  */
 
 
-export { CarouselSlider } from "./lib/src/carousel_slider";
-export * from './types';
 export { CarouselSliderItem } from "./lib/src/carousel_slider_item";
 export type { CarouselSliderItemElement } from "./lib/src/carousel_slider_item";
+export { CarouselSlider } from "./lib/src/carousel_slider";
 export type { CarouselSliderElement } from "./lib/src/carousel_slider";
+export * from './types';
