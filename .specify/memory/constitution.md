@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.0.1
-- Modified principles: None
+- Version change: 1.0.1 → 1.0.2
+- Modified principles: API 双层一致性
 - Added sections: None
 - Removed sections: None
-- Modified sections: Engineering Standards (tsup → tsdown)
+- Modified sections: Core Principles (generated files list refined)
 - Templates requiring updates:
   - ✅ checked (no changes) .specify/templates/plan-template.md
   - ✅ checked (no changes) .specify/templates/tasks-template.md
@@ -28,7 +28,9 @@ Sync Impact Report
 - 禁止手改生成文件（`packages/webf-react-carousel-slider/src/index.ts`、
   `packages/webf-react-carousel-slider/src/types.ts`、
   `native_uis/webf_carousel_slider/lib/src/carousel_slider_bindings_generated.dart`、
-  `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts`）。
+  `native_uis/webf_carousel_slider/lib/src/carousel_slider_item_bindings_generated.dart`）。
+- `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts` 与
+  `native_uis/webf_carousel_slider/lib/src/carousel_slider_item.d.ts` 为手维护定义文件，可直接修改。
 - 理由：避免 Dart/JS 行为漂移，保证接口一致可追踪。
 
 ### WebF 兼容性优先
@@ -80,4 +82,4 @@ Sync Impact Report
 - 审核要求：每个计划文档必须完成 Constitution Check，代码评审需验证原则合规，
   例外情况必须在计划中明确记录并给出理由。
 
-**Version**: 1.0.1 | **Ratified**: TODO(RATIFICATION_DATE): ratification date not recorded | **Last Amended**: 2026-01-13
+**Version**: 1.0.2 | **Ratified**: TODO(RATIFICATION_DATE): ratification date not recorded | **Last Amended**: 2026-01-13

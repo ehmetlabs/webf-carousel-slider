@@ -135,3 +135,9 @@ Source: `@openwebf/claude-code-skills@1.0.2`
 - `webf-quickstart`: `.codex/skills/webf-quickstart/reference.md`
 - `webf-routing-setup`: `.codex/skills/webf-routing-setup/cross-platform.md`, `.codex/skills/webf-routing-setup/examples.md`
 <!-- webf-agents:init end -->
+
+## Active Technologies
+- Dart >=3.0.0 <4.0.0, Flutter >=3.16.0; TypeScript strict mode + webf ^0.24.2; carousel_slider_plus ^7.1.1 (001-carousel-slider-plus-bridge)
+
+## Recent Changes
+- 001-carousel-slider-plus-bridge: Added Dart >=3.0.0 <4.0.0, Flutter >=3.16.0; TypeScript strict mode + webf ^0.24.2; carousel_slider_plus ^7.1.1
