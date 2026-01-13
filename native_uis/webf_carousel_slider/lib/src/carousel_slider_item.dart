@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:webf/css.dart';
 import 'package:webf/dom.dart' as dom;
 import 'package:webf/webf.dart';
+import 'package:webf_carousel_slider/src/carousel_slider_item_bindings_generated.dart';
 
-class WebFCarouselSliderItem extends WidgetElement {
+class WebFCarouselSliderItem extends CarouselSliderItemBindings {
   WebFCarouselSliderItem(super.context);
 
   String? _imageUrl;
