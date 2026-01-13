@@ -1,12 +1,12 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:webf/css.dart';
-import 'package:webf/dom.dart' as dom;
 import 'package:webf/webf.dart';
 
 import 'carousel_slider_bindings_generated.dart';
 import 'config/carousel_config.dart';
 import 'event/event_manager.dart';
+import 'carousel_slider_item.dart';
 import 'utils/type_converter.dart';
 
 /// WebF Custom Element wrapper for carousel_slider_plus.
@@ -455,7 +455,7 @@ class WebFCarouselSliderState extends WebFWidgetElementState {
   List<Widget> _buildItems() {
     final List<Widget> children = [];
     for (var child in widgetElement.childNodes) {
-      if (child is dom.Element) {
+      if (child is WebFCarouselSliderItem) {
         children.add(child.toWidget());
       }
     }
@@ -477,7 +477,7 @@ class WebFCarouselSliderState extends WebFWidgetElementState {
             ),
             SizedBox(height: 8),
             Text(
-              'Add child elements',
+              'Add <webf-carousel-slider-item>',
               style: TextStyle(color: Colors.grey),
             ),
           ],

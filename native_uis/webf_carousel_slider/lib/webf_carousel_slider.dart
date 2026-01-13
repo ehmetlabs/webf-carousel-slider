@@ -32,9 +32,9 @@
 /// ```javascript
 /// // Add to HTML
 /// <webf-carousel-slider autoplay autoplay-delay="3000" speed="300" easing="ease-in-out" slides-per-view="1">
-///   <img src="image1.jpg" />
-///   <img src="image2.jpg" />
-///   <img src="image3.jpg" />
+///   <webf-carousel-slider-item image-url="image1.jpg"></webf-carousel-slider-item>
+///   <webf-carousel-slider-item image-url="image2.jpg"></webf-carousel-slider-item>
+///   <webf-carousel-slider-item image-url="image3.jpg"></webf-carousel-slider-item>
 /// </webf-carousel-slider>
 ///
 /// // In JavaScript
@@ -70,8 +70,10 @@ library;
 
 import 'package:webf/webf.dart';
 import 'src/carousel_slider.dart';
+import 'src/carousel_slider_item.dart';
 
 export 'src/carousel_slider.dart';
+export 'src/carousel_slider_item.dart';
 
 /// Install the WebF Carousel Slider custom element.
 ///
@@ -89,5 +91,8 @@ void installWebFCarouselSlider() {
   // Register the custom element with WebF
   WebF.defineCustomElement('webf-carousel-slider', (context) {
     return WebFCarouselSlider(context);
+  });
+  WebF.defineCustomElement('webf-carousel-slider-item', (context) {
+    return WebFCarouselSliderItem(context);
   });
 }

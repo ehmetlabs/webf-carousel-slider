@@ -58,9 +58,15 @@ void main() {
   centered-slides
   loop
 >
-  <img src="https://example.com/slide-1.jpg" />
-  <img src="https://example.com/slide-2.jpg" />
-  <img src="https://example.com/slide-3.jpg" />
+  <webf-carousel-slider-item
+    image-url="https://example.com/slide-1.jpg"
+  ></webf-carousel-slider-item>
+  <webf-carousel-slider-item
+    image-url="https://example.com/slide-2.jpg"
+  ></webf-carousel-slider-item>
+  <webf-carousel-slider-item image-url="https://example.com/slide-3.jpg">
+    <div class="custom-caption">Custom overlay content</div>
+  </webf-carousel-slider-item>
 </webf-carousel-slider>
 ```
 
@@ -81,6 +87,12 @@ carousel.autoplayStart();
 
 This custom element keeps a Swiper-compatible subset of attributes and methods.
 `easing` is a non-standard extension for WebF.
+
+### Child items
+
+Use `<webf-carousel-slider-item>` as children. Non-item children are ignored.
+Each item supports `image-url` for the image URL and custom elements inside
+the item for advanced layouts.
 
 ### Attributes (kebab-case)
 

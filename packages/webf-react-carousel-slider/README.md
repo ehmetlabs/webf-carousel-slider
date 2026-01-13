@@ -19,7 +19,11 @@ npm install @ehmetlabs/webf-react-carousel-slider
 
 ```tsx
 import React, { useRef } from 'react';
-import { CarouselSlider, CarouselSliderElement } from '@ehmetlabs/webf-react-carousel-slider';
+import {
+  CarouselSlider,
+  CarouselSliderItem,
+  CarouselSliderElement,
+} from '@ehmetlabs/webf-react-carousel-slider';
 
 export function App() {
   const ref = useRef<CarouselSliderElement>(null);
@@ -40,8 +44,10 @@ export function App() {
         console.log(event.detail.index, event.detail.reason);
       }}
     >
-      <img src="https://example.com/1.jpg" />
-      <img src="https://example.com/2.jpg" />
+      <CarouselSliderItem imageUrl="https://example.com/1.jpg" />
+      <CarouselSliderItem imageUrl="https://example.com/2.jpg">
+        <div className="custom-caption">Custom overlay content</div>
+      </CarouselSliderItem>
     </CarouselSlider>
   );
 }
@@ -67,6 +73,18 @@ All props map to kebab-case attributes on `<webf-carousel-slider>` unless noted.
 | `centeredSlides` | boolean | false | `centered-slides` |
 | `initialSlide` | number | 0 | `initial-slide` |
 | `allowTouchMove` | boolean | true | `allow-touch-move` |
+| `id` | string | - | `id` |
+| `className` | string | - | `class` |
+| `style` | React.CSSProperties | - | - |
+| `children` | React.ReactNode | - | - |
+
+### Item props
+
+Use `CarouselSliderItem` as children. Non-item children are ignored.
+
+| Prop | Type | Default | Attribute |
+| --- | --- | --- | --- |
+| `imageUrl` | string | - | `image-url` |
 | `id` | string | - | `id` |
 | `className` | string | - | `class` |
 | `style` | React.CSSProperties | - | - |
