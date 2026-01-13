@@ -1,20 +1,20 @@
 <!--
 Sync Impact Report
-- Version change: N/A (template) → 1.0.0
-- Modified principles: Placeholder set → API 双层一致性; WebF 兼容性优先; 性能与依赖最小化;
-  可测试性与回归防护; 文档与示例同步
-- Added sections: None (filled template sections)
+- Version change: 1.0.0 → 1.0.1
+- Modified principles: None
+- Added sections: None
 - Removed sections: None
+- Modified sections: Engineering Standards (tsup → tsdown)
 - Templates requiring updates:
-  - ✅ .specify/templates/plan-template.md
-  - ✅ .specify/templates/tasks-template.md
+  - ✅ checked (no changes) .specify/templates/plan-template.md
+  - ✅ checked (no changes) .specify/templates/tasks-template.md
   - ✅ checked (no changes) .specify/templates/spec-template.md
   - ✅ checked (no changes) .specify/templates/checklist-template.md
   - ✅ checked (no changes) .specify/templates/agent-file-template.md
   - ⚠ pending .specify/templates/commands/*.md (directory missing)
 - Runtime guidance checked:
-  - ✅ CLAUDE.md (no changes)
-  - ✅ native_uis/webf_carousel_slider/README.md (no changes)
+  - ✅ checked (no changes) CLAUDE.md
+  - ✅ checked (no changes) native_uis/webf_carousel_slider/README.md
 - Follow-up TODOs:
   - TODO(RATIFICATION_DATE): ratification date not recorded in repo
 -->
@@ -58,7 +58,7 @@ Sync Impact Report
 
 - Dart/Flutter：Dart `>=3.0.0 <4.0.0`，Flutter `>=3.16.0`，使用
   `flutter_lints`，遵循 Effective Dart。
-- TypeScript：`strict: true`，通过 `tsup` 构建并输出到 `dist/`。
+- TypeScript：`strict: true`，通过 `tsdown` 构建并输出到 `dist/`。
 - 模块边界：Flutter 实现在 `native_uis/`，绑定包在 `packages/`，避免跨模块耦合。
 - 代码生成：通过 `webf codegen` 生成绑定文件，保留生成文件头部标记。
 
@@ -80,4 +80,4 @@ Sync Impact Report
 - 审核要求：每个计划文档必须完成 Constitution Check，代码评审需验证原则合规，
   例外情况必须在计划中明确记录并给出理由。
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): ratification date not recorded | **Last Amended**: 2026-01-08
+**Version**: 1.0.1 | **Ratified**: TODO(RATIFICATION_DATE): ratification date not recorded | **Last Amended**: 2026-01-13
