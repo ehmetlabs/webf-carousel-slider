@@ -20,6 +20,12 @@ A WebF carousel custom element implemented in Flutter, with a React wrapper for 
 - Flutter custom element: `native_uis/webf_carousel_slider/README.md`
 - React wrapper: `packages/webf-react-carousel-slider/README.md`
 
+## Example
+
+Minimal WebF example:
+- `native_uis/webf_carousel_slider/example/lib/main.dart`
+- `native_uis/webf_carousel_slider/example/assets/index.html`
+
 ## Build and test
 
 - Flutter dependencies + tests:

@@ -53,21 +53,21 @@ void main() {
   autoplay
   autoplay-delay="3000"
   speed="300"
-  easing="ease-in-out"
-  slides-per-view="1"
-  centered-slides
   loop
 >
-  <webf-carousel-slider-item
-    image-url="https://example.com/slide-1.jpg"
-  ></webf-carousel-slider-item>
-  <webf-carousel-slider-item
-    image-url="https://example.com/slide-2.jpg"
-  ></webf-carousel-slider-item>
-  <webf-carousel-slider-item image-url="https://example.com/slide-3.jpg">
-    <div class="custom-caption">Custom overlay content</div>
-  </webf-carousel-slider-item>
+  <webf-carousel-slider-item image-url="https://example.com/slide-1.jpg"></webf-carousel-slider-item>
+  <webf-carousel-slider-item image-url="https://example.com/slide-2.jpg"></webf-carousel-slider-item>
+  <webf-carousel-slider-item image-url="https://example.com/slide-3.jpg"></webf-carousel-slider-item>
 </webf-carousel-slider>
+```
+
+Ensure the slider and items have an explicit height in CSS:
+
+```css
+webf-carousel-slider,
+webf-carousel-slider-item {
+  height: 220px;
+}
 ```
 
 ```javascript
@@ -135,6 +135,11 @@ These methods are available on the element instance:
 | `changeend` | `{ index }` | Fired when the user ends dragging. |
 | `play` | - | Fired when autoplay starts. |
 | `pause` | - | Fired when autoplay pauses. |
+
+## Example
+
+- HTML: `example/assets/index.html`
+- Flutter: `example/lib/main.dart`
 
 ## WebF async rendering note
 
