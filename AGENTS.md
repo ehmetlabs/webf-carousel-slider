@@ -1,47 +1,113 @@
 # Repository Guidelines
 
-This repository provides a WebF hybrid UI carousel: a Flutter/Dart custom element and a React/TypeScript wrapper. Keep changes scoped to the relevant module and update docs/tests when APIs change.
+本仓库是 WebF hybrid UI carousel：Flutter/Dart 自定义元素 + React/Vue TypeScript 包装层。目标是最小变更、保守修复、避免改动生成文件。
 
-## Project Structure & Module Organization
+## Project Structure
 
-- `native_uis/webf_carousel_slider/`: Flutter package that implements the WebF custom element.
-  - `lib/src/`: Core implementation, config, event handling, and bindings.
-  - `test/`: Dart/Flutter unit and widget tests.
-  - `example/`: Demo app and `assets/index.html`.
-- `packages/webf-react-carousel-slider/`: TypeScript wrapper package.
-  - `src/index.ts`: generated entry file.
-  - `src/types.ts`: generated type declarations.
-  - `tsup.config.ts`: bundling configuration.
-- Root-level docs live in `CLAUDE.md` and module READMEs.
+- `native_uis/webf_carousel_slider/`: Flutter 包，包含 WebF 自定义元素实现。
+  - `lib/src/`: 组件实现、配置、事件、绑定。
+  - `test/`: Dart/Flutter 单元/组件测试。
+  - `example/`: 示例应用与 `assets/index.html`。
+- `packages/webf-react-carousel-slider/`: React/TS 包装层。
+  - `src/index.ts`: 生成文件，禁止手改。
+  - `src/types.ts`: 生成文件，禁止手改。
+- `packages/webf-vue-carousel-slider/`: Vue/TS 声明包（无构建脚本）。
+- 根级文档：`README.md`、`CLAUDE.md`、本文件。
 
-## Build, Test, and Development Commands
+## Build / Test / Lint Commands
 
-- Flutter deps: `cd native_uis/webf_carousel_slider && flutter pub get`
-- Flutter tests: `cd native_uis/webf_carousel_slider && flutter test`
-- React/TS build: `cd packages/webf-react-carousel-slider && npm install && npm run build`
-- Codegen (from README): `webf codegen ... --flutter-package-src=./native_uis/webf_carousel_slider`
+### Flutter (native_uis/webf_carousel_slider)
 
-## Coding Style & Naming Conventions
+- 安装依赖：
+  - `cd native_uis/webf_carousel_slider && flutter pub get`
+- 运行全部测试：
+  - `cd native_uis/webf_carousel_slider && flutter test`
+- 运行单个测试文件（单测入口）：
+  - `cd native_uis/webf_carousel_slider && flutter test test/<file>_test.dart`
+- 仅运行某个测试名：
+  - `cd native_uis/webf_carousel_slider && flutter test --name "<test name>"`
 
-- Dart follows `flutter_lints`; keep files `lower_snake_case`, types `UpperCamelCase`, members `lowerCamelCase`.
-- TypeScript uses `tsconfig.json` with `strict: true`; keep exports explicit and align with existing naming in `src/types.ts`.
-- Generated files are marked in headers (e.g., `src/index.ts`, `src/types.ts`, `carousel_slider_bindings_generated.dart`)—avoid manual edits; regenerate instead.
+### React package (packages/webf-react-carousel-slider)
+
+- 安装依赖 + 构建：
+  - `cd packages/webf-react-carousel-slider && npm install && npm run build`
+- 构建脚本：`npm run build` -> `tsdown`
+
+### Vue package (packages/webf-vue-carousel-slider)
+
+- 仅包含类型声明与依赖，无 build/lint/test 脚本。
+
+### Codegen
+
+- 生成文件禁止手改（见下方 Generated Files）。
+- 使用 WebF CLI：
+  - `webf codegen ... --flutter-package-src=./native_uis/webf_carousel_slider`
+
+### Lint / Format
+
+- Dart lint：`analysis_options.yaml` 使用 `flutter_lints` 默认规则。
+- 未发现 ESLint / Prettier / EditorConfig / CI lint 脚本。
+- TypeScript 主要依赖 `tsconfig.json` 的 `strict` 约束。
+
+## Code Style & Conventions
+
+### Dart / Flutter
+
+- Lint：`native_uis/webf_carousel_slider/analysis_options.yaml` 引用 `flutter_lints`。
+- 命名：
+  - 文件：`lower_snake_case`
+  - 类型：`UpperCamelCase`
+  - 成员/变量/方法：`lowerCamelCase`
+- 错误处理：
+  - 避免吞异常；必要时记录或向上抛出。
+  - 优先与现有 WebF API 兼容保持一致。
+- 生成代码：`carousel_slider_bindings_generated.dart` 禁止手改。
+
+### TypeScript (React/Vue packages)
+
+- `strict: true`（React 与 Vue 包均启用）。
+- React 包：`jsx: react-jsx`，有本地类型映射到 `@types/react`。
+- Vue 包：`noImplicitAny: true`。
+- 导出：保持显式导出，命名与 `src/types.ts` 一致。
+- 错误处理：无 ESLint 约束，遵循 TS strict，避免 `any` 与静默 catch。
+
+### Imports & Formatting
+
+- 未配置 ESLint/Prettier，保持现有文件风格与排序方式。
+- 如需新增规则，先在仓库内统一配置后再应用。
+
+## Generated Files (Do Not Edit)
+
+以下文件为生成产物，禁止直接修改：
+
+- `native_uis/webf_carousel_slider/lib/src/carousel_slider_bindings_generated.dart`
+- `packages/webf-react-carousel-slider/src/index.ts`
+- `packages/webf-react-carousel-slider/src/types.ts`
+
+修改 API 时：更新源文件 + 重新 codegen，再同步包说明文档。
 
 ## Testing Guidelines
 
-- Primary tests are in `native_uis/webf_carousel_slider/test/` and run via `flutter test`.
-- If you add new Dart behavior, add or update tests in the same module.
-- No JS test runner is configured; include setup notes if you introduce one.
+- Flutter 改动需在 `native_uis/webf_carousel_slider/test/` 补充或更新测试。
+- 无 JS 测试框架；如引入需更新 README 与本文件命令区。
+- 测试与构建命令执行结果需在 PR 描述中提供。
 
-## Commit & Pull Request Guidelines
+## Commit & PR Guidelines
 
-- Commit history uses emoji + conventional style: `✨ feat(scope): message`, `♻️ refactor(scope): ...`, `📝 docs(scope): ...`. Messages can be Chinese or English; keep scope short.
-- PRs should include: concise summary, test evidence (commands + results), and screenshots/GIFs for UI changes. Update README/API docs when public behavior changes.
+- Commit 格式：`✨ feat(scope): message` / `♻️ refactor(scope): ...` / `📝 docs(scope): ...`
+- 语言：中文或英文均可，scope 简短。
+- PR 需包含：摘要、测试证据（命令+结果），UI 变更需截图/GIF。
 
-## Agent-Specific Notes
+## WebF Notes
 
-- Prefer minimal changes (KISS/YAGNI) and keep shared logic centralized (DRY).
-- When touching WebF APIs or bindings, verify compatibility in both Dart and TypeScript layers.
+- WebF 异步布局：测量尺寸需等待 `onscreen` 事件。
+- 变更 WebF API 或 bindings 时，需同时验证 Dart + TS 层兼容。
+
+## External Agent Notes
+
+- 保持变更最小化（KISS/YAGNI），避免顺手重构。
+- 不要在修复 Bug 时顺带做大范围重构。
+- 不要提交生成文件修改，除非由 codegen 自动产出。
 
 <!-- webf-agents:init start -->
 ## WebF Claude Code Skills
@@ -54,10 +120,10 @@ Source: `@openwebf/claude-code-skills@1.0.2`
 - `webf-hybrid-ui-dev` — Develop custom native/hybrid UI libraries based on Flutter widgets for WebF. Create reusable component libraries that wrap Flutter widgets as web-accessible custom elements. Use when building UI libraries, wrapping Flutter packages, or creating native component systems. (`.codex/skills/webf-hybrid-ui-dev/SKILL.md`)
 - `webf-infinite-scrolling` — Create high-performance infinite scrolling lists with pull-to-refresh and load-more capabilities using WebFListView. Use when building feed-style UIs, product catalogs, chat messages, or any scrollable list that needs optimal performance with large datasets. (`.codex/skills/webf-infinite-scrolling/SKILL.md`)
 - `webf-native-plugin-dev` — Develop custom WebF native plugins based on Flutter packages. Create reusable plugins that wrap Flutter/platform capabilities as JavaScript APIs. Use when building plugins for native features like camera, payments, sensors, file access, or wrapping existing Flutter packages. (`.codex/skills/webf-native-plugin-dev/SKILL.md`)
-- `webf-native-plugins` — Install WebF native plugins to access platform capabilities like sharing, payment, camera, geolocation, and more. Use when building features that require native device APIs beyond standard web APIs. (`.codex/skills/webf-native-plugins/SKILL.md`)
-- `webf-native-ui` — Setup and use WebF's Cupertino UI library to build native iOS-style UIs with pre-built components instead of crafting everything with HTML/CSS. Use when building iOS apps, adding native UI components, or improving UI performance. (`.codex/skills/webf-native-ui/SKILL.md`)
-- `webf-quickstart` — Get started with WebF development - setup WebF Go, create a React/Vue/Svelte project with Vite, and load your first app. Use when starting a new WebF project, onboarding new developers, or setting up development environment. (`.codex/skills/webf-quickstart/SKILL.md`)
-- `webf-routing-setup` — Setup hybrid routing with native screen transitions in WebF - configure navigation using WebF routing instead of SPA routing. Use when setting up navigation, implementing multi-screen apps, or when react-router-dom/vue-router doesn't work as expected. (`.codex/skills/webf-routing-setup/SKILL.md`)
+- `webf-native-plugins` — Install WebF native plugins to access platform capabilities like sharing, payment, camera, geolocation, and more. Use when building features that require native device APIs beyond standard web APIs. (`.codex/skills/webf-native-plugins/reference.md`)
+- `webf-native-ui` — Setup and use WebF's Cupertino UI library to build native iOS-style UIs with pre-built components instead of crafting everything with HTML/CSS. Use when building iOS apps, adding native UI components, or improving UI performance. (`.codex/skills/webf-native-ui/reference.md`)
+- `webf-quickstart` — Get started with WebF development - setup WebF Go, create a React/Vue/Svelte project with Vite, and load your first app. Use when starting a new WebF project, onboarding new developers, or setting up development environment. (`.codex/skills/webf-quickstart/reference.md`)
+- `webf-routing-setup` — Setup hybrid routing with native screen transitions in WebF - configure navigation using WebF routing instead of SPA routing. Use when setting up navigation, implementing multi-screen apps, or when react-router-dom/vue-router doesn't work as expected. (`.codex/skills/webf-routing-setup/examples.md`)
 
 ### References
 - `webf-api-compatibility`: `.codex/skills/webf-api-compatibility/alternatives.md`, `.codex/skills/webf-api-compatibility/reference.md`
