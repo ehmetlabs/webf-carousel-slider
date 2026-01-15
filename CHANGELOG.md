@@ -1,4 +1,4 @@
-## 1.0.0 - 2026-01-12
+## 0.1.0 - 2026-01-12
 
 ### Breaking
 - None
@@ -8,7 +8,7 @@
 - Add WebF code skills and speckit commands
 - Initialize WebF carousel slider plugin project
 - Add spec workflow templates
-- Publish WebF carousel slider 1.0.0
+- Publish WebF carousel slider 0.1.0
 - Add comprehensive widget and options tests
 - Add WebF carousel slider component
 - Initialize AI context and project documentation
