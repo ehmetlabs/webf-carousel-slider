@@ -95,4 +95,12 @@ void installWebFCarouselSlider() {
   WebF.defineCustomElement('webf-carousel-slider-item', (context) {
     return WebFCarouselSliderItem(context);
   });
+
+  // Backward compatibility for generated React/Vue wrappers.
+  WebF.defineCustomElement('carousel-slider', (context) {
+    return WebFCarouselSlider(context);
+  });
+  WebF.defineCustomElement('carousel-slider-item', (context) {
+    return WebFCarouselSliderItem(context);
+  });
 }
