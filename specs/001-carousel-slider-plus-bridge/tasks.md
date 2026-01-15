@@ -28,10 +28,10 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create API inventory for carousel_slider_plus in `specs/001-carousel-slider-plus-bridge/api-inventory.md`
-- [ ] T002 Create API coverage checklist template in `specs/001-carousel-slider-plus-bridge/api-coverage.md`
-- [ ] T003 [P] Snapshot current JS bindings in `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts` (supports FR-001/FR-002)
-- [ ] T004 [P] Snapshot current JS item bindings in `native_uis/webf_carousel_slider/lib/src/carousel_slider_item.d.ts` (supports FR-001/FR-002)
+- [x] T001 Create API inventory for carousel_slider_plus in `specs/001-carousel-slider-plus-bridge/api-inventory.md`
+- [x] T002 Create API coverage checklist template in `specs/001-carousel-slider-plus-bridge/api-coverage.md`
+- [x] T003 [P] Snapshot current JS bindings in `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts` (supports FR-001/FR-002)
+- [x] T004 [P] Snapshot current JS item bindings in `native_uis/webf_carousel_slider/lib/src/carousel_slider_item.d.ts` (supports FR-001/FR-002)
 
 ---
 
@@ -41,9 +41,9 @@ description: "Task list template for feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Build source-to-bridge mapping table in `specs/001-carousel-slider-plus-bridge/api-coverage.md` (source API ↔ JS API)
-- [ ] T006 [P] Identify missing/extra APIs and annotate gaps in `specs/001-carousel-slider-plus-bridge/api-coverage.md`
-- [ ] T007 Define verification steps per API in `specs/001-carousel-slider-plus-bridge/api-coverage.md`
+- [x] T005 Build source-to-bridge mapping table in `specs/001-carousel-slider-plus-bridge/api-coverage.md` (source API ↔ JS API)
+- [x] T006 [P] Identify missing/extra APIs and annotate gaps in `specs/001-carousel-slider-plus-bridge/api-coverage.md`
+- [x] T007 Define verification steps per API in `specs/001-carousel-slider-plus-bridge/api-coverage.md`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -59,17 +59,18 @@ description: "Task list template for feature implementation"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T008 [P] [US1] Add API parity tests in `native_uis/webf_carousel_slider/test/carousel_slider_api_parity_test.dart`
+- [ ] T008 [P] [US1] Add API parity tests in `native_uis/webf_carousel_slider/test/carousel_slider_api_parity_test.dart` (include negative assertions that legacy names are not exposed)
 - [ ] T009 [P] [US1] Add event payload tests in `native_uis/webf_carousel_slider/test/carousel_slider_events_test.dart`
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Align slider TypeScript definitions in `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts`
-- [ ] T011 [US1] Align item TypeScript definitions in `native_uis/webf_carousel_slider/lib/src/carousel_slider_item.d.ts`
 - [ ] T012 [US1] Update slider bindings implementation in `native_uis/webf_carousel_slider/lib/src/carousel_slider.dart`
 - [ ] T013 [US1] Update item bindings implementation in `native_uis/webf_carousel_slider/lib/src/carousel_slider_item.dart`
 - [ ] T014 [US1] Update options mapping in `native_uis/webf_carousel_slider/lib/src/config/carousel_config.dart`
 - [ ] T015 [US1] Update event dispatch to match source semantics in `native_uis/webf_carousel_slider/lib/src/event/event_manager.dart`
+- [ ] T010 [US1] Align slider TypeScript definitions in `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts`
+- [ ] T011 [US1] Align item TypeScript definitions in `native_uis/webf_carousel_slider/lib/src/carousel_slider_item.d.ts`
+- [ ] T011a [US1] Remove legacy/alias API names from `native_uis/webf_carousel_slider/lib/src/carousel_slider.d.ts`, `native_uis/webf_carousel_slider/lib/src/carousel_slider_item.d.ts`, and related Dart bindings
 
 **Checkpoint**: User Story 1 should be fully functional and testable independently
 
@@ -83,7 +84,7 @@ description: "Task list template for feature implementation"
 
 ### Tests for User Story 2 (REQUIRED) ⚠️
 
-- [ ] T016 [P] [US2] Add behavior consistency tests in `native_uis/webf_carousel_slider/test/carousel_slider_behavior_test.dart`
+- [ ] T016 [P] [US2] Add behavior consistency tests in `native_uis/webf_carousel_slider/test/carousel_slider_behavior_test.dart` (覆盖关键行为清单与边界组合)
 
 ### Implementation for User Story 2
 
@@ -116,12 +117,17 @@ description: "Task list template for feature implementation"
 
 - [ ] T022 [P] Update API documentation in `native_uis/webf_carousel_slider/README.md`
 - [ ] T023 [P] Update example usage in `native_uis/webf_carousel_slider/example/assets/index.html`
-- [ ] T024 Run WebF codegen for bindings (if .d.ts changed) and verify generated files
+- [ ] T024 Run WebF codegen for bindings (if .d.ts changed) and verify generated files: `packages/webf-react-carousel-slider/src/index.ts`, `packages/webf-react-carousel-slider/src/types.ts`, `native_uis/webf_carousel_slider/lib/src/carousel_slider_bindings_generated.dart`, `native_uis/webf_carousel_slider/lib/src/carousel_slider_item_bindings_generated.dart`
+- [ ] T024a Run `npm run build` in `packages/webf-react-carousel-slider/` if bindings/types changed
 - [ ] T025 Run `flutter test` for `native_uis/webf_carousel_slider/`
 - [ ] T026 Run quickstart validation steps from `specs/001-carousel-slider-plus-bridge/quickstart.md`
-- [ ] T027 [P] 记录性能验证方法与阈值（例：连续滑动 10 次无可感知卡顿）并写入 `specs/001-carousel-slider-plus-bridge/api-coverage.md`
-- [ ] T028 [P] Record dependency impact assessment (if any) in `specs/001-carousel-slider-plus-bridge/api-inventory.md`
+- [ ] T027 [P] 记录性能验证方法与阈值并执行验证与结果记录（默认配置连续滑动 10 次，目标 60 fps）写入 `specs/001-carousel-slider-plus-bridge/api-coverage.md`
+- [ ] T028 [P] Verify no new runtime dependencies were added by diffing `native_uis/webf_carousel_slider/pubspec.yaml` and `packages/webf-react-carousel-slider/package.json`, then record impact assessment in `specs/001-carousel-slider-plus-bridge/api-inventory.md`
 - [ ] T029 [P] Record official API source links and version snapshot in `specs/001-carousel-slider-plus-bridge/api-inventory.md`
+- [ ] T030 Update `native_uis/webf_carousel_slider/CHANGELOG.md` with breaking changes summary and migration notes
+- [ ] T033 Record WebF compatibility checks for any new DOM/CSS/JS API usage (with support references) in `specs/001-carousel-slider-plus-bridge/api-coverage.md`
+- [ ] T034 Document strict original-name policy and legacy API removal in `native_uis/webf_carousel_slider/README.md` (avoid duplicating CHANGELOG)
+- [ ] T035 Update versions in `native_uis/webf_carousel_slider/pubspec.yaml` and `packages/webf-react-carousel-slider/package.json` for breaking changes
 
 ---
 
@@ -145,8 +151,9 @@ description: "Task list template for feature implementation"
 ### Within Each User Story
 
 - Tests (if included) MUST be written and FAIL before implementation
-- Definitions before bindings
-- Bindings before event dispatch verification
+- 先更新 Dart 行为与配置（carousel_slider.dart / carousel_slider_item.dart / config / event / utils）
+- 再更新 TypeScript 定义与绑定并执行 codegen
+- 最后同步文档与示例
 - Story complete before moving to next priority
 
 ### Parallel Opportunities

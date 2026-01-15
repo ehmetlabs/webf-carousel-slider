@@ -16,7 +16,7 @@
 
 ### User Story 1 - JS API 原样可用 (Priority: P1)
 
-作为使用者，我希望在 JS 侧直接使用 `carousel_slider_plus` 的所有接口、参数、事件且命名完全一致，这样无需改动现有调用代码即可工作。
+作为使用者，我希望在 JS 侧直接使用 `carousel_slider_plus` 的所有接口、参数、事件且命名完全一致。
 
 **Why this priority**: 这是核心价值，决定是否能“原封不动”复用现有 API。  
 
@@ -41,6 +41,12 @@
 
 1. **Given** 任意原始参数输入，**When** 传入到当前实现，**Then** 行为与原始组件一致，且不发生额外格式转换。
 
+**关键行为清单（必须覆盖）**：
+- autoplay / autoPlayInterval / autoPlayAnimationDuration
+- enableInfiniteScroll / reverse / enlargeCenterPage
+- initialPage / viewportFraction / aspectRatio
+- pageView 的 onPageChanged 语义与触发频率
+
 ---
 
 ### User Story 3 - 维护者可验证完整覆盖 (Priority: P3)
@@ -63,6 +69,12 @@
 - 当事件触发顺序或频率在边界条件下变化时，系统必须与原始事件语义一致。
 - 当调用顺序与原始推荐顺序不一致时，系统必须保持与原始组件一致的容错或失败行为。
 
+## Clarifications
+
+### Session 2026-01-14
+
+- Q: 迁移说明是否需要保留？（考虑“不需要向后兼容/旧命名”） → A: 迁移说明要求保留（遵循宪章）；如发生破坏性变更，必须更新 CHANGELOG 并提供迁移说明。
+
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
@@ -71,12 +83,13 @@
 - **FR-002**: 系统 MUST 保持所有接口、参数、事件名称与原始命名完全一致。
 - **FR-003**: 系统 MUST 保持行为语义与原始组件一致，不引入额外封装、转移或转换。
 - **FR-004**: 系统 MUST 提供一份可核对的 API 覆盖清单，用于验证完整性。
-- **FR-005**: 系统 MUST 在不改变对外行为的前提下完成重构、优化与清理。
+- **FR-005**: 系统 MUST 在不改变对外行为的前提下完成重构与清理，范围限定于 `native_uis/webf_carousel_slider/lib/src/{config,controller,event,utils}`；不新增/改变对外 API；仅移除冗余转换与未使用逻辑并保持现有测试覆盖。
 - **FR-006**: 系统 MUST 在覆盖清单中标注每个接口/事件的验证方式（示例调用或事件触发步骤）。
+- **FR-007**: 系统 MUST 移除任何非 `carousel_slider_plus` 原始命名的对外接口，禁止保留旧名作为公开 API。
 
 ### Non-Functional Requirements
 
-- **NFR-001**: 系统 MUST 保持轮播交互流畅性，基准场景下不出现可感知卡顿。
+- **NFR-001**: 系统 MUST 保持轮播交互流畅性（基准场景：默认配置连续滑动 10 次，目标 60 fps，无可感知卡顿）。
 - **NFR-002**: 系统 MUST 避免引入新的运行时依赖，除非在计划中明确必要性与收益。
 - **NFR-003**: 系统 MUST 保持 WebF 兼容性，不引入未支持的 Web API。
 

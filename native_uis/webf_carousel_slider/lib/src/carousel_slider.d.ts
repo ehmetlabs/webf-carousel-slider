@@ -8,84 +8,172 @@
 /**
  * Reason for page change.
  */
-export type CarouselChangeReason = 'autoplay' | 'drag' | 'api';
+export type CarouselPageChangedReason = 'timed' | 'manual' | 'controller';
+
+/**
+ * Strategy for enlarging center page.
+ */
+export type CenterPageEnlargeStrategy = 'scale' | 'height' | 'zoom';
 
 /**
  * Properties for <webf-carousel-slider>.
  */
 interface CarouselSliderProperties {
   /**
-   * Whether to autoplay.
-   * Default: false
+   * Set carousel height. Overrides aspectRatio if provided.
    */
-  autoplay?: boolean;
+  height?: number;
 
   /**
-   * Autoplay delay in milliseconds.
-   * Default: 3000
+   * Aspect ratio when height is not set.
+   * Default: 16 / 9
    */
-  autoplayDelay?: number;
+  aspectRatio?: number;
 
   /**
-   * Disable autoplay on interaction.
-   * Default: false
+   * The fraction of the viewport that each page should occupy.
+   * Default: 0.8 (carousel_slider_plus default)
    */
-  autoplayDisableOnInteraction?: boolean;
+  viewportFraction?: number;
 
   /**
-   * Transition speed in milliseconds.
-   * Default: 300
-   */
-  speed?: number;
-
-  /**
-   * Transition easing.
-   * Supported: 'ease', 'linear', 'ease-in', 'ease-out', 'ease-in-out',
-   * 'fast-out-slow-in', 'cubic-bezier(x1, y1, x2, y2)'.
-   * Default: 'ease'
-   */
-  easing?: string;
-
-  /**
-   * Whether to loop infinitely.
-   * Default: false
-   */
-  loop?: boolean;
-
-  /**
-   * Scroll direction.
-   * Default: 'horizontal'
-   */
-  direction?: string;
-
-  /**
-   * Number of slides per view.
-   * Default: 1
-   */
-  slidesPerView?: number;
-
-  /**
-   * Whether to center slides in view.
-   * Default: false
-   */
-  centeredSlides?: boolean;
-
-  /**
-   * Initial slide index.
+   * The initial page to show.
    * Default: 0
    */
-  initialSlide?: number;
+  initialPage?: number;
 
   /**
-   * Whether to allow touch dragging.
+   * Determines if carousel should loop infinitely.
    * Default: true
    */
-  allowTouchMove?: boolean;
+  enableInfiniteScroll?: boolean;
 
   /**
-   * Current active index (read-only).
+   * Loop to the closest occurrence of requested page.
+   * Default: true
    */
-  readonly activeIndex?: number;
+  animateToClosest?: boolean;
+
+  /**
+   * Reverse the order of items.
+   * Default: false
+   */
+  reverse?: boolean;
+
+  /**
+   * Enables auto play.
+   * Default: false
+   */
+  autoPlay?: boolean;
+
+  /**
+   * Frequency of slides in milliseconds.
+   * Default: 4000
+   */
+  autoPlayInterval?: number;
+
+  /**
+   * Animation duration between pages in milliseconds.
+   * Default: 800
+   */
+  autoPlayAnimationDuration?: number;
+
+  /**
+   * Animation curve name.
+   * Default: 'fast-out-slow-in'
+   */
+  autoPlayCurve?: string;
+
+  /**
+   * Whether current page should be larger than side images.
+   * Default: false
+   */
+  enlargeCenterPage?: boolean;
+
+  /**
+   * Called whenever the page in the center changes.
+   */
+  onPageChanged?: (index: number, reason: CarouselPageChangedReason) => void;
+
+  /**
+   * Called whenever the carousel is scrolled.
+   */
+  onScrolled?: (value: number | null) => void;
+
+  /**
+   * Scroll physics identifier.
+   */
+  scrollPhysics?: string;
+
+  /**
+   * Set to false to disable page snapping.
+   * Default: true
+   */
+  pageSnapping?: boolean;
+
+  /**
+   * Axis along which the page view scrolls.
+   * Default: 'horizontal'
+   */
+  scrollDirection?: 'horizontal' | 'vertical';
+
+  /**
+   * Pause auto play on touch.
+   * Default: true
+   */
+  pauseAutoPlayOnTouch?: boolean;
+
+  /**
+   * Pause auto play on manual navigation.
+   * Default: true
+   */
+  pauseAutoPlayOnManualNavigate?: boolean;
+
+  /**
+   * When finite scroll, decide whether auto play loops to first item.
+   * Default: false
+   */
+  pauseAutoPlayInFiniteScroll?: boolean;
+
+  /**
+   * PageStorageKey identifier.
+   */
+  pageViewKey?: string;
+
+  /**
+   * Determine which method to enlarge the center page.
+   * Default: 'scale'
+   */
+  enlargeStrategy?: CenterPageEnlargeStrategy;
+
+  /**
+   * How much the pages next to the center page will be scaled down.
+   * Default: 0.3
+   */
+  enlargeFactor?: number;
+
+  /**
+   * Whether to disable the Center widget for each slide.
+   * Default: false
+   */
+  disableCenter?: boolean;
+
+  /**
+   * Whether to add padding to both ends of the list.
+   * Default: true
+   */
+  padEnds?: boolean;
+
+  /**
+   * Clip behavior name.
+   * Default: 'hardEdge'
+   */
+  clipBehavior?: string;
+
+  /**
+   * Current real page index (read-only).
+   */
+  readonly realPage?: number;
 }
 
 /**
@@ -93,75 +181,53 @@ interface CarouselSliderProperties {
  */
 interface CarouselSliderMethods {
   /**
-   * Slide to the next item.
+   * Animates to the next page.
    */
-  slideNext(speed?: number): void;
+  nextPage(duration?: number, curve?: string): void;
 
   /**
-   * Slide to the previous item.
+   * Animates to the previous page.
    */
-  slidePrev(speed?: number): void;
+  previousPage(duration?: number, curve?: string): void;
 
   /**
-   * Slide to a specific index.
+   * Jumps to a specific page without animation.
    */
-  slideTo(index: number, speed?: number): void;
+  jumpToPage(page: number): void;
 
   /**
-   * Start autoplay.
+   * Animates to a specific page.
    */
-  autoplayStart(): void;
+  animateToPage(page: number, duration?: number, curve?: string): void;
 
   /**
-   * Stop autoplay.
+   * Starts auto play.
    */
-  autoplayStop(): void;
+  startAutoPlay(): void;
+
+  /**
+   * Stops auto play.
+   */
+  stopAutoPlay(): void;
 }
 
 /**
  * Events for <webf-carousel-slider>.
  */
-interface CarouselSliderEvents {
-  /**
-   * Fired when the current slide changes.
-   */
-  change: CustomEvent<{
-    index: number;
-    previousIndex: number;
-    reason: CarouselChangeReason;
-  }>;
-
-  /**
-   * Fired when user starts dragging.
-   */
-  changestart: CustomEvent<{ index: number }>;
-
-  /**
-   * Fired when user ends dragging.
-   */
-  changeend: CustomEvent<{ index: number }>;
-
-  /**
-   * Fired when autoplay starts.
-   */
-  play: Event;
-
-  /**
-   * Fired when autoplay pauses.
-   */
-  pause: Event;
-}
+interface CarouselSliderEvents {}
 
 declare global {
   interface HTMLElementTagNameMap {
     'webf-carousel-slider': HTMLElement &
       CarouselSliderProperties &
-      CarouselSliderMethods;
+      CarouselSliderMethods &
+      CarouselSliderEvents;
   }
 
   interface HTMLElement extends
     CarouselSliderProperties,
-    CarouselSliderMethods {}
+    CarouselSliderMethods,
+    CarouselSliderEvents {}
 }
 
 export {};

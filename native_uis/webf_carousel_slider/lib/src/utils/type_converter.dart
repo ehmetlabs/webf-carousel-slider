@@ -75,9 +75,62 @@ class TypeConverter {
     return strValue.contains('vertical') ? Axis.vertical : Axis.horizontal;
   }
 
+  /// 解析 clipBehavior 字符串为 Clip
+  static Clip parseClipBehavior(
+    dynamic value, {
+    Clip fallback = Clip.hardEdge,
+  }) {
+    if (value == null) return fallback;
+    if (value is Clip) return value;
+
+    final strValue = value.toString().trim().toLowerCase();
+    if (strValue.isEmpty) return fallback;
+
+    switch (strValue) {
+      case 'none':
+        return Clip.none;
+      case 'anti-alias':
+      case 'antialias':
+        return Clip.antiAlias;
+      case 'anti-alias-with-save-layer':
+      case 'antialiaswithsavelayer':
+        return Clip.antiAliasWithSaveLayer;
+      case 'hard-edge':
+      case 'hardedge':
+      default:
+        return Clip.hardEdge;
+    }
+  }
+
+  /// 标准化 clipBehavior 名称
+  static String normalizeClipBehaviorName(
+    dynamic value, {
+    String fallback = 'hardEdge',
+  }) {
+    if (value == null) return fallback;
+    if (value is Clip) return fallback;
+
+    final strValue = value.toString().trim().toLowerCase();
+    if (strValue.isEmpty) return fallback;
+
+    switch (strValue) {
+      case 'none':
+        return 'none';
+      case 'anti-alias':
+      case 'antialias':
+        return 'antiAlias';
+      case 'anti-alias-with-save-layer':
+      case 'antialiaswithsavelayer':
+        return 'antiAliasWithSaveLayer';
+      case 'hard-edge':
+      case 'hardedge':
+      default:
+        return 'hardEdge';
+    }
+  }
+
   static List<double>? _parseCubicBezier(String value) {
-    final match =
-        RegExp(r'cubic-bezier\s*\(([^)]+)\)').firstMatch(value);
+    final match = RegExp(r'cubic-bezier\s*\(([^)]+)\)').firstMatch(value);
     if (match == null) return null;
     final parts = match.group(1)!.split(RegExp(r'\s*,\s*'));
     if (parts.length != 4) return null;
@@ -215,10 +268,10 @@ class TypeConverter {
     return clampViewportFraction(1 / slidesPerView);
   }
 
-  /// 验证并限制 autoplayDelay（毫秒）在合理范围内
-  static int clampAutoplayDelayMs(
+  /// 验证并限制 autoPlayInterval（毫秒）在合理范围内
+  static int clampAutoPlayIntervalMs(
     dynamic value, {
-    int defaultValue = 3000,
+    int defaultValue = 4000,
   }) {
     return toInt(
       value,
@@ -228,16 +281,29 @@ class TypeConverter {
     );
   }
 
-  /// 验证并限制 speed（毫秒）在合理范围内
-  static int clampSpeedMs(
+  /// 验证并限制 autoPlayAnimationDuration（毫秒）在合理范围内
+  static int clampAutoPlayAnimationDurationMs(
     dynamic value, {
-    int defaultValue = 300,
+    int defaultValue = 800,
   }) {
     return toInt(
       value,
       defaultValue: defaultValue,
       min: 0,
       max: 5000,
+    );
+  }
+
+  /// 验证并限制 enlargeFactor 在合理范围内
+  static double clampEnlargeFactor(
+    dynamic value, {
+    double defaultValue = 0.3,
+  }) {
+    return toDouble(
+      value,
+      defaultValue: defaultValue,
+      min: 0.0,
+      max: 1.0,
     );
   }
 }

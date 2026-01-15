@@ -19,7 +19,7 @@
 **Target Platform**: WebF runtime (Flutter-based)  
 **Project Type**: Mobile/native UI library with JS bindings  
 **Performance Goals**: 保持 60 fps 级别的轮播性能与事件响应  
-**Constraints**: 不能改变对外 API 命名与语义；禁止新增不必要运行时依赖  
+**Constraints**: 不能改变对外 API 命名与语义；禁止新增不必要运行时依赖；破坏性变更必须更新 CHANGELOG 与迁移说明  
 **Scale/Scope**: 单一组件库（carousel slider + item）
 
 ## Constitution Check
@@ -28,6 +28,7 @@
 
 - [x] Dart ↔ TypeScript public API parity is planned (bindings + types + codegen)
 - [x] Dart behavior changes include a `flutter_test` plan in `native_uis/webf_carousel_slider/test/`
+- [x] Binding package changes include `npm run build`
 - [x] Public API changes include README/example update plan
 - [x] Dependency/performance impact is justified (avoid new runtime deps, avoid unnecessary rebuilds)
 - [x] WebF compatibility considerations are documented for any new web APIs

@@ -14,20 +14,32 @@ import 'utils/type_converter.dart';
 class WebFCarouselSlider extends CarouselSliderBindings {
   WebFCarouselSlider(super.context);
 
-  bool _autoplay = false;
-  int _autoplayDelayMs = 3000;
-  int _speedMs = 300;
-  Curve _easingCurve = Curves.ease;
-  String _easingName = 'ease';
-  bool _loop = false;
-  Axis _direction = Axis.horizontal;
-  double _slidesPerView = 1.0;
-  bool _centeredSlides = false;
-  int _initialSlide = 0;
-  int _activeIndex = 0;
-  bool _allowTouchMove = true;
-  bool _autoplayDisableOnInteraction = false;
-  final double _aspectRatio = 16 / 9;
+  double? _height;
+  double _aspectRatio = 16 / 9;
+  double _viewportFraction = 0.8;
+  int _initialPage = 0;
+  bool _enableInfiniteScroll = true;
+  bool _animateToClosest = true;
+  bool _reverse = false;
+  bool _autoPlay = false;
+  int _autoPlayIntervalMs = 4000;
+  int _autoPlayAnimationDurationMs = 800;
+  Curve _autoPlayCurve = Curves.fastOutSlowIn;
+  bool _enlargeCenterPage = false;
+  ScrollPhysics? _scrollPhysics;
+  bool _pageSnapping = true;
+  Axis _scrollDirection = Axis.horizontal;
+  bool _pauseAutoPlayOnTouch = true;
+  bool _pauseAutoPlayOnManualNavigate = true;
+  bool _pauseAutoPlayInFiniteScroll = false;
+  PageStorageKey<String>? _pageViewKey;
+  CenterPageEnlargeStrategy _enlargeStrategy = CenterPageEnlargeStrategy.scale;
+  double _enlargeFactor = 0.3;
+  bool _disableCenter = false;
+  bool _padEnds = true;
+  Clip _clipBehavior = Clip.hardEdge;
+  int _realPage = 0;
+  bool _disableGesture = false;
 
   CarouselEventManager? get _eventManager =>
       (state as WebFCarouselSliderState?)?._eventManager;
@@ -95,8 +107,7 @@ class WebFCarouselSlider extends CarouselSliderBindings {
 
   @override
   set easing(dynamic value) {
-    final curve =
-        TypeConverter.parseEasing(value, fallback: _easingCurve);
+    final curve = TypeConverter.parseEasing(value, fallback: _easingCurve);
     final name =
         TypeConverter.normalizeEasingName(value, fallback: _easingName);
     if (_easingCurve != curve || _easingName != name) {

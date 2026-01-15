@@ -141,3 +141,89 @@ Source: `@openwebf/claude-code-skills@1.0.2`
 
 ## Recent Changes
 - 001-carousel-slider-plus-bridge: Added Dart >=3.0.0 <4.0.0, Flutter >=3.16.0; TypeScript strict mode + webf ^0.24.2; carousel_slider_plus ^7.1.1
+
+<skills_system priority="1">
+
+## Available Skills
+
+<!-- SKILLS_TABLE_START -->
+<usage>
+When users ask you to perform tasks, check if any of the available skills below can help complete the task more effectively. Skills provide specialized capabilities and domain knowledge.
+
+How to use skills:
+- Invoke: Bash("openskills read <skill-name>")
+- The skill content will load with detailed instructions on how to complete the task
+- Base directory provided in output for resolving bundled resources (references/, scripts/, assets/)
+
+Usage notes:
+- Only use skills listed in <available_skills> below
+- Do not invoke a skill that is already loaded in your context
+- Each skill invocation is stateless
+</usage>
+
+<available_skills>
+
+<skill>
+<name>webf-api-compatibility</name>
+<description>Check Web API and CSS feature compatibility in WebF - determine what JavaScript APIs, DOM methods, CSS properties, and layout modes are supported. Use when planning features, debugging why APIs don't work, or finding alternatives for unsupported features like IndexedDB, WebGL, float layout, or CSS Grid.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-async-rendering</name>
+<description>Understand and work with WebF's async rendering model - handle onscreen/offscreen events and element measurements correctly. Use when getBoundingClientRect returns zeros, computed styles are incorrect, measurements fail, or elements don't layout as expected.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-hybrid-ui-dev</name>
+<description>Develop custom native/hybrid UI libraries based on Flutter widgets for WebF. Create reusable component libraries that wrap Flutter widgets as web-accessible custom elements. Use when building UI libraries, wrapping Flutter packages, or creating native component systems.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-infinite-scrolling</name>
+<description>Create high-performance infinite scrolling lists with pull-to-refresh and load-more capabilities using WebFListView. Use when building feed-style UIs, product catalogs, chat messages, or any scrollable list that needs optimal performance with large datasets.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-native-plugin-dev</name>
+<description>Develop custom WebF native plugins based on Flutter packages. Create reusable plugins that wrap Flutter/platform capabilities as JavaScript APIs. Use when building plugins for native features like camera, payments, sensors, file access, or wrapping existing Flutter packages.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-native-plugins</name>
+<description>Install WebF native plugins to access platform capabilities like sharing, payment, camera, geolocation, and more. Use when building features that require native device APIs beyond standard web APIs.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-native-ui</name>
+<description>Setup and use WebF's Cupertino UI library to build native iOS-style UIs with pre-built components instead of crafting everything with HTML/CSS. Use when building iOS apps, adding native UI components, or improving UI performance.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-quickstart</name>
+<description>Get started with WebF development - setup WebF Go, create a React/Vue/Svelte project with Vite, and load your first app. Use when starting a new WebF project, onboarding new developers, or setting up development environment.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>webf-routing-setup</name>
+<description>Setup hybrid routing with native screen transitions in WebF - configure navigation using WebF routing instead of SPA routing. Use when setting up navigation, implementing multi-screen apps, or when react-router-dom/vue-router doesn't work as expected.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>release-branch-notes</name>
+<description>Create a release/x.y.z branch in a Git repo and generate Release Notes from the latest tag to HEAD, grouped as Features/Fixes/Breaking and written to CHANGELOG.md. Use for automated release branch creation, release notes generation, and changelog updates.</description>
+<location>global</location>
+</skill>
+
+</available_skills>
+<!-- SKILLS_TABLE_END -->
+
+</skills_system>
