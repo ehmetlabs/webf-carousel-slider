@@ -100,41 +100,26 @@ void main() {
   });
 
   group('TypeConverter.clampViewportFraction', () {
-    test('should clamp to valid range', () {
-      expect(TypeConverter.clampViewportFraction(0.0), 0.01);
-      expect(TypeConverter.clampViewportFraction(1.5), 1.0);
+    test('should keep values without clamping', () {
+      expect(TypeConverter.clampViewportFraction(0.0), 0.0);
+      expect(TypeConverter.clampViewportFraction(1.5), 1.5);
       expect(TypeConverter.clampViewportFraction(0.5), 0.5);
     });
   });
 
-  group('TypeConverter.clampSlidesPerView', () {
-    test('should clamp to valid range', () {
-      expect(TypeConverter.clampSlidesPerView(0), 1.0);
-      expect(TypeConverter.clampSlidesPerView(12), 10.0);
-      expect(TypeConverter.clampSlidesPerView(2.5), 2.5);
+  group('TypeConverter.clampAutoPlayIntervalMs', () {
+    test('should keep values without clamping', () {
+      expect(TypeConverter.clampAutoPlayIntervalMs(100), 100);
+      expect(TypeConverter.clampAutoPlayIntervalMs(70000), 70000);
+      expect(TypeConverter.clampAutoPlayIntervalMs(3000), 3000);
     });
   });
 
-  group('TypeConverter.slidesPerViewToViewportFraction', () {
-    test('should map slidesPerView to viewportFraction', () {
-      expect(TypeConverter.slidesPerViewToViewportFraction(2), 0.5);
-      expect(TypeConverter.slidesPerViewToViewportFraction(1), 1.0);
-    });
-  });
-
-  group('TypeConverter.clampAutoplayDelayMs', () {
-    test('should clamp to valid range', () {
-      expect(TypeConverter.clampAutoplayDelayMs(100), 500);
-      expect(TypeConverter.clampAutoplayDelayMs(70000), 60000);
-      expect(TypeConverter.clampAutoplayDelayMs(3000), 3000);
-    });
-  });
-
-  group('TypeConverter.clampSpeedMs', () {
-    test('should clamp to valid range', () {
-      expect(TypeConverter.clampSpeedMs(-10), 0);
-      expect(TypeConverter.clampSpeedMs(6000), 5000);
-      expect(TypeConverter.clampSpeedMs(300), 300);
+  group('TypeConverter.clampAutoPlayAnimationDurationMs', () {
+    test('should keep values without clamping', () {
+      expect(TypeConverter.clampAutoPlayAnimationDurationMs(-10), -10);
+      expect(TypeConverter.clampAutoPlayAnimationDurationMs(6000), 6000);
+      expect(TypeConverter.clampAutoPlayAnimationDurationMs(300), 300);
     });
   });
 }

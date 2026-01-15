@@ -31,7 +31,7 @@
 ///
 /// ```javascript
 /// // Add to HTML
-/// <webf-carousel-slider autoplay autoplay-delay="3000" speed="300" easing="ease-in-out" slides-per-view="1">
+/// <webf-carousel-slider auto-play auto-play-interval="3000" auto-play-animation-duration="300" enable-infinite-scroll>
 ///   <webf-carousel-slider-item image-url="image1.jpg"></webf-carousel-slider-item>
 ///   <webf-carousel-slider-item image-url="image2.jpg"></webf-carousel-slider-item>
 ///   <webf-carousel-slider-item image-url="image3.jpg"></webf-carousel-slider-item>
@@ -41,30 +41,30 @@
 /// const carousel = document.querySelector('webf-carousel-slider');
 ///
 /// // Listen to changes
-/// carousel.addEventListener('change', (event) => {
-///   console.log('Current index:', event.detail.index);
-/// });
+/// carousel.onPageChanged = (index, reason) => {
+///   console.log('Current index:', index, 'reason:', reason);
+/// };
 ///
 /// // Control programmatically
-/// carousel.slideNext();        // Next page
-/// carousel.slidePrev();        // Previous page
-/// carousel.slideTo(2);         // Slide to page 2
-/// carousel.autoplayStop();     // Stop autoplay
-/// carousel.autoplayStart();    // Start autoplay
+/// carousel.nextPage();         // Next page
+/// carousel.previousPage();     // Previous page
+/// carousel.jumpToPage(2);      // Jump to page 2
+/// carousel.stopAutoPlay();     // Stop autoplay
+/// carousel.startAutoPlay();    // Start autoplay
 /// ```
 ///
 /// ## Features
 ///
 /// - ✅ High-performance Flutter rendering
 /// - ✅ Smooth animations and transitions
-/// - ✅ Swiper-compatible API subset
-/// - ✅ Autoplay with customizable delay
+/// - ✅ carousel_slider_plus API naming parity
+/// - ✅ Autoplay with configurable interval/duration
 /// - ✅ Infinite scroll support
-/// - ✅ Custom easing (cubic-bezier)
-/// - ✅ Centered slides
+/// - ✅ Curve mapping (including cubic-bezier)
+/// - ✅ Center page enlarge strategies
 /// - ✅ Vertical and horizontal scroll directions
 /// - ✅ Programmatic control methods
-/// - ✅ Event-driven API
+/// - ✅ Callback-driven API (onPageChanged/onScrolled)
 /// - ✅ TypeScript definitions
 library;
 

@@ -13,7 +13,6 @@ class EnumConverter {
   ///
   /// 支持格式:
   /// - 枚举名（如 'scale', 'height', 'zoom'）
-  /// - 完整枚举名（如 'CenterPageEnlargeStrategy.scale'）
   /// - 不区分大小写
   ///
   /// 返回: 对应的策略，未找到返回 CenterPageEnlargeStrategy.scale
@@ -31,18 +30,19 @@ class EnumConverter {
     if (value is CenterPageEnlargeStrategy) return value;
 
     final strValue = value.toString().toLowerCase();
+    final normalized = strValue.contains('.')
+        ? strValue.split('.').last
+        : strValue;
 
-    // 使用 Map 替代 if-else 链，提升性能和可维护性
-    const strategyMap = <String, CenterPageEnlargeStrategy>{
-      'centerpageenlargestrategy.scale': CenterPageEnlargeStrategy.scale,
-      'scale': CenterPageEnlargeStrategy.scale,
-      'centerpageenlargestrategy.height': CenterPageEnlargeStrategy.height,
-      'height': CenterPageEnlargeStrategy.height,
-      'centerpageenlargestrategy.zoom': CenterPageEnlargeStrategy.zoom,
-      'zoom': CenterPageEnlargeStrategy.zoom,
-    };
-
-    return strategyMap[strValue] ?? CenterPageEnlargeStrategy.scale;
+    switch (normalized) {
+      case 'height':
+        return CenterPageEnlargeStrategy.height;
+      case 'zoom':
+        return CenterPageEnlargeStrategy.zoom;
+      case 'scale':
+      default:
+        return CenterPageEnlargeStrategy.scale;
+    }
   }
 
   /// 解析 ScrollPhysics 字符串

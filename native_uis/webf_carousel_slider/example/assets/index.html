@@ -71,10 +71,10 @@
 
     <webf-carousel-slider
       id="carousel"
-      autoplay
-      autoplay-delay="3000"
-      loop
-      speed="300"
+      auto-play
+      auto-play-interval="3000"
+      auto-play-animation-duration="300"
+      enable-infinite-scroll
     >
       <webf-carousel-slider-item image-url="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=450&fit=crop"></webf-carousel-slider-item>
       <webf-carousel-slider-item image-url="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=450&fit=crop"></webf-carousel-slider-item>
@@ -99,33 +99,30 @@
       statusEl.textContent = text;
     };
 
-    carousel.addEventListener('change', (event) => {
-      const { index, previousIndex, reason } = event.detail;
-      updateStatus(`index: ${index}, previous: ${previousIndex}, reason: ${reason}`);
-    });
+    carousel.onPageChanged = (index, reason) => {
+      updateStatus(`index: ${index}, reason: ${reason}, realPage: ${carousel.realPage}`);
+    };
 
-    carousel.addEventListener('play', () => {
-      updateStatus('autoplay started');
-    });
-
-    carousel.addEventListener('pause', () => {
-      updateStatus('autoplay paused');
-    });
+    carousel.onScrolled = (value) => {
+      if (value !== null && value !== undefined) {
+        console.log('scrolled:', value);
+      }
+    };
 
     document.getElementById('prevBtn').addEventListener('click', () => {
-      carousel.slidePrev();
+      carousel.previousPage();
     });
 
     document.getElementById('nextBtn').addEventListener('click', () => {
-      carousel.slideNext();
+      carousel.nextPage();
     });
 
     document.getElementById('pauseBtn').addEventListener('click', () => {
-      carousel.autoplayStop();
+      carousel.stopAutoPlay();
     });
 
     document.getElementById('playBtn').addEventListener('click', () => {
-      carousel.autoplayStart();
+      carousel.startAutoPlay();
     });
 
     updateStatus(`slides: ${carousel.children.length}`);

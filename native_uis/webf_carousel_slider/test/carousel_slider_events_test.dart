@@ -1,36 +1,38 @@
+import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webf_carousel_slider/src/event/event_manager.dart';
 
-class _FakeElement implements WidgetElement {
-  final List<CustomEvent> events = [];
-
-  @override
-  void dispatchEvent(Event event) {
-    if (event is CustomEvent) {
-      events.add(event);
-    }
-  }
-
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
 void main() {
   group('WebFCarouselSlider events payloads', () {
-    test('dispatches change event with index, previousIndex, reason', () {
-      final element = _FakeElement();
-      final manager = CarouselEventManager(element);
+    test('dispatches onPageChanged callback with index and reason', () {
+      int? receivedIndex;
+      String? receivedReason;
+      final manager = CarouselEventManager(
+        onPageChanged: () => (int index, String reason) {
+          receivedIndex = index;
+          receivedReason = reason;
+        },
+        onScrolled: () => null,
+      );
 
-      manager.dispatchChange(index: 2, previousIndex: 1, reason: 'manual');
+      manager.dispatchPageChanged(2, CarouselPageChangedReason.manual);
 
-      expect(element.events, hasLength(1));
-      final event = element.events.first;
-      expect(event.type, equals('change'));
-      expect(event.detail, isA<Map<String, Object?>>());
-      final detail = event.detail as Map<String, Object?>;
-      expect(detail['index'], equals(2));
-      expect(detail['previousIndex'], equals(1));
-      expect(detail['reason'], equals('manual'));
+      expect(receivedIndex, equals(2));
+      expect(receivedReason, equals('manual'));
+    });
+
+    test('dispatches onScrolled callback with value', () {
+      double? receivedValue;
+      final manager = CarouselEventManager(
+        onPageChanged: () => null,
+        onScrolled: () => (double? value) {
+          receivedValue = value;
+        },
+      );
+
+      manager.dispatchScrolled(12.5);
+
+      expect(receivedValue, equals(12.5));
     });
   });
 }

@@ -50,10 +50,10 @@ void main() {
 
 ```html
 <webf-carousel-slider
-  autoplay
-  autoplay-delay="3000"
-  speed="300"
-  loop
+  auto-play
+  auto-play-interval="3000"
+  auto-play-animation-duration="300"
+  enable-infinite-scroll
 >
   <webf-carousel-slider-item image-url="https://example.com/slide-1.jpg"></webf-carousel-slider-item>
   <webf-carousel-slider-item image-url="https://example.com/slide-2.jpg"></webf-carousel-slider-item>
@@ -73,24 +73,24 @@ webf-carousel-slider-item {
 ```javascript
 const carousel = document.querySelector('webf-carousel-slider');
 
-carousel.addEventListener('change', (event) => {
-  console.log('Index:', event.detail.index);
-  console.log('Reason:', event.detail.reason); // autoplay | drag | api
-});
+carousel.onPageChanged = (index, reason) => {
+  console.log('Index:', index);
+  console.log('Reason:', reason); // timed | manual | controller
+};
 
-carousel.slideNext();
-carousel.autoplayStop();
-carousel.autoplayStart();
+carousel.nextPage();
+carousel.stopAutoPlay();
+carousel.startAutoPlay();
 ```
 
 ## API reference
 
-This custom element keeps a Swiper-compatible subset of attributes and methods.
-`easing` is a non-standard extension for WebF.
+This custom element mirrors `carousel_slider_plus` API names and semantics.
+Legacy alias names are removed to avoid ambiguity.
 
 ### Child items
 
-Use `<webf-carousel-slider-item>` as children. Non-item children are ignored.
+Use `<webf-carousel-slider-item>` as children or any other DOM elements.
 Each item supports `image-url` for the image URL and custom elements inside
 the item for advanced layouts.
 
@@ -98,43 +98,63 @@ the item for advanced layouts.
 
 | Attribute | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `autoplay` | boolean | false | Enables autoplay. |
-| `autoplay-delay` | number (ms) | 3000 | 500-60000. |
-| `autoplay-disable-on-interaction` | boolean | false | Stops autoplay after interaction. |
-| `speed` | number (ms) | 300 | 0-5000. |
-| `easing` | string | `ease` | `ease`, `linear`, `ease-in`, `ease-out`, `ease-in-out`, `fast-out-slow-in`, `cubic-bezier(x1, y1, x2, y2)`. |
-| `loop` | boolean | false | Enables infinite loop. |
-| `direction` | string | `horizontal` | `horizontal` or `vertical`. |
-| `slides-per-view` | number | 1 | - |
-| `centered-slides` | boolean | false | Centers slides in view. |
-| `initial-slide` | number | 0 | Only used on first build. |
-| `allow-touch-move` | boolean | true | Allows drag interaction. |
+| `height` | number | - | Overrides `aspect-ratio` when provided. |
+| `aspect-ratio` | number | 16 / 9 | - |
+| `viewport-fraction` | number | 0.8 | - |
+| `initial-page` | number | 0 | - |
+| `enable-infinite-scroll` | boolean | true | - |
+| `animate-to-closest` | boolean | true | - |
+| `reverse` | boolean | false | - |
+| `auto-play` | boolean | false | - |
+| `auto-play-interval` | number (ms) | 4000 | - |
+| `auto-play-animation-duration` | number (ms) | 800 | - |
+| `auto-play-curve` | string | `fast-out-slow-in` | `ease`, `linear`, `ease-in`, `ease-out`, `ease-in-out`, `fast-out-slow-in`, `cubic-bezier(x1, y1, x2, y2)`. |
+| `enlarge-center-page` | boolean | false | - |
+| `scroll-physics` | string | platform | `clamping`, `bouncing`, `fixed`. |
+| `page-snapping` | boolean | true | - |
+| `scroll-direction` | string | `horizontal` | `horizontal` or `vertical`. |
+| `pause-auto-play-on-touch` | boolean | true | - |
+| `pause-auto-play-on-manual-navigate` | boolean | true | - |
+| `pause-auto-play-in-finite-scroll` | boolean | false | - |
+| `page-view-key` | string | - | PageStorageKey identifier. |
+| `enlarge-strategy` | string | `scale` | `scale`, `height`, `zoom`. |
+| `enlarge-factor` | number | 0.3 | - |
+| `disable-center` | boolean | false | - |
+| `pad-ends` | boolean | true | - |
+| `clip-behavior` | string | `hardEdge` | `none`, `antiAlias`, `antiAliasWithSaveLayer`, `hardEdge`. |
+| `disable-gesture` | boolean | false | Disables touch gestures. |
+
+### Callback properties (JS)
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `onPageChanged` | `(index: number, reason: 'timed' | 'manual' | 'controller') => void` | Called whenever the page changes. |
+| `onScrolled` | `(value: number | null) => void` | Called whenever the carousel is scrolled. |
 
 ### Read-only properties
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `activeIndex` | number | Current active index. |
+| `realPage` | number | Current real page index. |
 
 ### Methods
 
 These methods are available on the element instance:
 
-- `slideNext(speed?: number)` - slide to the next page
-- `slidePrev(speed?: number)` - slide to the previous page
-- `slideTo(index: number, speed?: number)` - slide to an index
-- `autoplayStart()` - start autoplay
-- `autoplayStop()` - stop autoplay
+- `nextPage(duration?: number, curve?: string)` - animate to the next page
+- `previousPage(duration?: number, curve?: string)` - animate to the previous page
+- `jumpToPage(page: number)` - jump to a page without animation
+- `animateToPage(page: number, duration?: number, curve?: string)` - animate to a page
+- `startAutoPlay()` - start autoplay
+- `stopAutoPlay()` - stop autoplay
 
-### Events
+### Legacy API removal (breaking)
 
-| Event | Detail | Description |
-| --- | --- | --- |
-| `change` | `{ index, previousIndex, reason }` | Fired when the page changes. |
-| `changestart` | `{ index }` | Fired when the user starts dragging. |
-| `changeend` | `{ index }` | Fired when the user ends dragging. |
-| `play` | - | Fired when autoplay starts. |
-| `pause` | - | Fired when autoplay pauses. |
+The following legacy names are removed; use the original `carousel_slider_plus` names instead:
+
+- Properties: `autoplay`, `autoplayDelay`, `autoplayDisableOnInteraction`, `speed`, `easing`, `loop`, `direction`, `slidesPerView`, `centeredSlides`, `initialSlide`, `allowTouchMove`, `activeIndex`
+- Methods: `slideNext`, `slidePrev`, `slideTo`, `autoplayStart`, `autoplayStop`
+- Events: `change`, `changestart`, `changeend`, `play`, `pause`
 
 ## Example
 

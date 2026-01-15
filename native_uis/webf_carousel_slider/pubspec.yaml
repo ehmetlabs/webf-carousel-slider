@@ -1,6 +1,6 @@
 name: webf_carousel_slider
 description: WebF Custom Element wrapper for carousel_slider_plus. Provides hybrid UI carousel component with Flutter performance and JavaScript API.
-version: 0.1.0
+version: 0.2.0
 homepage: https://github.com/example/carousel-slider-webf
 repository: https://github.com/example/carousel-slider-webf
 issue_tracker: https://github.com/example/carousel-slider-webf/issues

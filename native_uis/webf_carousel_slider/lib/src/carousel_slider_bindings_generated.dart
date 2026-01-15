@@ -23,6 +23,22 @@ enum CarouselSliderScrollDirection {
   @override
   String toString() => value;
 }
+enum CarouselSliderEnlargeStrategy {
+  scale('scale'),
+  height('height'),
+  zoom('zoom');
+  final String value;
+  const CarouselSliderEnlargeStrategy(this.value);
+  static CarouselSliderEnlargeStrategy? parse(String? value) {
+    if (value == null) return null;
+    return CarouselSliderEnlargeStrategy.values.firstWhere(
+      (e) => e.value == value,
+      orElse: () => throw ArgumentError('Invalid CarouselSliderEnlargeStrategy value: $value'),
+    );
+  }
+  @override
+  String toString() => value;
+}
 abstract class CarouselSliderBindings extends WidgetElement {
   CarouselSliderBindings(super.context);
   double? get height;
@@ -67,7 +83,7 @@ abstract class CarouselSliderBindings extends WidgetElement {
   set pauseAutoPlayInFiniteScroll(value);
   String? get pageViewKey;
   set pageViewKey(value);
-  CenterPageEnlargeStrategy? get enlargeStrategy;
+  CarouselSliderEnlargeStrategy? get enlargeStrategy;
   set enlargeStrategy(value);
   double? get enlargeFactor;
   set enlargeFactor(value);
@@ -77,6 +93,8 @@ abstract class CarouselSliderBindings extends WidgetElement {
   set padEnds(value);
   String? get clipBehavior;
   set clipBehavior(value);
+  bool get disableGesture;
+  set disableGesture(value);
   double? get realPage;
   set realPage(value);
   @override
@@ -188,8 +206,8 @@ abstract class CarouselSliderBindings extends WidgetElement {
       deleter: () => pageViewKey = null
     );
     attributes['enlarge-strategy'] = ElementAttributeProperty(
-      getter: () => enlargeStrategy?.toString(),
-      setter: (value) => enlargeStrategy = value,
+      getter: () => enlargeStrategy?.value,
+      setter: (value) => enlargeStrategy = CarouselSliderEnlargeStrategy.parse(value),
       deleter: () => enlargeStrategy = null
     );
     attributes['enlarge-factor'] = ElementAttributeProperty(
@@ -211,6 +229,11 @@ abstract class CarouselSliderBindings extends WidgetElement {
       getter: () => clipBehavior?.toString(),
       setter: (value) => clipBehavior = value,
       deleter: () => clipBehavior = null
+    );
+    attributes['disable-gesture'] = ElementAttributeProperty(
+      getter: () => disableGesture.toString(),
+      setter: (value) => disableGesture = value == 'true' || value == '',
+      deleter: () => disableGesture = false
     );
     attributes['real-page'] = ElementAttributeProperty(
       getter: () => realPage?.toString(),
@@ -348,6 +371,11 @@ abstract class CarouselSliderBindings extends WidgetElement {
       getter: (element) => castToType<CarouselSliderBindings>(element).clipBehavior,
       setter: (element, value) =>
       castToType<CarouselSliderBindings>(element).clipBehavior = value,
+    ),
+    'disableGesture': StaticDefinedBindingProperty(
+      getter: (element) => castToType<CarouselSliderBindings>(element).disableGesture,
+      setter: (element, value) =>
+      castToType<CarouselSliderBindings>(element).disableGesture = value,
     ),
     'realPage': StaticDefinedBindingProperty(
       getter: (element) => castToType<CarouselSliderBindings>(element).realPage,

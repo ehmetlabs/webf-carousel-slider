@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 /// 轮播图片项
 class CarouselImageItem {
   final Object id;
@@ -22,31 +20,13 @@ class CarouselImageItem {
 ///
 /// 支持输入:
 /// - List<Map> 结构
-/// - JSON 字符串
 List<CarouselImageItem> parseCarouselItems(dynamic value) {
-  if (value == null) {
-    return const <CarouselImageItem>[];
-  }
-
-  dynamic rawValue = value;
-  if (value is String) {
-    final trimmed = value.trim();
-    if (trimmed.isEmpty) {
-      return const <CarouselImageItem>[];
-    }
-    try {
-      rawValue = jsonDecode(trimmed);
-    } catch (_) {
-      return const <CarouselImageItem>[];
-    }
-  }
-
-  if (rawValue is! List) {
+  if (value is! List) {
     return const <CarouselImageItem>[];
   }
 
   final items = <CarouselImageItem>[];
-  for (final entry in rawValue) {
+  for (final entry in value) {
     if (entry is! Map) {
       continue;
     }

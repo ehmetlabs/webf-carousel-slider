@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:webf/css.dart';
+import 'package:webf/dom.dart' as dom;
 import 'package:webf/webf.dart';
 
 import 'carousel_slider_bindings_generated.dart';
+import 'carousel_slider_item.dart';
 import 'config/carousel_config.dart';
 import 'event/event_manager.dart';
-import 'carousel_slider_item.dart';
+import 'utils/enum_converter.dart';
 import 'utils/type_converter.dart';
 
 /// WebF Custom Element wrapper for carousel_slider_plus.
@@ -25,267 +29,530 @@ class WebFCarouselSlider extends CarouselSliderBindings {
   int _autoPlayIntervalMs = 4000;
   int _autoPlayAnimationDurationMs = 800;
   Curve _autoPlayCurve = Curves.fastOutSlowIn;
+  String _autoPlayCurveName = 'fast-out-slow-in';
   bool _enlargeCenterPage = false;
   ScrollPhysics? _scrollPhysics;
+  String? _scrollPhysicsName;
   bool _pageSnapping = true;
   Axis _scrollDirection = Axis.horizontal;
   bool _pauseAutoPlayOnTouch = true;
   bool _pauseAutoPlayOnManualNavigate = true;
   bool _pauseAutoPlayInFiniteScroll = false;
-  PageStorageKey<String>? _pageViewKey;
+  String? _pageViewKeyValue;
   CenterPageEnlargeStrategy _enlargeStrategy = CenterPageEnlargeStrategy.scale;
   double _enlargeFactor = 0.3;
   bool _disableCenter = false;
   bool _padEnds = true;
   Clip _clipBehavior = Clip.hardEdge;
+  String _clipBehaviorName = 'hardEdge';
   int _realPage = 0;
   bool _disableGesture = false;
 
-  CarouselEventManager? get _eventManager =>
-      (state as WebFCarouselSliderState?)?._eventManager;
+  dynamic _onPageChanged;
+  dynamic _onScrolled;
 
   void _requestUpdate() {
     state?.requestUpdateState(() {});
   }
 
-  void _setAutoplay(bool value) {
-    if (_autoplay == value) {
-      if (_autoplay) {
-        (state as WebFCarouselSliderState?)?.startAutoplay();
-      } else {
-        (state as WebFCarouselSliderState?)?.stopAutoplay();
-      }
-      return;
-    }
-    _autoplay = value;
-    _requestUpdate();
-    if (_autoplay) {
-      _eventManager?.dispatchPlay();
-      (state as WebFCarouselSliderState?)?.startAutoplay();
-    } else {
-      _eventManager?.dispatchPause();
-      (state as WebFCarouselSliderState?)?.stopAutoplay();
+  void _setRealPage(int value) {
+    _realPage = value;
+  }
+
+  @override
+  double? get height => _height;
+
+  @override
+  set height(value) {
+    final next = value == null ? null : TypeConverter.toDouble(value);
+    if (_height != next) {
+      _height = next;
+      _requestUpdate();
     }
   }
 
   @override
-  bool get autoplay => _autoplay;
+  double? get aspectRatio => _aspectRatio;
 
   @override
-  set autoplay(dynamic value) {
+  set aspectRatio(value) {
+    final next = TypeConverter.toDouble(
+      value,
+      defaultValue: 16 / 9,
+      min: 0.01,
+    );
+    if (_aspectRatio != next) {
+      _aspectRatio = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  double? get viewportFraction => _viewportFraction;
+
+  @override
+  set viewportFraction(value) {
+    final next = TypeConverter.clampViewportFraction(
+      value,
+      defaultValue: _viewportFraction,
+    );
+    if (_viewportFraction != next) {
+      _viewportFraction = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  double? get initialPage => _initialPage.toDouble();
+
+  @override
+  set initialPage(value) {
+    final next = TypeConverter.toInt(
+      value,
+      defaultValue: _initialPage,
+      min: 0,
+    );
+    if (_initialPage != next) {
+      _initialPage = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get enableInfiniteScroll => _enableInfiniteScroll;
+
+  @override
+  set enableInfiniteScroll(value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_enableInfiniteScroll != boolValue) {
+      _enableInfiniteScroll = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get animateToClosest => _animateToClosest;
+
+  @override
+  set animateToClosest(value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_animateToClosest != boolValue) {
+      _animateToClosest = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get reverse => _reverse;
+
+  @override
+  set reverse(value) {
     final boolValue = TypeConverter.toBool(value);
-    _setAutoplay(boolValue);
-  }
-
-  @override
-  double? get autoplayDelay => _autoplayDelayMs.toDouble();
-
-  @override
-  set autoplayDelay(dynamic value) {
-    final next = TypeConverter.clampAutoplayDelayMs(value,
-        defaultValue: _autoplayDelayMs);
-    if (_autoplayDelayMs != next) {
-      _autoplayDelayMs = next;
+    if (_reverse != boolValue) {
+      _reverse = boolValue;
       _requestUpdate();
     }
   }
 
   @override
-  double? get speed => _speedMs.toDouble();
+  bool get autoPlay => _autoPlay;
 
   @override
-  set speed(dynamic value) {
-    final next = TypeConverter.clampSpeedMs(value, defaultValue: _speedMs);
-    if (_speedMs != next) {
-      _speedMs = next;
-      _requestUpdate();
-    }
-  }
-
-  @override
-  String? get easing => _easingName;
-
-  @override
-  set easing(dynamic value) {
-    final curve = TypeConverter.parseEasing(value, fallback: _easingCurve);
-    final name =
-        TypeConverter.normalizeEasingName(value, fallback: _easingName);
-    if (_easingCurve != curve || _easingName != name) {
-      _easingCurve = curve;
-      _easingName = name;
-      _requestUpdate();
-    }
-  }
-
-  @override
-  bool get loop => _loop;
-
-  @override
-  set loop(dynamic value) {
+  set autoPlay(value) {
     final boolValue = TypeConverter.toBool(value);
-    if (_loop != boolValue) {
-      _loop = boolValue;
+    if (_autoPlay != boolValue) {
+      _autoPlay = boolValue;
       _requestUpdate();
     }
   }
 
   @override
-  String? get direction =>
-      _direction == Axis.horizontal ? 'horizontal' : 'vertical';
+  double? get autoPlayInterval => _autoPlayIntervalMs.toDouble();
 
   @override
-  set direction(dynamic value) {
-    final next = TypeConverter.parseDirection(value);
-    if (_direction != next) {
-      _direction = next;
+  set autoPlayInterval(value) {
+    final next = TypeConverter.clampAutoPlayIntervalMs(
+      value,
+      defaultValue: _autoPlayIntervalMs,
+    );
+    if (_autoPlayIntervalMs != next) {
+      _autoPlayIntervalMs = next;
       _requestUpdate();
     }
   }
 
   @override
-  double? get slidesPerView => _slidesPerView;
+  double? get autoPlayAnimationDuration => _autoPlayAnimationDurationMs.toDouble();
 
   @override
-  set slidesPerView(dynamic value) {
-    final next =
-        TypeConverter.clampSlidesPerView(value, defaultValue: _slidesPerView);
-    if (_slidesPerView != next) {
-      _slidesPerView = next;
+  set autoPlayAnimationDuration(value) {
+    final next = TypeConverter.clampAutoPlayAnimationDurationMs(
+      value,
+      defaultValue: _autoPlayAnimationDurationMs,
+    );
+    if (_autoPlayAnimationDurationMs != next) {
+      _autoPlayAnimationDurationMs = next;
       _requestUpdate();
     }
   }
 
   @override
-  bool get centeredSlides => _centeredSlides;
+  String? get autoPlayCurve => _autoPlayCurveName;
 
   @override
-  set centeredSlides(dynamic value) {
+  set autoPlayCurve(value) {
+    final curve = TypeConverter.parseEasing(
+      value,
+      fallback: _autoPlayCurve,
+    );
+    final name = TypeConverter.normalizeEasingName(
+      value,
+      fallback: _autoPlayCurveName,
+    );
+    if (_autoPlayCurve != curve || _autoPlayCurveName != name) {
+      _autoPlayCurve = curve;
+      _autoPlayCurveName = name;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get enlargeCenterPage => _enlargeCenterPage;
+
+  @override
+  set enlargeCenterPage(value) {
     final boolValue = TypeConverter.toBool(value);
-    if (_centeredSlides != boolValue) {
-      _centeredSlides = boolValue;
+    if (_enlargeCenterPage != boolValue) {
+      _enlargeCenterPage = boolValue;
       _requestUpdate();
     }
   }
 
   @override
-  double? get initialSlide => _initialSlide.toDouble();
+  dynamic get onPageChanged => _onPageChanged;
 
   @override
-  set initialSlide(dynamic value) {
-    final next = TypeConverter.toInt(value, min: 0);
-    if (_initialSlide != next) {
-      _initialSlide = next;
+  set onPageChanged(value) {
+    if (!identical(_onPageChanged, value)) {
+      _onPageChanged = value;
       _requestUpdate();
     }
   }
 
   @override
-  double? get activeIndex => _activeIndex.toDouble();
+  dynamic get onScrolled => _onScrolled;
 
   @override
-  set activeIndex(dynamic value) {
+  set onScrolled(value) {
+    if (!identical(_onScrolled, value)) {
+      _onScrolled = value;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  String? get scrollPhysics => _scrollPhysicsName;
+
+  @override
+  set scrollPhysics(value) {
+    final nextName = value == null ? null : value.toString();
+    final nextPhysics = EnumConverter.parseScrollPhysics(value);
+    if (_scrollPhysicsName != nextName || _scrollPhysics != nextPhysics) {
+      _scrollPhysicsName = nextName;
+      _scrollPhysics = nextPhysics;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get pageSnapping => _pageSnapping;
+
+  @override
+  set pageSnapping(value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_pageSnapping != boolValue) {
+      _pageSnapping = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  CarouselSliderScrollDirection? get scrollDirection =>
+      _scrollDirection == Axis.vertical
+          ? CarouselSliderScrollDirection.vertical
+          : CarouselSliderScrollDirection.horizontal;
+
+  @override
+  set scrollDirection(value) {
+    final next = value is CarouselSliderScrollDirection
+        ? (value == CarouselSliderScrollDirection.vertical
+            ? Axis.vertical
+            : Axis.horizontal)
+        : TypeConverter.parseDirection(value);
+    if (_scrollDirection != next) {
+      _scrollDirection = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get pauseAutoPlayOnTouch => _pauseAutoPlayOnTouch;
+
+  @override
+  set pauseAutoPlayOnTouch(value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_pauseAutoPlayOnTouch != boolValue) {
+      _pauseAutoPlayOnTouch = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get pauseAutoPlayOnManualNavigate => _pauseAutoPlayOnManualNavigate;
+
+  @override
+  set pauseAutoPlayOnManualNavigate(value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_pauseAutoPlayOnManualNavigate != boolValue) {
+      _pauseAutoPlayOnManualNavigate = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get pauseAutoPlayInFiniteScroll => _pauseAutoPlayInFiniteScroll;
+
+  @override
+  set pauseAutoPlayInFiniteScroll(value) {
+    final boolValue = TypeConverter.toBool(value);
+    if (_pauseAutoPlayInFiniteScroll != boolValue) {
+      _pauseAutoPlayInFiniteScroll = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  String? get pageViewKey => _pageViewKeyValue;
+
+  @override
+  set pageViewKey(value) {
+    final next = value?.toString();
+    final normalized =
+        next == null || next.trim().isEmpty ? null : next.trim();
+    if (_pageViewKeyValue != normalized) {
+      _pageViewKeyValue = normalized;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  CarouselSliderEnlargeStrategy? get enlargeStrategy {
+    switch (_enlargeStrategy) {
+      case CenterPageEnlargeStrategy.height:
+        return CarouselSliderEnlargeStrategy.height;
+      case CenterPageEnlargeStrategy.zoom:
+        return CarouselSliderEnlargeStrategy.zoom;
+      case CenterPageEnlargeStrategy.scale:
+      default:
+        return CarouselSliderEnlargeStrategy.scale;
+    }
+  }
+
+  @override
+  set enlargeStrategy(value) {
+    final next = EnumConverter.parseEnlargeStrategy(value);
+    if (_enlargeStrategy != next) {
+      _enlargeStrategy = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  double? get enlargeFactor => _enlargeFactor;
+
+  @override
+  set enlargeFactor(value) {
+    final next = TypeConverter.clampEnlargeFactor(
+      value,
+      defaultValue: _enlargeFactor,
+    );
+    if (_enlargeFactor != next) {
+      _enlargeFactor = next;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get disableCenter => _disableCenter;
+
+  @override
+  set disableCenter(value) {
+    final boolValue = TypeConverter.toBool(value);
+    if (_disableCenter != boolValue) {
+      _disableCenter = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  bool get padEnds => _padEnds;
+
+  @override
+  set padEnds(value) {
+    final boolValue = TypeConverter.toBool(value, defaultValue: true);
+    if (_padEnds != boolValue) {
+      _padEnds = boolValue;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  String? get clipBehavior => _clipBehaviorName;
+
+  @override
+  set clipBehavior(value) {
+    final clip = TypeConverter.parseClipBehavior(
+      value,
+      fallback: _clipBehavior,
+    );
+    final name = TypeConverter.normalizeClipBehaviorName(
+      value,
+      fallback: _clipBehaviorName,
+    );
+    if (_clipBehavior != clip || _clipBehaviorName != name) {
+      _clipBehavior = clip;
+      _clipBehaviorName = name;
+      _requestUpdate();
+    }
+  }
+
+  @override
+  double? get realPage => _realPage.toDouble();
+
+  @override
+  set realPage(value) {
     // 只读属性，忽略外部设置
   }
 
   @override
-  bool get allowTouchMove => _allowTouchMove;
+  bool get disableGesture => _disableGesture;
 
   @override
-  set allowTouchMove(dynamic value) {
-    final boolValue = TypeConverter.toBool(value, defaultValue: true);
-    if (_allowTouchMove != boolValue) {
-      _allowTouchMove = boolValue;
-      _requestUpdate();
-    }
-  }
-
-  @override
-  bool get autoplayDisableOnInteraction => _autoplayDisableOnInteraction;
-
-  @override
-  set autoplayDisableOnInteraction(dynamic value) {
+  set disableGesture(value) {
     final boolValue = TypeConverter.toBool(value);
-    if (_autoplayDisableOnInteraction != boolValue) {
-      _autoplayDisableOnInteraction = boolValue;
+    if (_disableGesture != boolValue) {
+      _disableGesture = boolValue;
       _requestUpdate();
     }
   }
 
-  void _slideNextSync(List<dynamic> args) {
-    final durationMs = TypeConverter.clampSpeedMs(
-      args.isNotEmpty ? args[0] : null,
-      defaultValue: _speedMs,
-    );
-    (state as WebFCarouselSliderState?)
-        ?.nextPage(durationMs: durationMs, curve: _easingCurve);
-  }
-
-  void _slidePrevSync(List<dynamic> args) {
-    final durationMs = TypeConverter.clampSpeedMs(
-      args.isNotEmpty ? args[0] : null,
-      defaultValue: _speedMs,
-    );
-    (state as WebFCarouselSliderState?)
-        ?.previousPage(durationMs: durationMs, curve: _easingCurve);
-  }
-
-  void _slideToSync(List<dynamic> args) {
-    final index = TypeConverter.toInt(
-      args.isNotEmpty ? args[0] : null,
-      defaultValue: _activeIndex,
+  Duration _parseDuration(dynamic value, {required Duration fallback}) {
+    if (value == null) return fallback;
+    final ms = TypeConverter.toInt(
+      value,
+      defaultValue: fallback.inMilliseconds,
       min: 0,
     );
-    final durationMs = TypeConverter.clampSpeedMs(
+    return Duration(milliseconds: ms);
+  }
+
+  Curve _parseCurve(dynamic value, {required Curve fallback}) {
+    if (value == null) return fallback;
+    return TypeConverter.parseEasing(value, fallback: fallback);
+  }
+
+  void _nextPageSync(List<dynamic> args) {
+    final duration = _parseDuration(
+      args.isNotEmpty ? args[0] : null,
+      fallback: const Duration(milliseconds: 300),
+    );
+    final curve = _parseCurve(
       args.length > 1 ? args[1] : null,
-      defaultValue: _speedMs,
+      fallback: Curves.linear,
     );
-    if (durationMs <= 0) {
-      (state as WebFCarouselSliderState?)?.jumpToPage(index);
-      return;
-    }
+    (state as WebFCarouselSliderState?)
+        ?.nextPage(duration: duration, curve: curve);
+  }
+
+  void _previousPageSync(List<dynamic> args) {
+    final duration = _parseDuration(
+      args.isNotEmpty ? args[0] : null,
+      fallback: const Duration(milliseconds: 300),
+    );
+    final curve = _parseCurve(
+      args.length > 1 ? args[1] : null,
+      fallback: Curves.linear,
+    );
+    (state as WebFCarouselSliderState?)
+        ?.previousPage(duration: duration, curve: curve);
+  }
+
+  void _jumpToPageSync(List<dynamic> args) {
+    if (args.isEmpty) return;
+    final page = TypeConverter.toInt(args[0], min: 0);
+    (state as WebFCarouselSliderState?)?.jumpToPage(page);
+  }
+
+  void _animateToPageSync(List<dynamic> args) {
+    if (args.isEmpty) return;
+    final page = TypeConverter.toInt(args[0], min: 0);
+    final duration = _parseDuration(
+      args.length > 1 ? args[1] : null,
+      fallback: const Duration(milliseconds: 300),
+    );
+    final curve = _parseCurve(
+      args.length > 2 ? args[2] : null,
+      fallback: Curves.linear,
+    );
     (state as WebFCarouselSliderState?)?.animateToPage(
-      page: index,
-      durationMs: durationMs,
-      curve: _easingCurve,
+      page: page,
+      duration: duration,
+      curve: curve,
     );
   }
 
-  void _autoplayStartSync(List<dynamic> args) {
-    _setAutoplay(true);
+  void _startAutoPlaySync(List<dynamic> args) {
+    (state as WebFCarouselSliderState?)?.startAutoPlay();
   }
 
-  void _autoplayStopSync(List<dynamic> args) {
-    _setAutoplay(false);
+  void _stopAutoPlaySync(List<dynamic> args) {
+    (state as WebFCarouselSliderState?)?.stopAutoPlay();
   }
 
   static final StaticDefinedSyncBindingObjectMethodMap carouselMethods = {
-    'slideNext': StaticDefinedSyncBindingObjectMethod(
+    'nextPage': StaticDefinedSyncBindingObjectMethod(
       call: (element, args) {
-        castToType<WebFCarouselSlider>(element)._slideNextSync(args);
+        castToType<WebFCarouselSlider>(element)._nextPageSync(args);
         return null;
       },
     ),
-    'slidePrev': StaticDefinedSyncBindingObjectMethod(
+    'previousPage': StaticDefinedSyncBindingObjectMethod(
       call: (element, args) {
-        castToType<WebFCarouselSlider>(element)._slidePrevSync(args);
+        castToType<WebFCarouselSlider>(element)._previousPageSync(args);
         return null;
       },
     ),
-    'slideTo': StaticDefinedSyncBindingObjectMethod(
+    'jumpToPage': StaticDefinedSyncBindingObjectMethod(
       call: (element, args) {
-        castToType<WebFCarouselSlider>(element)._slideToSync(args);
+        castToType<WebFCarouselSlider>(element)._jumpToPageSync(args);
         return null;
       },
     ),
-    'autoplayStart': StaticDefinedSyncBindingObjectMethod(
+    'animateToPage': StaticDefinedSyncBindingObjectMethod(
       call: (element, args) {
-        castToType<WebFCarouselSlider>(element)._autoplayStartSync(args);
+        castToType<WebFCarouselSlider>(element)._animateToPageSync(args);
         return null;
       },
     ),
-    'autoplayStop': StaticDefinedSyncBindingObjectMethod(
+    'startAutoPlay': StaticDefinedSyncBindingObjectMethod(
       call: (element, args) {
-        castToType<WebFCarouselSlider>(element)._autoplayStopSync(args);
+        castToType<WebFCarouselSlider>(element)._startAutoPlaySync(args);
+        return null;
+      },
+    ),
+    'stopAutoPlay': StaticDefinedSyncBindingObjectMethod(
+      call: (element, args) {
+        castToType<WebFCarouselSlider>(element)._stopAutoPlaySync(args);
         return null;
       },
     ),
@@ -306,7 +573,7 @@ class WebFCarouselSlider extends CarouselSliderBindings {
 class WebFCarouselSliderState extends WebFWidgetElementState {
   late final CarouselSliderController _controller;
   late final CarouselEventManager _eventManager;
-  bool _isDragging = false;
+  final GlobalKey _carouselKey = GlobalKey();
 
   WebFCarouselSliderState(super.widgetElement);
 
@@ -318,21 +585,38 @@ class WebFCarouselSliderState extends WebFWidgetElementState {
   void initState() {
     super.initState();
     _controller = CarouselSliderController();
-    _eventManager = CarouselEventManager(widgetElement);
+    _eventManager = CarouselEventManager(
+      onPageChanged: () => widgetElement.onPageChanged,
+      onScrolled: () => widgetElement.onScrolled,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncRealPageFromState();
+    });
   }
 
-  void nextPage({required int durationMs, required Curve curve}) {
-    _controller.nextPage(
-      duration: Duration(milliseconds: durationMs),
-      curve: curve,
-    );
+  void _syncRealPageFromState({int? fallback}) {
+    final dynamic sliderState = _carouselKey.currentState;
+    final dynamic carouselState = sliderState?.state;
+    final dynamic realPage = carouselState?.realPage;
+    if (realPage is int) {
+      widgetElement._setRealPage(realPage);
+      return;
+    }
+    if (realPage is double) {
+      widgetElement._setRealPage(realPage.toInt());
+      return;
+    }
+    if (fallback != null) {
+      widgetElement._setRealPage(fallback);
+    }
   }
 
-  void previousPage({required int durationMs, required Curve curve}) {
-    _controller.previousPage(
-      duration: Duration(milliseconds: durationMs),
-      curve: curve,
-    );
+  void nextPage({required Duration duration, required Curve curve}) {
+    _controller.nextPage(duration: duration, curve: curve);
+  }
+
+  void previousPage({required Duration duration, required Curve curve}) {
+    _controller.previousPage(duration: duration, curve: curve);
   }
 
   void jumpToPage(int page) {
@@ -341,68 +625,64 @@ class WebFCarouselSliderState extends WebFWidgetElementState {
 
   void animateToPage({
     required int page,
-    required int durationMs,
+    required Duration duration,
     required Curve curve,
   }) {
-    _controller.animateToPage(
-      page,
-      duration: Duration(milliseconds: durationMs),
-      curve: curve,
-    );
+    _controller.animateToPage(page, duration: duration, curve: curve);
   }
 
-  void startAutoplay() {
+  void startAutoPlay() {
     _controller.startAutoPlay();
   }
 
-  void stopAutoplay() {
+  void stopAutoPlay() {
     _controller.stopAutoPlay();
   }
 
-  CarouselOptions _buildOptions(double? height) {
-    final viewportFraction = TypeConverter.slidesPerViewToViewportFraction(
-      widgetElement._slidesPerView,
-    );
+  void _handlePageChanged(int index, CarouselPageChangedReason reason) {
+    _syncRealPageFromState(fallback: index);
+    _eventManager.dispatchPageChanged(index, reason);
+  }
+
+  void _handleScrolled(double? value) {
+    _eventManager.dispatchScrolled(value);
+  }
+
+  CarouselOptions _buildOptions() {
     final config = CarouselConfig(
-      height: height,
+      height: widgetElement._height,
       aspectRatio: widgetElement._aspectRatio,
-      viewportFraction: viewportFraction,
-      initialIndex: widgetElement._initialSlide,
-      loop: widgetElement._loop,
-      autoplay: widgetElement._autoplay,
-      autoplayDelayMs: widgetElement._autoplayDelayMs.toDouble(),
-      speedMs: widgetElement._speedMs.toDouble(),
-      easing: widgetElement._easingCurve,
-      direction: widgetElement._direction,
-      centeredSlides: widgetElement._centeredSlides,
-      allowTouchMove: widgetElement._allowTouchMove,
-      autoplayDisableOnInteraction: widgetElement._autoplayDisableOnInteraction,
-      onPageChanged: _onPageChanged,
+      viewportFraction: widgetElement._viewportFraction,
+      initialPage: widgetElement._initialPage,
+      enableInfiniteScroll: widgetElement._enableInfiniteScroll,
+      animateToClosest: widgetElement._animateToClosest,
+      reverse: widgetElement._reverse,
+      autoPlay: widgetElement._autoPlay,
+      autoPlayIntervalMs: widgetElement._autoPlayIntervalMs.toDouble(),
+      autoPlayAnimationDurationMs:
+          widgetElement._autoPlayAnimationDurationMs.toDouble(),
+      autoPlayCurve: widgetElement._autoPlayCurve,
+      enlargeCenterPage: widgetElement._enlargeCenterPage,
+      scrollPhysics: widgetElement._scrollPhysics,
+      pageSnapping: widgetElement._pageSnapping,
+      scrollDirection: widgetElement._scrollDirection,
+      pauseAutoPlayOnTouch: widgetElement._pauseAutoPlayOnTouch,
+      pauseAutoPlayOnManualNavigate:
+          widgetElement._pauseAutoPlayOnManualNavigate,
+      pauseAutoPlayInFiniteScroll: widgetElement._pauseAutoPlayInFiniteScroll,
+      pageViewKey: widgetElement._pageViewKeyValue == null
+          ? null
+          : PageStorageKey<String>(widgetElement._pageViewKeyValue!),
+      enlargeStrategy: widgetElement._enlargeStrategy,
+      enlargeFactor: widgetElement._enlargeFactor,
+      disableCenter: widgetElement._disableCenter,
+      padEnds: widgetElement._padEnds,
+      clipBehavior: widgetElement._clipBehavior,
+      onPageChanged: _handlePageChanged,
+      onScrolled: _handleScrolled,
     );
 
     return config.build();
-  }
-
-  String _mapChangeReason(CarouselPageChangedReason reason) {
-    switch (reason) {
-      case CarouselPageChangedReason.timed:
-        return 'autoplay';
-      case CarouselPageChangedReason.manual:
-        return 'drag';
-      case CarouselPageChangedReason.controller:
-        return 'api';
-    }
-  }
-
-  void _onPageChanged(int index, CarouselPageChangedReason reason) {
-    final previousIndex = widgetElement._activeIndex;
-    widgetElement._activeIndex = index;
-
-    _eventManager.dispatchChange(
-      index: index,
-      previousIndex: previousIndex,
-      reason: _mapChangeReason(reason),
-    );
   }
 
   @override
@@ -413,45 +693,17 @@ class WebFCarouselSliderState extends WebFWidgetElementState {
     if (width == 0) width = null;
     if (height == 0) height = null;
 
-    final options = _buildOptions(height);
+    final options = _buildOptions();
     final items = _buildItems();
 
-    final carousel = CarouselSlider(
+    Widget content = CarouselSlider(
+      key: _carouselKey,
       options: options,
       items: items,
       controller: _controller,
+      disableGesture: widgetElement._disableGesture,
     );
 
-    final allowTouchMove = widgetElement._allowTouchMove;
-    final gestureCarousel = GestureDetector(
-      onPanStart: allowTouchMove
-          ? (_) {
-              if (widgetElement._autoplayDisableOnInteraction &&
-                  widgetElement._autoplay) {
-                widgetElement._setAutoplay(false);
-              }
-              _isDragging = true;
-              _eventManager.dispatchChangeStart(widgetElement._activeIndex);
-            }
-          : null,
-      onPanEnd: allowTouchMove
-          ? (_) {
-              if (!_isDragging) return;
-              _isDragging = false;
-              _eventManager.dispatchChangeEnd(widgetElement._activeIndex);
-            }
-          : null,
-      onPanCancel: allowTouchMove
-          ? () {
-              if (!_isDragging) return;
-              _isDragging = false;
-              _eventManager.dispatchChangeEnd(widgetElement._activeIndex);
-            }
-          : null,
-      child: carousel,
-    );
-
-    Widget content = gestureCarousel;
     if (width != null || height != null) {
       content = SizedBox(
         width: width,
@@ -465,37 +717,13 @@ class WebFCarouselSliderState extends WebFWidgetElementState {
 
   List<Widget> _buildItems() {
     final List<Widget> children = [];
-    for (var child in widgetElement.childNodes) {
+    for (final child in widgetElement.childNodes) {
       if (child is WebFCarouselSliderItem) {
+        children.add(child.toWidget());
+      } else if (child is dom.Element) {
         children.add(child.toWidget());
       }
     }
-
-    if (children.isNotEmpty) {
-      return children;
-    }
-
-    final placeholder = Container(
-      color: Colors.grey[300],
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.image,
-              size: 48,
-              color: Colors.grey,
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Add <webf-carousel-slider-item>',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    return [placeholder, placeholder, placeholder];
+    return children;
   }
 }

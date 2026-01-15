@@ -232,7 +232,7 @@ class TypeConverter {
     return aliasMap[lower] ?? fallback;
   }
 
-  /// 验证并限制 viewportFraction 在有效范围内
+  /// 解析 viewportFraction，保持原始语义
   static double clampViewportFraction(
     dynamic value, {
     double defaultValue = 1.0,
@@ -240,35 +240,10 @@ class TypeConverter {
     return toDouble(
       value,
       defaultValue: defaultValue,
-      min: 0.01,
-      max: 1.0,
     );
   }
 
-  /// 验证并限制 slidesPerView 在合理范围内
-  static double clampSlidesPerView(
-    dynamic value, {
-    double defaultValue = 1.0,
-  }) {
-    return toDouble(
-      value,
-      defaultValue: defaultValue,
-      min: 1.0,
-      max: 10.0,
-    );
-  }
-
-  /// 将 slidesPerView 转为 viewportFraction
-  static double slidesPerViewToViewportFraction(
-    dynamic value, {
-    double defaultSlidesPerView = 1.0,
-  }) {
-    final slidesPerView =
-        clampSlidesPerView(value, defaultValue: defaultSlidesPerView);
-    return clampViewportFraction(1 / slidesPerView);
-  }
-
-  /// 验证并限制 autoPlayInterval（毫秒）在合理范围内
+  /// 解析 autoPlayInterval（毫秒），保持原始语义
   static int clampAutoPlayIntervalMs(
     dynamic value, {
     int defaultValue = 4000,
@@ -276,12 +251,10 @@ class TypeConverter {
     return toInt(
       value,
       defaultValue: defaultValue,
-      min: 500,
-      max: 60000,
     );
   }
 
-  /// 验证并限制 autoPlayAnimationDuration（毫秒）在合理范围内
+  /// 解析 autoPlayAnimationDuration（毫秒），保持原始语义
   static int clampAutoPlayAnimationDurationMs(
     dynamic value, {
     int defaultValue = 800,
@@ -289,12 +262,10 @@ class TypeConverter {
     return toInt(
       value,
       defaultValue: defaultValue,
-      min: 0,
-      max: 5000,
     );
   }
 
-  /// 验证并限制 enlargeFactor 在合理范围内
+  /// 解析 enlargeFactor，保持原始语义
   static double clampEnlargeFactor(
     dynamic value, {
     double defaultValue = 0.3,
@@ -302,8 +273,6 @@ class TypeConverter {
     return toDouble(
       value,
       defaultValue: defaultValue,
-      min: 0.0,
-      max: 1.0,
     );
   }
 }

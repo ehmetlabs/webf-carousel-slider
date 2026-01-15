@@ -5,7 +5,8 @@
 // https://vuejs.org/guide/extras/web-components
 import type { EmitFn, PublicProps, StyleValue, ClassValue } from 'vue';
 import '@openwebf/vue-core-ui';
-export type CarouselChangeReason = "autoplay" | "drag" | "api";
+export type CarouselPageChangedReason = "timed" | "manual" | "controller";
+export type CenterPageEnlargeStrategy = "scale" | "height" | "zoom";
 type EventMap = {
   [event: string]: Event
 }
@@ -36,47 +37,75 @@ type DefineCustomElement<
   $emit: VueEmit<Events>
 }
 export type CarouselSliderProps = {
-  'autoplay'?: boolean;
-  'autoplay-delay'?: number;
-  'autoplay-disable-on-interaction'?: boolean;
-  'speed'?: number;
-  'easing'?: string;
-  'loop'?: boolean;
-  'direction'?: string;
-  'slides-per-view'?: number;
-  'centered-slides'?: boolean;
-  'initial-slide'?: number;
-  'allow-touch-move'?: boolean;
-  'active-index'?: number;
+  'height'?: number;
+  'aspect-ratio'?: number;
+  'viewport-fraction'?: number;
+  'initial-page'?: number;
+  'enable-infinite-scroll'?: boolean;
+  'animate-to-closest'?: boolean;
+  'reverse'?: boolean;
+  'auto-play'?: boolean;
+  'auto-play-interval'?: number;
+  'auto-play-animation-duration'?: number;
+  'auto-play-curve'?: string;
+  'enlarge-center-page'?: boolean;
+  'on-page-changed'?: any;
+  'on-scrolled'?: any;
+  'scroll-physics'?: string;
+  'page-snapping'?: boolean;
+  'scroll-direction'?: 'horizontal' | 'vertical';
+  'pause-auto-play-on-touch'?: boolean;
+  'pause-auto-play-on-manual-navigate'?: boolean;
+  'pause-auto-play-in-finite-scroll'?: boolean;
+  'page-view-key'?: string;
+  'enlarge-strategy'?: 'scale' | 'height' | 'zoom';
+  'enlarge-factor'?: number;
+  'disable-center'?: boolean;
+  'pad-ends'?: boolean;
+  'clip-behavior'?: string;
+  'disable-gesture'?: boolean;
+  'real-page'?: number;
   'id'?: string;
   'class'?: ClassValue;
   'style'?: StyleValue;
 }
 export interface CarouselSliderElement {
-  autoplay?: boolean;
-  autoplayDelay?: number;
-  autoplayDisableOnInteraction?: boolean;
-  speed?: number;
-  easing?: string;
-  loop?: boolean;
-  direction?: string;
-  slidesPerView?: number;
-  centeredSlides?: boolean;
-  initialSlide?: number;
-  allowTouchMove?: boolean;
-  activeIndex?: number;
-  slideNext(speed: number): void;
-  slidePrev(speed: number): void;
-  slideTo(index: number, speed: number): void;
-  autoplayStart(): void;
-  autoplayStop(): void;
+  height?: number;
+  aspectRatio?: number;
+  viewportFraction?: number;
+  initialPage?: number;
+  enableInfiniteScroll?: boolean;
+  animateToClosest?: boolean;
+  reverse?: boolean;
+  autoPlay?: boolean;
+  autoPlayInterval?: number;
+  autoPlayAnimationDuration?: number;
+  autoPlayCurve?: string;
+  enlargeCenterPage?: boolean;
+  onPageChanged?: any;
+  onScrolled?: any;
+  scrollPhysics?: string;
+  pageSnapping?: boolean;
+  scrollDirection?: 'horizontal' | 'vertical';
+  pauseAutoPlayOnTouch?: boolean;
+  pauseAutoPlayOnManualNavigate?: boolean;
+  pauseAutoPlayInFiniteScroll?: boolean;
+  pageViewKey?: string;
+  enlargeStrategy?: 'scale' | 'height' | 'zoom';
+  enlargeFactor?: number;
+  disableCenter?: boolean;
+  padEnds?: boolean;
+  clipBehavior?: string;
+  disableGesture?: boolean;
+  realPage?: number;
+  nextPage(duration: number, curve: string): void;
+  previousPage(duration: number, curve: string): void;
+  jumpToPage(page: number): void;
+  animateToPage(page: number, duration: number, curve: string): void;
+  startAutoPlay(): void;
+  stopAutoPlay(): void;
 }
 export type CarouselSliderEvents = {
-  change: CustomEvent<{ index: number; previousIndex: number; reason: CarouselChangeReason }>;
-  changestart: CustomEvent<{ index: number }>;
-  changeend: CustomEvent<{ index: number }>;
-  play: Event;
-  pause: Event;
 }
 export type CarouselSliderItemProps = {
   'image-url'?: string;

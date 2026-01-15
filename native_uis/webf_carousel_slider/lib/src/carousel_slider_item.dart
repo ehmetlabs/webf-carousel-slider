@@ -9,8 +9,10 @@ class WebFCarouselSliderItem extends CarouselSliderItemBindings {
 
   String? _imageUrl;
 
+  @override
   String? get imageUrl => _imageUrl;
 
+  @override
   set imageUrl(dynamic value) {
     final next = _normalizeText(value?.toString());
     if (_imageUrl != next) {
@@ -33,30 +35,6 @@ class WebFCarouselSliderItem extends CarouselSliderItemBindings {
     }
     return trimmed;
   }
-
-  @override
-  void initializeAttributes(Map<String, ElementAttributeProperty> attributes) {
-    super.initializeAttributes(attributes);
-    attributes['image-url'] = ElementAttributeProperty(
-      getter: () => _imageUrl,
-      setter: (value) => imageUrl = value,
-      deleter: () => imageUrl = null,
-    );
-  }
-
-  static final StaticDefinedBindingPropertyMap carouselSliderItemProperties = {
-    'imageUrl': StaticDefinedBindingProperty(
-      getter: (element) => castToType<WebFCarouselSliderItem>(element).imageUrl,
-      setter: (element, value) =>
-          castToType<WebFCarouselSliderItem>(element).imageUrl = value,
-    ),
-  };
-
-  @override
-  List<StaticDefinedBindingPropertyMap> get properties => [
-        ...super.properties,
-        carouselSliderItemProperties,
-      ];
 
   @override
   WebFWidgetElementState createState() {

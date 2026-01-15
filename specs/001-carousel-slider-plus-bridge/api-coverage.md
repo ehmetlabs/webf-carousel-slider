@@ -16,57 +16,64 @@ exposure and records gaps. It is a parity checklist for FR-001/FR-002/FR-003.
 
 | Source API | Type | JS Exposure | Status | Notes |
 | --- | --- | --- | --- | --- |
-| CarouselSlider(...) | constructor | <webf-carousel-slider> element | partial | No direct constructor; element + attributes map to options. |
-| CarouselSlider.builder(...) | constructor | N/A | missing | No JS builder API exposed. |
+| CarouselSlider(...) | constructor | <webf-carousel-slider> element | exposed | Element + properties map to CarouselOptions. |
+| CarouselSlider.builder(...) | constructor | DOM child elements | exposed | Use DOM children as items to mirror builder behavior. |
 
 ## CarouselOptions (properties)
 
 | Source API | Type | JS Exposure | Status | Notes |
 | --- | --- | --- | --- | --- |
-| height | double? | N/A | missing | No height attribute in JS. |
-| aspectRatio | double | N/A | missing | No aspectRatio attribute in JS. |
-| viewportFraction | double | slidesPerView | mismatch | slidesPerView is not viewportFraction; mapping needed. |
-| initialPage | int | initialSlide | mismatch | Naming differs. |
-| enableInfiniteScroll | bool | loop | mismatch | Naming differs. |
-| animateToClosest | bool | N/A | missing | Not exposed in JS. |
-| reverse | bool | N/A | missing | Not exposed in JS. |
-| autoPlay | bool | autoplay | mismatch | Naming differs (autoPlay vs autoplay). |
-| autoPlayInterval | Duration | autoplayDelay | mismatch | unit uses Duration vs ms; ensure mapping. |
-| autoPlayAnimationDuration | Duration | speed | mismatch | speed is ms; ensure mapping. |
-| autoPlayCurve | Curve | easing | mismatch | easing string vs Curve; mapping needed. |
-| enlargeCenterPage | bool | centeredSlides | mismatch | centeredSlides semantics differ; verify. |
-| onPageChanged | callback | change event | partial | JS uses CustomEvent with {index, previousIndex, reason}. |
-| onScrolled | ValueChanged<double?> | N/A | missing | No JS event/callback. |
-| scrollPhysics | ScrollPhysics? | N/A | missing | Not exposed in JS. |
-| pageSnapping | bool | N/A | missing | Not exposed in JS. |
-| scrollDirection | Axis | direction | mismatch | direction string vs Axis. |
-| pauseAutoPlayOnTouch | bool | autoplayDisableOnInteraction | mismatch | Naming differs; ensure semantics. |
-| pauseAutoPlayOnManualNavigate | bool | N/A | missing | Not exposed in JS. |
-| pauseAutoPlayInFiniteScroll | bool | N/A | missing | Not exposed in JS. |
-| pageViewKey | PageStorageKey? | N/A | missing | Not exposed in JS. |
-| enlargeStrategy | CenterPageEnlargeStrategy | N/A | missing | Not exposed in JS. |
-| enlargeFactor | double | N/A | missing | Not exposed in JS. |
-| disableCenter | bool | N/A | missing | Not exposed in JS. |
-| padEnds | bool | N/A | missing | Not exposed in JS. |
-| clipBehavior | Clip | N/A | missing | Not exposed in JS. |
+| height | double? | height | exposed | number → double. |
+| aspectRatio | double | aspectRatio | exposed | number → double. |
+| viewportFraction | double | viewportFraction | exposed | number → double. |
+| initialPage | int | initialPage | exposed | number → int. |
+| enableInfiniteScroll | bool | enableInfiniteScroll | exposed | boolean. |
+| animateToClosest | bool | animateToClosest | exposed | boolean. |
+| reverse | bool | reverse | exposed | boolean. |
+| autoPlay | bool | autoPlay | exposed | boolean. |
+| autoPlayInterval | Duration | autoPlayInterval | exposed | milliseconds number. |
+| autoPlayAnimationDuration | Duration | autoPlayAnimationDuration | exposed | milliseconds number. |
+| autoPlayCurve | Curve | autoPlayCurve | exposed | curve name string. |
+| enlargeCenterPage | bool | enlargeCenterPage | exposed | boolean. |
+| onPageChanged | callback | onPageChanged | exposed | callback property only. |
+| onScrolled | ValueChanged<double?> | onScrolled | exposed | callback property only. |
+| scrollPhysics | ScrollPhysics? | scrollPhysics | exposed | string identifier. |
+| pageSnapping | bool | pageSnapping | exposed | boolean. |
+| scrollDirection | Axis | scrollDirection | exposed | `horizontal` \| `vertical`. |
+| pauseAutoPlayOnTouch | bool | pauseAutoPlayOnTouch | exposed | boolean. |
+| pauseAutoPlayOnManualNavigate | bool | pauseAutoPlayOnManualNavigate | exposed | boolean. |
+| pauseAutoPlayInFiniteScroll | bool | pauseAutoPlayInFiniteScroll | exposed | boolean. |
+| pageViewKey | PageStorageKey? | pageViewKey | exposed | string identifier. |
+| enlargeStrategy | CenterPageEnlargeStrategy | enlargeStrategy | exposed | enum string. |
+| enlargeFactor | double | enlargeFactor | exposed | number → double. |
+| disableCenter | bool | disableCenter | exposed | boolean. |
+| padEnds | bool | padEnds | exposed | boolean. |
+| clipBehavior | Clip | clipBehavior | exposed | string identifier. |
+
+## CarouselSlider (widget properties)
+
+| Source API | Type | JS Exposure | Status | Notes |
+| --- | --- | --- | --- | --- |
+| disableGesture | bool | disableGesture | exposed | boolean. |
 
 ## CarouselSliderController (methods)
 
 | Source API | Type | JS Exposure | Status | Notes |
 | --- | --- | --- | --- | --- |
-| nextPage({duration, curve}) | method | slideNext(speed?) | partial | speed maps to duration ms; curve not exposed. |
-| previousPage({duration, curve}) | method | slidePrev(speed?) | partial | speed maps to duration ms; curve not exposed. |
-| jumpToPage(int page) | method | slideTo(index, speed?) | partial | slideTo uses optional speed; jump vs animate not distinguished. |
-| animateToPage(int page, {duration, curve}) | method | slideTo(index, speed?) | partial | curve not exposed. |
-| startAutoPlay() | method | autoplayStart() | mismatch | Naming differs. |
-| stopAutoPlay() | method | autoplayStop() | mismatch | Naming differs. |
+| nextPage({duration, curve}) | method | nextPage(duration?, curve?) | exposed | duration in ms; curve name string. |
+| previousPage({duration, curve}) | method | previousPage(duration?, curve?) | exposed | duration in ms; curve name string. |
+| jumpToPage(int page) | method | jumpToPage(page) | exposed | direct jump without animation. |
+| animateToPage(int page, {duration, curve}) | method | animateToPage(page, duration?, curve?) | exposed | duration in ms; curve name string. |
+| startAutoPlay() | method | startAutoPlay() | exposed | starts autoplay timer. |
+| stopAutoPlay() | method | stopAutoPlay() | exposed | stops autoplay timer. |
 
 ## CarouselState (public)
 
 | Source API | Type | JS Exposure | Status | Notes |
 | --- | --- | --- | --- | --- |
-| CarouselState(...) | class | N/A | missing | Internal state not exposed. |
-| properties/methods | class members | N/A | missing | No JS exposure. |
+| CarouselState(...) | class | N/A | missing | JS does not expose the class directly. |
+| realPage | int | realPage (read-only) | exposed | surfaced via element property. |
+| other members | class members | N/A | missing | Not exposed. |
 
 ## Helpers
 
@@ -78,8 +85,8 @@ exposure and records gaps. It is a parity checklist for FR-001/FR-002/FR-003.
 
 | Source API | Type | JS Exposure | Status | Notes |
 | --- | --- | --- | --- | --- |
-| CarouselPageChangedReason (timed/manual/controller) | enum | CarouselChangeReason ('autoplay'|'drag'|'api') | mismatch | Value names differ; mapping needed. |
-| CenterPageEnlargeStrategy (scale/height/zoom) | enum | N/A | missing | Not exposed in JS. |
+| CarouselPageChangedReason (timed/manual/controller) | enum | CarouselPageChangedReason ('timed'/'manual'/'controller') | exposed | string union in JS types. |
+| CenterPageEnlargeStrategy (scale/height/zoom) | enum | CenterPageEnlargeStrategy ('scale'/'height'/'zoom') | exposed | string union in JS types. |
 
 ## Typedefs
 
@@ -96,39 +103,50 @@ exposure and records gaps. It is a parity checklist for FR-001/FR-002/FR-003.
 
 ## JS Events (current)
 
-| JS Event | Payload | Source API | Status | Notes |
-| --- | --- | --- | --- | --- |
-| change | { index, previousIndex, reason } | onPageChanged | partial | reason values differ from CarouselPageChangedReason. |
-| changestart | { index } | N/A | missing | No source API equivalent. |
-| changeend | { index } | N/A | missing | No source API equivalent. |
-| play | Event | startAutoPlay | partial | Existence OK; payload differs (none). |
-| pause | Event | stopAutoPlay | partial | Existence OK; payload differs (none). |
+无额外自定义事件暴露，使用 `onPageChanged` / `onScrolled` 回调属性。
 
 ## JS Element Properties/Methods (current)
 
 | JS Exposure | Type | Source API | Status | Notes |
 | --- | --- | --- | --- | --- |
-| autoplay | boolean | autoPlay | mismatch | Naming differs. |
-| autoplayDelay | number (ms) | autoPlayInterval | mismatch | Duration vs ms. |
-| autoplayDisableOnInteraction | boolean | pauseAutoPlayOnTouch | mismatch | Naming differs. |
-| speed | number (ms) | autoPlayAnimationDuration | mismatch | Duration vs ms; also used by slide methods. |
-| easing | string | autoPlayCurve | mismatch | Curve vs string. |
-| loop | boolean | enableInfiniteScroll | mismatch | Naming differs. |
-| direction | string | scrollDirection | mismatch | Axis vs string. |
-| slidesPerView | number | viewportFraction | mismatch | Semantics differ; mapping required. |
-| centeredSlides | boolean | enlargeCenterPage | mismatch | Semantics differ. |
-| initialSlide | number | initialPage | mismatch | Naming differs. |
-| allowTouchMove | boolean | disableGesture | mismatch | Inverse naming/logic. |
-| activeIndex (readonly) | number | CarouselState.realPage | partial | Needs mapping to real/current index. |
-| slideNext(speed?) | method | nextPage | partial | Curve not exposed. |
-| slidePrev(speed?) | method | previousPage | partial | Curve not exposed. |
-| slideTo(index, speed?) | method | jumpToPage/animateToPage | partial | Jump vs animate not distinguished. |
-| autoplayStart() | method | startAutoPlay | mismatch | Naming differs. |
-| autoplayStop() | method | stopAutoPlay | mismatch | Naming differs. |
+| height | number | CarouselOptions.height | exposed | number → double. |
+| aspectRatio | number | CarouselOptions.aspectRatio | exposed | number → double. |
+| viewportFraction | number | CarouselOptions.viewportFraction | exposed | number → double. |
+| initialPage | number | CarouselOptions.initialPage | exposed | number → int. |
+| enableInfiniteScroll | boolean | CarouselOptions.enableInfiniteScroll | exposed | boolean. |
+| animateToClosest | boolean | CarouselOptions.animateToClosest | exposed | boolean. |
+| reverse | boolean | CarouselOptions.reverse | exposed | boolean. |
+| autoPlay | boolean | CarouselOptions.autoPlay | exposed | boolean. |
+| autoPlayInterval | number (ms) | CarouselOptions.autoPlayInterval | exposed | milliseconds. |
+| autoPlayAnimationDuration | number (ms) | CarouselOptions.autoPlayAnimationDuration | exposed | milliseconds. |
+| autoPlayCurve | string | CarouselOptions.autoPlayCurve | exposed | curve name string. |
+| enlargeCenterPage | boolean | CarouselOptions.enlargeCenterPage | exposed | boolean. |
+| onPageChanged | callback | CarouselOptions.onPageChanged | exposed | callback property. |
+| onScrolled | callback | CarouselOptions.onScrolled | exposed | callback property. |
+| scrollPhysics | string | CarouselOptions.scrollPhysics | exposed | string identifier. |
+| pageSnapping | boolean | CarouselOptions.pageSnapping | exposed | boolean. |
+| scrollDirection | string | CarouselOptions.scrollDirection | exposed | `horizontal` \| `vertical`. |
+| pauseAutoPlayOnTouch | boolean | CarouselOptions.pauseAutoPlayOnTouch | exposed | boolean. |
+| pauseAutoPlayOnManualNavigate | boolean | CarouselOptions.pauseAutoPlayOnManualNavigate | exposed | boolean. |
+| pauseAutoPlayInFiniteScroll | boolean | CarouselOptions.pauseAutoPlayInFiniteScroll | exposed | boolean. |
+| pageViewKey | string | CarouselOptions.pageViewKey | exposed | string identifier. |
+| enlargeStrategy | string | CarouselOptions.enlargeStrategy | exposed | enum string. |
+| enlargeFactor | number | CarouselOptions.enlargeFactor | exposed | number → double. |
+| disableCenter | boolean | CarouselOptions.disableCenter | exposed | boolean. |
+| padEnds | boolean | CarouselOptions.padEnds | exposed | boolean. |
+| clipBehavior | string | CarouselOptions.clipBehavior | exposed | string identifier. |
+| disableGesture | boolean | CarouselSlider.disableGesture | exposed | boolean. |
+| realPage (readonly) | number | CarouselState.realPage | exposed | read-only mapping. |
+| nextPage(duration?, curve?) | method | CarouselSliderController.nextPage | exposed | duration ms, curve name. |
+| previousPage(duration?, curve?) | method | CarouselSliderController.previousPage | exposed | duration ms, curve name. |
+| jumpToPage(page) | method | CarouselSliderController.jumpToPage | exposed | direct jump. |
+| animateToPage(page, duration?, curve?) | method | CarouselSliderController.animateToPage | exposed | duration ms, curve name. |
+| startAutoPlay() | method | CarouselSliderController.startAutoPlay | exposed | starts autoplay. |
+| stopAutoPlay() | method | CarouselSliderController.stopAutoPlay | exposed | stops autoplay. |
 
 ## Notes
-- This document intentionally records mismatches without proposing conversions, per FR-003.
-- Use it as the canonical checklist for API parity work and tests.
+- 记录 JS 暴露与官方 API 的一致性状态，任何差异需说明原因与影响。
+- 作为 API 完整性核对清单与测试对照。
 
 ## Verification Steps (per API)
 
@@ -164,6 +182,9 @@ exposure and records gaps. It is a parity checklist for FR-001/FR-002/FR-003.
 - `padEnds`: 设置 `padEnds` 并验证两端 padding。
 - `clipBehavior`: 设置 `clipBehavior` 并验证裁剪行为。
 
+### CarouselSlider widget properties
+- `disableGesture`: 设置 `disableGesture` 并验证是否禁用触控滑动。
+
 ### CarouselSliderController methods
 - `nextPage`: 调用并确认向后翻页与动画参数。
 - `previousPage`: 调用并确认向前翻页与动画参数。
@@ -173,7 +194,7 @@ exposure and records gaps. It is a parity checklist for FR-001/FR-002/FR-003.
 - `stopAutoPlay`: 调用并确认自动播放停止。
 
 ### CarouselState (public)
-- `CarouselState`: 暴露后验证可读取 `realPage` 等状态字段。
+- `realPage`: 验证 `realPage` 读取与内部状态一致。
 
 ### Helpers
 - `ConditionalParentWidget`: Flutter 端存在性验证（无需 JS 暴露）。
@@ -190,4 +211,65 @@ exposure and records gaps. It is a parity checklist for FR-001/FR-002/FR-003.
 - `remainder`: 调用并验证返回值与官方实现一致。
 
 ### JS Events (current)
-- `change/changestart/changeend/play/pause`: 若被移除，确认不再对外暴露。
+- 无自定义事件；仅验证 `onPageChanged` / `onScrolled` 回调。
+
+## Example Snippets (JS)
+
+```js
+const carousel = document.querySelector('webf-carousel-slider');
+
+// Properties (CarouselOptions + widget properties)
+carousel.height = 240;
+carousel.aspectRatio = 2.0;
+carousel.viewportFraction = 0.8;
+carousel.initialPage = 1;
+carousel.enableInfiniteScroll = true;
+carousel.animateToClosest = true;
+carousel.reverse = false;
+carousel.autoPlay = true;
+carousel.autoPlayInterval = 3000;
+carousel.autoPlayAnimationDuration = 800;
+carousel.autoPlayCurve = 'fast-out-slow-in';
+carousel.enlargeCenterPage = false;
+carousel.scrollPhysics = 'clamping';
+carousel.pageSnapping = true;
+carousel.scrollDirection = 'horizontal';
+carousel.pauseAutoPlayOnTouch = true;
+carousel.pauseAutoPlayOnManualNavigate = true;
+carousel.pauseAutoPlayInFiniteScroll = false;
+carousel.pageViewKey = 'carousel-main';
+carousel.enlargeStrategy = 'scale';
+carousel.enlargeFactor = 0.3;
+carousel.disableCenter = false;
+carousel.padEnds = true;
+carousel.clipBehavior = 'hardEdge';
+carousel.disableGesture = false;
+
+// Callbacks
+carousel.onPageChanged = (index, reason) => {
+  console.log(index, reason);
+};
+carousel.onScrolled = (value) => {
+  console.log(value);
+};
+
+// Controller methods
+carousel.nextPage();
+carousel.previousPage(300, 'linear');
+carousel.jumpToPage(2);
+carousel.animateToPage(3, 300, 'ease-in-out');
+carousel.startAutoPlay();
+carousel.stopAutoPlay();
+
+// Items
+// <webf-carousel-slider-item image-url="image.jpg"></webf-carousel-slider-item>
+```
+
+## WebF Compatibility (T033)
+
+- 未新增 DOM/CSS/JS API 使用；仅使用既有自定义元素属性与 JS 回调机制。
+
+## Performance Validation (T027)
+
+- 方法：默认配置连续滑动 10 次，目标 60 fps，无可感知卡顿。
+- 结果：未执行（需要在真实设备/模拟器验证）。

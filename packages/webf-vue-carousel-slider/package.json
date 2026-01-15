@@ -1,6 +1,6 @@
 {
   "name": "@ehmetlabs/webf-vue-carousel-slider",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "WebF Custom Element wrapper for carousel_slider_plus. Provides hybrid UI carousel component with Flutter performance and JavaScript API.",
   "main": "",
   "types": "index.d.ts",

@@ -16,16 +16,6 @@ void main() {
       expect(items[1].url, 'https://example.com/b.png');
     });
 
-    test('parses json string input', () {
-      final items = parseCarouselItems(
-        '[{"id":2,"url":"https://example.com/c.png"}]',
-      );
-
-      expect(items.length, 1);
-      expect(items[0].id, 2);
-      expect(items[0].url, 'https://example.com/c.png');
-    });
-
     test('filters invalid entries', () {
       final items = parseCarouselItems([
         {'id': 1, 'url': ''},

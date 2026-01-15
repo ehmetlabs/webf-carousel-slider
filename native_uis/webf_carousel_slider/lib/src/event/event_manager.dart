@@ -1,53 +1,39 @@
+import 'dart:async';
+
+import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:webf/webf.dart';
 
-/// 事件管理器
+typedef CarouselCallbackGetter = dynamic Function();
+
+/// 回调管理器
 ///
-/// 职责:
-/// - 统一管理轮播事件派发
-/// - 封装 CustomEvent 创建逻辑
+/// 负责调用 JS 侧回调以匹配 carousel_slider_plus 的语义。
 class CarouselEventManager {
-  final WidgetElement element;
+  CarouselEventManager({
+    required CarouselCallbackGetter onPageChanged,
+    required CarouselCallbackGetter onScrolled,
+  })  : _onPageChanged = onPageChanged,
+        _onScrolled = onScrolled;
 
-  CarouselEventManager(this.element);
+  final CarouselCallbackGetter _onPageChanged;
+  final CarouselCallbackGetter _onScrolled;
 
-  void dispatchChange({
-    required int index,
-    required int previousIndex,
-    required String reason,
-  }) {
-    element.dispatchEvent(CustomEvent(
-      'change',
-      detail: {
-        'index': index,
-        'previousIndex': previousIndex,
-        'reason': reason,
-      },
-    ));
+  void dispatchPageChanged(int index, CarouselPageChangedReason reason) {
+    _invokeCallback(_onPageChanged(), [index, reason.name]);
   }
 
-  void dispatchChangeStart(int index) {
-    element.dispatchEvent(CustomEvent(
-      'changestart',
-      detail: {
-        'index': index,
-      },
-    ));
+  void dispatchScrolled(double? value) {
+    _invokeCallback(_onScrolled(), [value]);
   }
 
-  void dispatchChangeEnd(int index) {
-    element.dispatchEvent(CustomEvent(
-      'changeend',
-      detail: {
-        'index': index,
-      },
-    ));
-  }
-
-  void dispatchPlay() {
-    element.dispatchEvent(Event('play'));
-  }
-
-  void dispatchPause() {
-    element.dispatchEvent(Event('pause'));
+  void _invokeCallback(dynamic callback, List<dynamic> args) {
+    if (callback == null) return;
+    if (callback is JSFunction) {
+      unawaited(callback.invoke(args));
+      return;
+    }
+    if (callback is Function) {
+      Function.apply(callback, args);
+    }
   }
 }

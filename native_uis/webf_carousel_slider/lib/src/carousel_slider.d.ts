@@ -144,7 +144,7 @@ interface CarouselSliderProperties {
    * Determine which method to enlarge the center page.
    * Default: 'scale'
    */
-  enlargeStrategy?: CenterPageEnlargeStrategy;
+  enlargeStrategy?: 'scale' | 'height' | 'zoom';
 
   /**
    * How much the pages next to the center page will be scaled down.
@@ -169,6 +169,12 @@ interface CarouselSliderProperties {
    * Default: 'hardEdge'
    */
   clipBehavior?: string;
+
+  /**
+   * Whether to disable touch gestures.
+   * Default: false
+   */
+  disableGesture?: boolean;
 
   /**
    * Current real page index (read-only).
