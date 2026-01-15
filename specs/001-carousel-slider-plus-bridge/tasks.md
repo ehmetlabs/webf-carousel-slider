@@ -59,7 +59,7 @@ description: "Task list template for feature implementation"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [x] T008 [P] [US1] Add API parity tests in `native_uis/webf_carousel_slider/test/carousel_slider_api_parity_test.dart` (include negative assertions that legacy names are not exposed)
+- [x] T008 [P] [US1] Add API parity tests in `native_uis/webf_carousel_slider/test/carousel_slider_api_parity_test.dart` (include negative assertions that legacy names are not exposed + default values)
 - [x] T009 [P] [US1] Add event payload tests in `native_uis/webf_carousel_slider/test/carousel_slider_events_test.dart`
 
 ### Implementation for User Story 1
@@ -84,7 +84,8 @@ description: "Task list template for feature implementation"
 
 ### Tests for User Story 2 (REQUIRED) ⚠️
 
-- [x] T016 [P] [US2] Add behavior consistency tests in `native_uis/webf_carousel_slider/test/carousel_slider_behavior_test.dart` (覆盖关键行为清单与边界组合)
+- [x] T016 [P] [US2] Add behavior consistency tests in `native_uis/webf_carousel_slider/test/carousel_slider_behavior_test.dart` (覆盖关键行为清单 + 默认值 + 边界组合)
+- [x] T016a [P] [US2] Add edge-case behavior tests in `native_uis/webf_carousel_slider/test/carousel_slider_edge_cases_test.dart` (unsupported params failure mode, event order/frequency, out-of-order calls)
 
 ### Implementation for User Story 2
 
@@ -121,7 +122,7 @@ description: "Task list template for feature implementation"
 - [x] T024a Run `npm run build` in `packages/webf-react-carousel-slider/` if bindings/types changed
 - [x] T025 Run `flutter test` for `native_uis/webf_carousel_slider/`
 - [ ] T026 Run quickstart validation steps from `specs/001-carousel-slider-plus-bridge/quickstart.md`
-- [ ] T027 [P] 记录性能验证方法与阈值并执行验证与结果记录（默认配置连续滑动 10 次，目标 60 fps）写入 `specs/001-carousel-slider-plus-bridge/api-coverage.md`
+- [ ] T027 [P] 记录性能验证方法与阈值并执行验证与结果记录（默认配置连续滑动 10 次；使用 Flutter Performance Overlay 或 DevTools 统计，90% 帧时间 < 16.7ms；目标 60 fps）写入 `specs/001-carousel-slider-plus-bridge/api-coverage.md`
 - [x] T028 [P] Verify no new runtime dependencies were added by diffing `native_uis/webf_carousel_slider/pubspec.yaml` and `packages/webf-react-carousel-slider/package.json`, then record impact assessment in `specs/001-carousel-slider-plus-bridge/api-inventory.md`
 - [x] T029 [P] Record official API source links and version snapshot in `specs/001-carousel-slider-plus-bridge/api-inventory.md`
 - [x] T030 Update `native_uis/webf_carousel_slider/CHANGELOG.md` with breaking changes summary and migration notes

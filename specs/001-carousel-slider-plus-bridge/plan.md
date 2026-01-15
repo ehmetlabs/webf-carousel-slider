@@ -18,8 +18,8 @@
 **Testing**: flutter test (native_uis/webf_carousel_slider/test/)  
 **Target Platform**: WebF runtime (Flutter-based)  
 **Project Type**: Mobile/native UI library with JS bindings  
-**Performance Goals**: 保持 60 fps 级别的轮播性能与事件响应  
-**Constraints**: 不能改变对外 API 命名与语义；禁止新增不必要运行时依赖；破坏性变更必须更新 CHANGELOG 与迁移说明  
+**Performance Goals**: 保持 60 fps 级别的轮播性能与事件响应；使用 Flutter Performance Overlay 或 DevTools 统计，90% 帧时间 < 16.7ms  
+**Constraints**: 不能改变对外 API 命名与语义；禁止新增不必要运行时依赖；破坏性变更必须更新 CHANGELOG 与迁移说明；清理逻辑限定在 `config/controller/event/utils`，但为 API parity 允许调整 `carousel_slider.dart`、`carousel_slider_item.dart` 与 `.d.ts`  
 **Scale/Scope**: 单一组件库（carousel slider + item）
 
 ## Constitution Check
