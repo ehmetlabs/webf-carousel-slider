@@ -1,6 +1,6 @@
 name: webf_carousel_slider_example
 description: Demonstrates how to use the webf_carousel_slider package.
-version: 1.0.0
+version: 0.1.0
 publish_to: 'none'
 
 environment:

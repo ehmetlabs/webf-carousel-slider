@@ -1,4 +1,4 @@
-## 1.0.1
+## 0.1.0
 
 ### Features
 - ✨ Initial release of WebF Carousel Slider
@@ -28,7 +28,7 @@
 - Type-safe Dart implementation
 - Comprehensive TypeScript definitions
 
-## 1.0.0
+## 0.0.0
 
 ### Initial Release
 - Initial package setup
