@@ -24,6 +24,7 @@ import { CarouselSlider, CarouselSliderItem } from '@ehmetlabs/webf-react-carous
 export function App() {
   return (
     <CarouselSlider
+      style={{ height: 220 }}
       autoPlay
       autoPlayInterval={3000}
       autoPlayAnimationDuration={300}
@@ -38,6 +39,9 @@ export function App() {
   );
 }
 ```
+
+The generated React wrapper renders a `<carousel-slider>` custom element.
+Ensure the element has an explicit height via `style` or CSS.
 
 ## API reference
 

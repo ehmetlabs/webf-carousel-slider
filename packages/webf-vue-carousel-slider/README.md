@@ -20,15 +20,16 @@ npm install @ehmetlabs/webf-vue-carousel-slider
 
 ```vue
 <template>
-  <webf-carousel-slider
+  <carousel-slider
+    style="height: 220px"
     auto-play
     auto-play-interval="3000"
     auto-play-animation-duration="300"
     enable-infinite-scroll
   >
-    <webf-carousel-slider-item image-url="https://example.com/slide-1.jpg" />
-    <webf-carousel-slider-item image-url="https://example.com/slide-2.jpg" />
-  </webf-carousel-slider>
+    <carousel-slider-item image-url="https://example.com/slide-1.jpg" />
+    <carousel-slider-item image-url="https://example.com/slide-2.jpg" />
+  </carousel-slider>
 </template>
 
 <script setup lang="ts">
@@ -37,6 +38,9 @@ const onPageChanged = (index: number, reason: 'timed' | 'manual' | 'controller')
 };
 </script>
 ```
+
+The generated Vue typings expose `<carousel-slider>`.
+Ensure the element has an explicit height via inline style or CSS.
 
 ## API reference
 
