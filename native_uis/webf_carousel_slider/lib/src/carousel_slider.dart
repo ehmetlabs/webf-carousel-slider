@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:webf/css.dart';
@@ -182,7 +180,8 @@ class WebFCarouselSlider extends CarouselSliderBindings {
   }
 
   @override
-  double? get autoPlayAnimationDuration => _autoPlayAnimationDurationMs.toDouble();
+  double? get autoPlayAnimationDuration =>
+      _autoPlayAnimationDurationMs.toDouble();
 
   @override
   set autoPlayAnimationDuration(value) {
@@ -255,7 +254,7 @@ class WebFCarouselSlider extends CarouselSliderBindings {
 
   @override
   set scrollPhysics(value) {
-    final nextName = value == null ? null : value.toString();
+    final nextName = value?.toString();
     final nextPhysics = EnumConverter.parseScrollPhysics(value);
     if (_scrollPhysicsName != nextName || _scrollPhysics != nextPhysics) {
       _scrollPhysicsName = nextName;
@@ -337,8 +336,7 @@ class WebFCarouselSlider extends CarouselSliderBindings {
   @override
   set pageViewKey(value) {
     final next = value?.toString();
-    final normalized =
-        next == null || next.trim().isEmpty ? null : next.trim();
+    final normalized = next == null || next.trim().isEmpty ? null : next.trim();
     if (_pageViewKeyValue != normalized) {
       _pageViewKeyValue = normalized;
       _requestUpdate();
@@ -353,7 +351,6 @@ class WebFCarouselSlider extends CarouselSliderBindings {
       case CenterPageEnlargeStrategy.zoom:
         return CarouselSliderEnlargeStrategy.zoom;
       case CenterPageEnlargeStrategy.scale:
-      default:
         return CarouselSliderEnlargeStrategy.scale;
     }
   }

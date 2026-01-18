@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:webf_carousel_slider/src/carousel_slider.dart';
 import 'package:webf_carousel_slider/src/carousel_slider_bindings_generated.dart';
 

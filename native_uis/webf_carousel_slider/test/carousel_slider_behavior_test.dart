@@ -1,5 +1,4 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webf_carousel_slider/src/config/carousel_config.dart';
 
@@ -15,7 +14,8 @@ void main() {
       final options = config.build();
 
       expect(options.autoPlay, isTrue);
-      expect(options.autoPlayInterval, equals(const Duration(milliseconds: 2500)));
+      expect(
+          options.autoPlayInterval, equals(const Duration(milliseconds: 2500)));
       expect(options.autoPlayAnimationDuration,
           equals(const Duration(milliseconds: 650)));
     });
