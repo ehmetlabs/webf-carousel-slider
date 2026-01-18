@@ -30,9 +30,8 @@ class EnumConverter {
     if (value is CenterPageEnlargeStrategy) return value;
 
     final strValue = value.toString().toLowerCase();
-    final normalized = strValue.contains('.')
-        ? strValue.split('.').last
-        : strValue;
+    final normalized =
+        strValue.contains('.') ? strValue.split('.').last : strValue;
 
     switch (normalized) {
       case 'height':
@@ -79,5 +78,4 @@ class EnumConverter {
         return null;
     }
   }
-
 }
